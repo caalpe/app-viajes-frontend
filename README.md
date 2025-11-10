@@ -22,6 +22,7 @@ plugins: [require('flowbite/plugin')]
 
 # 4) Instalar Flowbite (CSS + JS de componentes)
 npm i flowbite
+
 Importa el JS en main.ts
 import 'flowbite';
 
