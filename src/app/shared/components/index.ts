@@ -1,1 +1,2 @@
-export * from './navbar/navbar.component';
+// Exports removed - Import directly from component files instead
+

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-navbar-green">
   <div class="container-fluid">
     <!-- Brand/Logo - Left side -->
     <div class="navbar-left">
@@ -30,8 +30,30 @@
 
       <!-- Right section: User navigation or Auth -->
       <ul class="navbar-nav ms-auto align-items-center">
-        <!-- If user is authenticated -->
-        <ng-container *ngIf="isUserAuthenticated">
+        <!-- If user is not authenticated or not logged in -->
+        <ng-container *ngIf="!isUserAuthenticated || !isUserLoggedIn">
+          <li class="nav-item">
+            <div class="btn-group" role="group">
+              <a 
+                class="btn btn-outline-light" 
+                [routerLink]="['/users/new']"
+                title="Sign Up">
+                <i class="bi bi-person-plus"></i> Registrarse
+              </a>
+              <button 
+                class="btn btn-outline-info" 
+                type="button"
+                (click)="login()"
+                title="Sign In"
+                [disabled]="!isUserAuthenticated">
+                <i class="bi bi-box-arrow-in-right"></i> Entrar
+              </button>
+            </div>
+          </li>
+        </ng-container>
+
+        <!-- If user is logged in - Show tabs -->
+        <ng-container *ngIf="isUserAuthenticated && isUserLoggedIn">
           <!-- Mis Viajes -->
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/trips']" routerLinkActive="active">
@@ -52,31 +74,16 @@
               <i class="bi bi-chat-dots"></i> Mis solicitudes
             </a>
           </li>
-        </ng-container>
 
-        <!-- If user is not authenticated -->
-        <ng-container *ngIf="!isUserAuthenticated">
+          <!-- Logout button -->
           <li class="nav-item">
-            <div class="input-group input-group-sm auth-input">
-              <input 
-                type="email" 
-                class="form-control" 
-                placeholder="Email"
-                aria-label="Email">
-              <button 
-                class="btn btn-outline-light" 
-                type="button" 
-                [routerLink]="['/users/new']"
-                title="Sign Up">
-                Registrarse
-              </button>
-              <button 
-                class="btn btn-outline-info" 
-                type="button"
-                title="Sign In">
-                Entrar
-              </button>
-            </div>
+            <button 
+              class="btn btn-outline-warning" 
+              type="button"
+              (click)="logout()"
+              title="Sign Out">
+              <i class="bi bi-box-arrow-right"></i> Salir
+            </button>
           </li>
         </ng-container>
       </ul>

@@ -3,23 +3,45 @@
   <div class="row mb-5">
     <div class="col-md-6 mx-auto">
       <div class="card border-primary shadow-sm">
-
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-shield-lock"></i> Estado de Autenticación
+          </h5>
+        </div>
         <div class="card-body">
-          <p class="text-muted mb-3">Cambia el estado de autenticación para ver cómo cambia la navbar:</p>
+          <p class="text-muted mb-3">Estado actual: 
+            <strong>
+              <span *ngIf="isUserAuthenticated" class="badge bg-success">
+                <i class="bi bi-check-circle"></i> Autenticado
+              </span>
+              <span *ngIf="!isUserAuthenticated" class="badge bg-danger">
+                <i class="bi bi-x-circle"></i> No Autenticado
+              </span>
+            </strong>
+          </p>
 
           <div class="btn-group w-100" role="group">
             <button
               type="button"
-              class="btn btn-outline-danger"
+              [class.active]="!isUserAuthenticated"
+              [class]="isUserAuthenticated ? 'btn btn-outline-danger' : 'btn btn-danger'"
               (click)="toggleAuth(false)">
               <i class="bi bi-box-arrow-right"></i> No Autenticado
             </button>
             <button
               type="button"
-              class="btn btn-outline-success"
+              [class.active]="isUserAuthenticated"
+              [class]="!isUserAuthenticated ? 'btn btn-outline-success' : 'btn btn-success'"
               (click)="toggleAuth(true)">
               <i class="bi bi-check-circle"></i> Autenticado
             </button>
+          </div>
+
+          <hr class="my-3">
+          
+          <div class="alert alert-info small mb-0">
+            <i class="bi bi-info-circle"></i>
+            <strong>Nota:</strong> Los botones mostrarán cuál es el estado actual. Haz clic en uno para cambiar el estado y observa cómo cambia la navbar.
           </div>
         </div>
       </div>
