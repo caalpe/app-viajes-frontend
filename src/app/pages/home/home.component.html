@@ -1,0 +1,28 @@
+<div class="container py-5">
+  <!-- Control de Autenticación -->
+  <div class="row mb-5">
+    <div class="col-md-6 mx-auto">
+      <div class="card border-primary shadow-sm">
+
+        <div class="card-body">
+          <p class="text-muted mb-3">Cambia el estado de autenticación para ver cómo cambia la navbar:</p>
+
+          <div class="btn-group w-100" role="group">
+            <button
+              type="button"
+              class="btn btn-outline-danger"
+              (click)="toggleAuth(false)">
+              <i class="bi bi-box-arrow-right"></i> No Autenticado
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-success"
+              (click)="toggleAuth(true)">
+              <i class="bi bi-check-circle"></i> Autenticado
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
