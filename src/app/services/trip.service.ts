@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
+  FormControl,
   Validators,
 } from '@angular/forms';
 
@@ -15,17 +16,17 @@ export class TripStateService {
   /** Crea el form con la estructura de la tabla `trips` */
   private createForm(): FormGroup {
     return this.fb.group({
-      title: ['', [Validators.required, Validators.maxLength(150)]],
-      description: ['', [Validators.required]],
-      destination: ['', [Validators.required]],
-      start_date: ['', [Validators.required]],
-      end_date: ['', [Validators.required]],
-      cost_per_person: [null],
-      min_participants: [1, [Validators.required, Validators.min(1)]],
-      transport_info: [''],
-      accommodation_info: [''],
-      itinerary: [''],
-      status: ['open'],
+      title: new FormControl<string>('', [Validators.required, Validators.maxLength(150)]),
+      description: new FormControl<string>('', [Validators.required]),
+      destination: new FormControl<string>('', [Validators.required]),
+      start_date: new FormControl<string>('', [Validators.required]),
+      end_date: new FormControl<string>('', [Validators.required]),
+      cost_per_person: new FormControl<number | null>(null),
+      min_participants: new FormControl<number>(1, [Validators.required, Validators.min(1)]),
+      transport_info: new FormControl<string>(''),
+      accommodation_info: new FormControl<string>(''),
+      itinerary: new FormControl<string>(''),
+      status: new FormControl<string>('open'),
     });
   }
 
