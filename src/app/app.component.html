@@ -1,3 +1,9 @@
+<app-navbar [isUserAuthenticated]="isUserAuthenticated"></app-navbar>
+
+<main class="mt-4">
+  <router-outlet></router-outlet>
+</main>
+<<<<<<< HEAD
 
 <header class="site-header">
 	<div class="container header-inner">
@@ -26,6 +32,21 @@
 </header>
 
 <main>
-	<router-outlet></router-outlet>
+	<app-navbar [isUserAuthenticated]="isUserAuthenticated"></app-navbar>
+	<main class="mt-4">
+	  <router-outlet />
+	</main>
 </main>
 
+=======
+<app-navbar [isUserAuthenticated]="isUserAuthenticated"></app-navbar>
+
+<main class="mt-4">
+  <router-outlet />
+</main>
+<app-navbar [isUserAuthenticated]="isUserAuthenticated"></app-navbar>
+
+<main class="mt-4">
+  <router-outlet />
+</main>
+>>>>>>> origin/develop

@@ -1,0 +1,92 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-navbar-green">
+  <div class="container-fluid">
+    <!-- Brand/Logo - Left side -->
+    <div class="navbar-left">
+      <a class="navbar-brand fw-bold" [routerLink]="['/']">
+        <i class="bi bi-airplane"></i> App Viajes
+      </a>
+      <button 
+        class="navbar-toggler" 
+        type="button" 
+        data-bs-toggle="collapse" 
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav" 
+        aria-expanded="false" 
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+
+    <!-- Navbar items -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Left section: Home -->
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/']" routerLinkActive="active" routerLinkActiveOptions="{exact: true}">
+            <i class="bi bi-house"></i> Inicio
+          </a>
+        </li>
+      </ul>
+
+      <!-- Right section: User navigation or Auth -->
+      <ul class="navbar-nav ms-auto align-items-center">
+        <!-- If user is not authenticated or not logged in -->
+        <ng-container *ngIf="!isUserAuthenticated || !isUserLoggedIn">
+          <li class="nav-item">
+            <div class="btn-group" role="group">
+              <a 
+                class="btn btn-outline-light" 
+                [routerLink]="['/users/new']"
+                title="Sign Up">
+                <i class="bi bi-person-plus"></i> Registrarse
+              </a>
+              <button 
+                class="btn btn-outline-info" 
+                type="button"
+                (click)="login()"
+                title="Sign In"
+                [disabled]="!isUserAuthenticated">
+                <i class="bi bi-box-arrow-in-right"></i> Entrar
+              </button>
+            </div>
+          </li>
+        </ng-container>
+
+        <!-- If user is logged in - Show tabs -->
+        <ng-container *ngIf="isUserAuthenticated && isUserLoggedIn">
+          <!-- Mis Viajes -->
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/trips']" routerLinkActive="active">
+              <i class="bi bi-map"></i> Mis viajes
+            </a>
+          </li>
+
+          <!-- Mi Perfil -->
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/users/1']" routerLinkActive="active">
+              <i class="bi bi-person-circle"></i> Mi perfil
+            </a>
+          </li>
+
+          <!-- Mis Solicitudes -->
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/requests']" routerLinkActive="active">
+              <i class="bi bi-chat-dots"></i> Mis solicitudes
+            </a>
+          </li>
+
+          <!-- Logout button -->
+          <li class="nav-item">
+            <button 
+              class="btn btn-outline-warning" 
+              type="button"
+              (click)="logout()"
+              title="Sign Out">
+              <i class="bi bi-box-arrow-right"></i> Salir
+            </button>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,81 +1,115 @@
 <section class="hero">
-	<div class="hero-inner container">
-		<h1>Viaja. Descubre. Vive.</h1>
-		<p class="lead">Encuentra las mejores ofertas y experiencias únicas para tu próxima aventura.</p>
+  <div class="hero-inner container">
+    <h1>Viaja. Descubre. Vive.</h1>
+    <p class="lead">Encuentra las mejores ofertas y experiencias únicas para tu próxima aventura.</p>
 
-		<form class="search-form" [formGroup]="searchForm" (ngSubmit)="$event.preventDefault()">
-			<div class="field">
-				<label class="label-accent">Destino</label>
-				<input type="text" formControlName="destination" placeholder="¿A dónde?" />
-			</div>
+    <form class="search-form" [formGroup]="searchForm" (ngSubmit)="$event.preventDefault()">
+      <div class="field">
+        <label class="label-accent">Destino</label>
+        <input type="text" formControlName="destination" placeholder="¿A dónde?" />
+      </div>
 
-			<div class="field">
-				<label class="label-accent" [class.label-error]="searchForm.errors?.['dateRange']">Desde</label>
-				<input type="date" formControlName="from" placeholder="dd/mm/aaaa"
-					[class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
-			</div>
+      <div class="field">
+        <label class="label-accent" [class.label-error]="searchForm.errors?.['dateRange']">Desde</label>
+        <input type="date" formControlName="from" placeholder="dd/mm/aaaa"
+          [class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
+      </div>
 
-			<div class="field">
-				<label class="label-accent" [class.label-error]="searchForm.errors?.['dateRange']">Hasta</label>
-				<input type="date" formControlName="to" placeholder="dd/mm/aaaa"
-					[class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
-			</div>
+      <div class="field">
+        <label class="label-accent" [class.label-error]="searchForm.errors?.['dateRange']">Hasta</label>
+        <input type="date" formControlName="to" placeholder="dd/mm/aaaa"
+          [class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
+      </div>
 
-			<div class="form-error" *ngIf="searchForm.errors?.['dateRange']">
-				La fecha "Desde" debe ser anterior o igual a la fecha "Hasta".
-			</div>
+      <div class="form-error" *ngIf="searchForm.errors?.['dateRange']">
+        La fecha "Desde" debe ser anterior o igual a la fecha "Hasta".
+      </div>
 
-			<div class="field">
-				<label class="label-accent label-budget">Presupuesto</label>
-				<div class="input-with-addon">
-					<input type="number" formControlName="budget" min="0" placeholder="0" />
-					<span class="addon">€</span>
-				</div>
-			</div>
-			<div class="form-error" *ngIf="budgetControl?.invalid && (budgetControl?.dirty || budgetControl?.touched)">
-				El presupuesto debe ser un número mayor o igual a 0.
-			</div>
+      <div class="field">
+        <label class="label-accent label-budget">Presupuesto</label>
+        <div class="input-with-addon">
+          <input type="number" formControlName="budget" min="0" placeholder="0" />
+          <span class="addon">€</span>
+        </div>
+      </div>
+      <div class="form-error" *ngIf="budgetControl?.invalid && (budgetControl?.dirty || budgetControl?.touched)">
+        El presupuesto debe ser un número mayor o igual a 0.
+      </div>
 
-			<div class="field action">
-				<button class="btn primary" type="submit">Buscar</button>
-			</div>
-		</form>
-	</div>
+      <div class="field action">
+        <button class="btn primary" type="submit">Buscar</button>
+      </div>
+    </form>
+  </div>
 </section>
 
-<section class="features container">
-	<div class="features-grid">
-		<div class="feature" *ngFor="let f of features">
-			<h3>{{ f.title }}</h3>
-			<p>{{ f.desc }}</p>
-		</div>
-	</div>
-</section>
+<div class="container py-5">
+  <div class="row mb-5">
+    <div class="col-md-6 mx-auto">
+      <div class="card border-primary shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-shield-lock"></i> Estado de Autenticación
+          </h5>
+        </div>
+        <div class="card-body">
+          <p class="text-muted mb-3">Estado actual:
+            <strong>
+              <ng-container *ngIf="isUserAuthenticated; else notAuth">
+                <span class="badge bg-success">
+                  <i class="bi bi-check-circle"></i> Autenticado
+                </span>
+              </ng-container>
+              <ng-template #notAuth>
+                <span class="badge bg-danger">
+                  <i class="bi bi-x-circle"></i> No Autenticado
+                </span>
+              </ng-template>
+            </strong>
+          </p>
 
-<section class="trips container">
-	<h2>Viajes recomendados</h2>
-	<div class="trips-grid">
-		<article class="trip-card" *ngFor="let t of (trips$ | async)">
-			<div class="image" [style.backgroundImage]="'url(' + t.img + ')'">
-			</div>
-			<div class="trip-body">
-				<div>
-					<h3>{{ t.title }}</h3>
-					<p class="muted">{{ t.description }}</p>
-				</div>
-				<div class="trip-meta">
-					<span class="price">{{ t.price }}</span>
-					<button class="btn">Ver</button>
-				</div>
-			</div>
-		</article>
-	</div>
-</section>
+          <div class="btn-group w-100" role="group">
+            <button
+              type="button"
+              [ngClass]="isUserAuthenticated ? 'btn btn-outline-danger' : 'btn btn-danger active'"
+              (click)="toggleAuth(false)">
+              <i class="bi bi-box-arrow-right"></i> No Autenticado
+            </button>
+            <button
+              type="button"
+              [ngClass]="!isUserAuthenticated ? 'btn btn-outline-success' : 'btn btn-success active'"
+              (click)="toggleAuth(true)">
+              <i class="bi bi-check-circle"></i> Autenticado
+            </button>
+          </div>
 
-<section class="cta">
-	<div class="container cta-inner">
-		<h2>Listo para tu próxima aventura?</h2>
-		<p>Reserva ahora y obtén descuentos exclusivos en destinos seleccionados.</p>
-		<button class="btn primary large">Empieza ahora</button>
-	</div>
-</section>
+          <hr class="my-3">
+
+          <div class="alert alert-info small mb-0">
+            <i class="bi bi-info-circle"></i>
+            <strong>Nota:</strong> Los botones mostrarán cuál es el estado actual. Haz clic en uno para cambiar el estado y observa cómo cambia la navbar.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6 mx-auto">
+      <div class="card border-secondary shadow-sm">
+        <div class="card-body">
+          <p class="text-muted mb-3">Prueba los enlaces de routing:</p>
+          <div class="d-grid gap-2">
+            <a routerLink="/trips/1" class="btn btn-success">
+              <i class="bi bi-eye"></i> Ver Detalle de Viaje
+            </a>
+            <a routerLink="/requests/new" class="btn btn-primary">
+              <i class="bi bi-plus"></i> Hacer Solicitud
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
