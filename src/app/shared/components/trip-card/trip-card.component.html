@@ -1,0 +1,35 @@
+<article class="card" (mouseenter)="hover = true" (mouseleave)="hover = false"
+         [class.shadow]="hover" [class.shadow-sm]="!hover">
+    <div class="pt-4">
+        <img src="{{image}}" alt="" class="img-fluid card-image">
+        <span class="badge rounded-pill text-bg-primary position-absolute owner-display">
+            @if(owner)
+            {
+                Organizador
+            }@else
+            {
+                Participante
+            }
+        </span>
+    </div>
+    
+    <div class="card-body">
+        <h3 class="card-title">{{title}}</h3>
+        <div>
+            <i class="bi bi-geo-alt pe-2"></i>
+            <span class="card-text">{{startPoint}}</span>
+            <i class="bi bi-arrow-right pe-2"></i>
+            <span class="card-text">{{endPoint}}</span>
+        </div>
+        <div>
+            <i class="bi bi-calendar pe-2"></i>
+            <span class="card-text">{{date}}</span>
+        </div>
+        <div>
+            <i class="bi bi-people pe-2"></i>
+            <span class="card-text">{{participant}} / {{maxParticipant}}</span>
+        </div>
+    </div>
+
+    <a href="#" class="stretched-link"></a>
+</article>
