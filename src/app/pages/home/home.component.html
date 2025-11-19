@@ -1,0 +1,81 @@
+<section class="hero">
+	<div class="hero-inner container">
+		<h1>Viaja. Descubre. Vive.</h1>
+		<p class="lead">Encuentra las mejores ofertas y experiencias únicas para tu próxima aventura.</p>
+
+		<form class="search-form" [formGroup]="searchForm" (ngSubmit)="$event.preventDefault()">
+			<div class="field">
+				<label class="label-accent">Destino</label>
+				<input type="text" formControlName="destination" placeholder="¿A dónde?" />
+			</div>
+
+			<div class="field">
+				<label class="label-accent" [class.label-error]="searchForm.errors?.['dateRange']">Desde</label>
+				<input type="date" formControlName="from" placeholder="dd/mm/aaaa"
+					[class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
+			</div>
+
+			<div class="field">
+				<label class="label-accent" [class.label-error]="searchForm.errors?.['dateRange']">Hasta</label>
+				<input type="date" formControlName="to" placeholder="dd/mm/aaaa"
+					[class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
+			</div>
+
+			<div class="form-error" *ngIf="searchForm.errors?.['dateRange']">
+				La fecha "Desde" debe ser anterior o igual a la fecha "Hasta".
+			</div>
+
+			<div class="field">
+				<label class="label-accent label-budget">Presupuesto</label>
+				<div class="input-with-addon">
+					<input type="number" formControlName="budget" min="0" placeholder="0" />
+					<span class="addon">€</span>
+				</div>
+			</div>
+			<div class="form-error" *ngIf="budgetControl?.invalid && (budgetControl?.dirty || budgetControl?.touched)">
+				El presupuesto debe ser un número mayor o igual a 0.
+			</div>
+
+			<div class="field action">
+				<button class="btn primary" type="submit">Buscar</button>
+			</div>
+		</form>
+	</div>
+</section>
+
+<section class="features container">
+	<div class="features-grid">
+		<div class="feature" *ngFor="let f of features">
+			<h3>{{ f.title }}</h3>
+			<p>{{ f.desc }}</p>
+		</div>
+	</div>
+</section>
+
+<section class="trips container">
+	<h2>Viajes recomendados</h2>
+	<div class="trips-grid">
+		<article class="trip-card" *ngFor="let t of (trips$ | async)">
+			<div class="image" [style.backgroundImage]="'url(' + t.img + ')'">
+			</div>
+			<div class="trip-body">
+				<div>
+					<h3>{{ t.title }}</h3>
+					<p class="muted">{{ t.description }}</p>
+				</div>
+				<div class="trip-meta">
+					<span class="price">{{ t.price }}</span>
+					<button class="btn">Ver</button>
+				</div>
+			</div>
+		</article>
+	</div>
+</section>
+
+<section class="cta">
+	<div class="container cta-inner">
+		<h2>Listo para tu próxima aventura?</h2>
+		<p>Reserva ahora y obtén descuentos exclusivos en destinos seleccionados.</p>
+		<button class="btn primary large">Empieza ahora</button>
+	</div>
+</section>
