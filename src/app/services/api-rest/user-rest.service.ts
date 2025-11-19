@@ -1,28 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-
-export interface User {
-  id_user: number;
-  name: string;
-  email: string;
-  password?: string;
-  phone?: string | null;
-  photo_url?: string | null;
-  bio?: string | null;
-  interests?: string | null;
-  average_rating: number;
-  rating_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export type CreateUserDto = Omit<
-  User,
-  'id_user' | 'created_at' | 'updated_at' | 'average_rating' | 'rating_count'
->;
-
-export type UpdateUserDto = Partial<CreateUserDto>;
+import { IUser } from '../../interfaces/IUser';
 
 @Injectable({
   providedIn: 'root',
@@ -30,15 +9,15 @@ export type UpdateUserDto = Partial<CreateUserDto>;
 export class UserApiService {
   private http = inject(HttpClient);
 
-  // Ajusta a tu backend real
-private baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/users'
+  private baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/users';
+
   /**
    * Recuperar todos los usuarios
    * GET /api/usuarios
    */
-  getUsers(): Promise<User[]> {
+  getUsers(): Promise<IUser[]> {
     return firstValueFrom(
-      this.http.get<User[]>(this.baseUrl)
+      this.http.get<IUser[]>(this.baseUrl)
     );
   }
 
@@ -46,9 +25,9 @@ private baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/users'
    * Recuperar un usuario específico
    * GET /api/usuarios/:idUser
    */
-  getUser(idUser: number): Promise<User> {
+  getUser(idUser: number): Promise<IUser> {
     return firstValueFrom(
-      this.http.get<User>(`${this.baseUrl}/${idUser}`)
+      this.http.get<IUser>(`${this.baseUrl}/${idUser}`)
     );
   }
 
@@ -56,9 +35,9 @@ private baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/users'
    * Crear un nuevo usuario
    * POST /api/usuarios
    */
-  createUser(payload: Partial<CreateUserDto>): Promise<User> {
+  createUser(payload: Partial<IUser>): Promise<IUser> {
     return firstValueFrom(
-      this.http.post<User>(this.baseUrl, payload)
+      this.http.post<IUser>(this.baseUrl, payload)
     );
   }
 
@@ -66,9 +45,9 @@ private baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/users'
    * Actualizar un usuario con PATCH
    * PATCH /api/usuarios/:idUser
    */
-  updateUserPatch(idUser: number, payload: UpdateUserDto): Promise<User> {
+  updateUserPatch(idUser: number, payload: Partial<IUser>): Promise<IUser> {
     return firstValueFrom(
-      this.http.patch<User>(`${this.baseUrl}/${idUser}`, payload)
+      this.http.patch<IUser>(`${this.baseUrl}/${idUser}`, payload)
     );
   }
 
@@ -76,9 +55,9 @@ private baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/users'
    * Actualizar un usuario con PUT
    * PUT /api/usuarios/:idUser
    */
-  updateUserPut(idUser: number, payload: UpdateUserDto): Promise<User> {
+  updateUserPut(idUser: number, payload: Partial<IUser>): Promise<IUser> {
     return firstValueFrom(
-      this.http.put<User>(`${this.baseUrl}/${idUser}`, payload)
+      this.http.put<IUser>(`${this.baseUrl}/${idUser}`, payload)
     );
   }
 

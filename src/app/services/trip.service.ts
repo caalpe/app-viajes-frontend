@@ -19,7 +19,8 @@ export class TripStateService {
     return this.fb.group({
       title: new FormControl<ITrip['title']>('', [Validators.required, Validators.maxLength(150)]),
       description: new FormControl<ITrip['description']>('', [Validators.required]),
-      destination: new FormControl<ITrip['destination']>('', [Validators.required]),
+      origin: new FormControl<ITrip['origin']>('', [Validators.required]),
+      destination: new FormControl<ITrip['destination']>(''),
       start_date: new FormControl<ITrip['start_date']>('', [Validators.required]),
       end_date: new FormControl<ITrip['end_date']>('', [Validators.required]),
       cost_per_person: new FormControl<ITrip['cost_per_person']>(null),

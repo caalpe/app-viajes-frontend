@@ -33,27 +33,28 @@
           <!-- Start Location + End Location -->
           <div class="row">
             <div class="col-md-6 mb-4">
-              <label class="form-label" for="destination">Ubicación de Inicio *</label>
+              <label class="form-label" for="origin">Ubicación de Origen *</label>
               <input
-                id="destination"
+                id="origin"
                 type="text"
                 class="form-control"
-                formControlName="destination"
+                formControlName="origin"
                 placeholder="Ej. Los Ángeles"
               />
-              @if (tripForm.get('destination')?.touched && tripForm.get('destination')?.invalid) {
+              @if (tripForm.get('origin')?.touched && tripForm.get('origin')?.invalid) {
                 <div class="invalid-feedback d-block mt-2">
-                  La ubicación es obligatoria.
+                  La ubicación de origen es obligatoria.
                 </div>
               }
             </div>
 
             <div class="col-md-6 mb-4">
-              <label class="form-label" for="description">Ubicación Final *</label>
+              <label class="form-label" for="destination">Ubicación de Destino</label>
               <input
-                id="description"
+                id="destination"
                 type="text"
                 class="form-control"
+                formControlName="destination"
                 placeholder="Ej. San Diego"
               />
             </div>

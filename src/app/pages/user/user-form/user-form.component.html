@@ -149,3 +149,13 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Alert -->
+<app-modal-alert
+  [isVisible]="modalVisible"
+  [title]="modalTitle"
+  [message]="modalMessage"
+  [type]="modalType"
+  [redirectUrl]="modalRedirectUrl"
+  (onClose)="onModalClose()"
+></app-modal-alert>
