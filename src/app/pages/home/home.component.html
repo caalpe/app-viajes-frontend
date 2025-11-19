@@ -9,36 +9,37 @@
           </h5>
         </div>
         <div class="card-body">
-          <p class="text-muted mb-3">Estado actual: 
+          <p class="text-muted mb-3">Estado actual:
             <strong>
-              <span *ngIf="isUserAuthenticated" class="badge bg-success">
-                <i class="bi bi-check-circle"></i> Autenticado
-              </span>
-              <span *ngIf="!isUserAuthenticated" class="badge bg-danger">
-                <i class="bi bi-x-circle"></i> No Autenticado
-              </span>
+              @if (isUserAuthenticated) {
+                <span class="badge bg-success">
+                  <i class="bi bi-check-circle"></i> Autenticado
+                </span>
+              } @else {
+                <span class="badge bg-danger">
+                  <i class="bi bi-x-circle"></i> No Autenticado
+                </span>
+              }
             </strong>
           </p>
 
           <div class="btn-group w-100" role="group">
             <button
               type="button"
-              [class.active]="!isUserAuthenticated"
-              [class]="isUserAuthenticated ? 'btn btn-outline-danger' : 'btn btn-danger'"
+              class="{{ isUserAuthenticated ? 'btn btn-outline-danger' : 'btn btn-danger active' }}"
               (click)="toggleAuth(false)">
               <i class="bi bi-box-arrow-right"></i> No Autenticado
             </button>
             <button
               type="button"
-              [class.active]="isUserAuthenticated"
-              [class]="!isUserAuthenticated ? 'btn btn-outline-success' : 'btn btn-success'"
+              class="{{ !isUserAuthenticated ? 'btn btn-outline-success' : 'btn btn-success active' }}"
               (click)="toggleAuth(true)">
               <i class="bi bi-check-circle"></i> Autenticado
             </button>
           </div>
 
           <hr class="my-3">
-          
+
           <div class="alert alert-info small mb-0">
             <i class="bi bi-info-circle"></i>
             <strong>Nota:</strong> Los botones mostrarán cuál es el estado actual. Haz clic en uno para cambiar el estado y observa cómo cambia la navbar.
@@ -56,10 +57,11 @@
         <div class="card-body">
           <p class="text-muted mb-3">Prueba los enlaces de routing:</p>
           <div class="d-grid gap-2">
-            <a href="/trips/1" class="btn btn-success">
+            <!-- IMPORTANTE: routerLink, NO href -->
+            <a routerLink="/trips/1" class="btn btn-success">
               <i class="bi bi-eye"></i> Ver Detalle de Viaje
             </a>
-            <a href="/requests/new" class="btn btn-primary">
+            <a routerLink="/requests/new" class="btn btn-primary">
               <i class="bi bi-plus"></i> Hacer Solicitud
             </a>
           </div>
@@ -68,3 +70,4 @@
     </div>
   </div>
 
+</div>
