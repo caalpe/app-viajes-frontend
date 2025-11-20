@@ -3,7 +3,7 @@ export interface ITrip {
   id_creator?: number;
   title: string;
   description: string;
-  origin: string;
+  departure: string;
   destination?: string | null;
   start_date: string;
   end_date: string;

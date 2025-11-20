@@ -33,11 +33,11 @@ export class TripApiService {
   }
 
   /**
-   * Recuperar viajes por origen
-   * GET /api/trips?origin=pais, provincia o ciudad
+   * Recuperar viajes por salida/departure
+   * GET /api/trips?departure=pais, provincia o ciudad
    */
-  getTripsByOrigin(origin: string): Promise<ITrip[]> {
-    let params = new HttpParams().set('origin', origin);
+  getTripsByDeparture(departure: string): Promise<ITrip[]> {
+    let params = new HttpParams().set('departure', departure);
     return firstValueFrom(
       this.http.get<ITrip[]>(this.baseUrl, { params })
     );
