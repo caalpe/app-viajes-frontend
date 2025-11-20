@@ -4,7 +4,7 @@
 }
 
 .bg-navbar-green {
-  background-color: #1b5e20 !important;
+  background-color: #17a2b8 !important;
 }
 
 .navbar-left {
@@ -67,6 +67,17 @@
   background-color: #0dcaf0;
   border-color: #0dcaf0;
   color: #1b5e20;
+}
+
+.btn-outline-warning {
+  color: white;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.btn-outline-warning:hover {
+  background-color: white;
+  border-color: white;
+  color: #17a2b8;
 }
 
 /* Iconos */
