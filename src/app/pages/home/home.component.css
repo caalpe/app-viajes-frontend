@@ -36,7 +36,12 @@
 .search-form .field{ display:flex; flex-direction:column }
 .search-form .field label{ font-size:0.75rem; color:rgba(17,24,39,0.6); margin-bottom:6px }
 .search-form .field label.label-accent{ color: #0b1220; font-weight:700 }
-.search-form .field label.label-budget{ color: #000000 }
+.search-form .field label.label-budget{ color: #000 }
+
+/* Ensure budget label remains black on small screens */
+@media (max-width:900px){
+	.search-form .field label.label-budget{ color: #000 !important }
+}
 .search-form .field input{ padding:10px 12px; border-radius:8px; border:1px solid rgba(15,23,42,0.06); }
 .search-form .field.date input{ width:100px }
 .search-form .field.action{ display:flex; align-items:center }
@@ -102,24 +107,3 @@
 @media (min-width:1100px){
 	.hero-inner{ max-width:680px }
 }
-
-/* Additional develop styles merged in */
-.hover-card {
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
-	cursor: pointer;
-}
-
-.hover-card:hover {
-	transform: translateY(-5px);
-	box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2) !important;
-}
-
-.btn-group { gap: 0.5rem; }
-
-.display-1 { font-size: 4rem; opacity: 0.9; }
-
-.card-text { font-size: 0.95rem; }
-
-a { text-decoration: none; }
-a:hover { text-decoration: none; }
-.display-1 {
