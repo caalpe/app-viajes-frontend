@@ -1,4 +1,14 @@
 import { Component, Input } from '@angular/core';
+import { ITrip } from '../../../interfaces/ITrip';
+
+export enum cardType
+{
+    none = "none",
+    owner = "owner",
+    participant = "participant",
+    pending = "pending",
+
+}
 
 @Component({
   selector: 'app-trip-card',
@@ -16,5 +26,34 @@ export class TripCardComponent {
     participant : number = 3;
     maxParticipant : number = 6;
 
-    @Input({ required: true}) owner : boolean = false;
+    cardType = cardType;
+    @Input() type : cardType = cardType.none;
+    @Input({required : true}) tripInfo! : ITrip;
+    
+    ngOnInit()
+    {
+    }
+
+    selectCardType() : string
+    {
+        switch(this.type)
+        {
+            case cardType.none:
+                return "";
+            case cardType.owner:
+                return "Organizador";
+            case cardType.participant:
+                return "Participante";
+            case  cardType.pending:
+                return "Pendiente";
+        }
+    }
+    badgeClassMap: Record<cardType, string> = 
+    {
+        [cardType.none]: "text-bg-secondary",
+        [cardType.owner]: "text-bg-primary",
+        [cardType.participant]: "text-bg-success",
+        [cardType.pending]: "text-bg-warning",
+    };
+
 }

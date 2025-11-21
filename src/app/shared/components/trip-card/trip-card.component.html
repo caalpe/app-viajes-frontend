@@ -2,32 +2,27 @@
          [class.shadow]="hover" [class.shadow-sm]="!hover">
     <div class="pt-4">
         <img src="{{image}}" alt="" class="img-fluid card-image">
-        <span class="badge rounded-pill text-bg-primary position-absolute owner-display">
-            @if(owner)
-            {
-                Organizador
-            }@else
-            {
-                Participante
-            }
-        </span>
+        <span class="badge rounded-pill position-absolute owner-display {{badgeClassMap[type]}}">{{selectCardType()}}</span>        
     </div>
-    
     <div class="card-body">
-        <h3 class="card-title">{{title}}</h3>
+        <h3 class="card-title">{{tripInfo.title}}</h3>
         <div>
             <i class="bi bi-geo-alt pe-2"></i>
-            <span class="card-text">{{startPoint}}</span>
+            <span class="card-text">{{tripInfo.departure}}</span>
             <i class="bi bi-arrow-right pe-2"></i>
-            <span class="card-text">{{endPoint}}</span>
+            <span class="card-text">{{tripInfo.destination}}</span>
         </div>
         <div>
             <i class="bi bi-calendar pe-2"></i>
-            <span class="card-text">{{date}}</span>
+            <span class="card-text">{{tripInfo.start_date}}</span>
         </div>
         <div>
             <i class="bi bi-people pe-2"></i>
-            <span class="card-text">{{participant}} / {{maxParticipant}}</span>
+            <span class="card-text">{{participant}} / {{tripInfo.min_participants}}</span>
+        </div>
+        <div>
+            <i class="bi bi-cash pe-2"></i>
+            <span class="card-text">{{tripInfo.cost_per_person}} €</span>
         </div>
     </div>
 

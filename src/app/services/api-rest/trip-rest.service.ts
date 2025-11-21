@@ -71,8 +71,7 @@ export class TripApiService {
    * Los espacios deben sustituirse por %20
    */
   getTripsByCreator(creatorName: string): Promise<ITrip[]> {
-    const encodedName = creatorName.replace(/ /g, '%20');
-    let params = new HttpParams().set('creator', encodedName);
+    let params = new HttpParams().set('creator', creatorName);
     return firstValueFrom(
       this.http.get<ITrip[]>(this.baseUrl, { params })
     );
