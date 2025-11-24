@@ -33,11 +33,11 @@ export class TripApiService {
   }
 
   /**
-   * Recuperar viajes por origen
-   * GET /api/trips?origin=pais, provincia o ciudad
+   * Recuperar viajes por salida/departure
+   * GET /api/trips?departure=pais, provincia o ciudad
    */
-  getTripsByOrigin(origin: string): Promise<ITrip[]> {
-    let params = new HttpParams().set('origin', origin);
+  getTripsByDeparture(departure: string): Promise<ITrip[]> {
+    let params = new HttpParams().set('departure', departure);
     return firstValueFrom(
       this.http.get<ITrip[]>(this.baseUrl, { params })
     );
@@ -71,8 +71,7 @@ export class TripApiService {
    * Los espacios deben sustituirse por %20
    */
   getTripsByCreator(creatorName: string): Promise<ITrip[]> {
-    const encodedName = creatorName.replace(/ /g, '%20');
-    let params = new HttpParams().set('creator', encodedName);
+    let params = new HttpParams().set('creator', creatorName);
     return firstValueFrom(
       this.http.get<ITrip[]>(this.baseUrl, { params })
     );
