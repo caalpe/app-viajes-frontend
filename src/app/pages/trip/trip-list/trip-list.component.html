@@ -1,13 +1,32 @@
 <div class="container py-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0">
-      <i class="bi bi-map"></i> Mis Viajes
+  <section class="pb-5">
+		<div class="d-flex justify-content-between mb-4">
+			<h2 class="">
+				Mis viajes
+			</h2>
+			<a routerLink="/trips/new" class="btn btn-primary my-auto">
+                <i class="bi bi-plus-circle"></i> Nuevo Viaje
+            </a>
+		</div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+       @for(trip of userTrips; track trip.id_trip)
+      {
+        <app-trip-card class="col" [type]="cardType.owner" [tripInfo]="trip"></app-trip-card>
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2 class="mb-4">
+      Viajes donde participo
     </h2>
-    <a routerLink="/trips/new" class="btn btn-primary">
-      <i class="bi bi-plus-circle"></i> Crear Nuevo Viaje
-    </a>
-  </div>
-  <a routerLink="/trips/1" class="btn btn-success">
-    <i class="bi bi-eye"></i> Ver Detalle de Viaje
-  </a>
+	<!-- <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <app-trip-card class="col" [type]="cardType.participant"></app-trip-card>
+      <app-trip-card class="col" [type]="cardType.participant"></app-trip-card>
+      <app-trip-card class="col" [type]="cardType.participant"></app-trip-card>
+      <app-trip-card class="col" [type]="cardType.pending"></app-trip-card>
+      <app-trip-card class="col" [type]="cardType.pending"></app-trip-card>
+      <app-trip-card class="col" [type]="cardType.pending"></app-trip-card>
+	</div> -->
+  </section>
 </div>
