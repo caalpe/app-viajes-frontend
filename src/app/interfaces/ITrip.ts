@@ -5,7 +5,6 @@ export interface ITrip {
   description: string;
   departure: string;
   destination?: string | null;
-  departure: string;
   start_date: string;
   end_date: string;
   cost_per_person?: number | null;
