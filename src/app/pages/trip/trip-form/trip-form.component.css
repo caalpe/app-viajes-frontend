@@ -75,6 +75,7 @@
   padding: 10px 14px;
   font-size: 14px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
 }
 
 .form-control:focus {
@@ -84,6 +85,16 @@
 
 .form-control::placeholder {
   color: #adb5bd;
+}
+
+/* Estilos para inputs de fecha */
+input[type="date"] {
+  width: 100%;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  width: 100%;
+  cursor: pointer;
 }
 
 textarea.form-control {
