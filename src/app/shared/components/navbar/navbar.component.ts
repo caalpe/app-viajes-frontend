@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -9,20 +10,27 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
-export class NavbarComponent {
-  @Input() isUserAuthenticated: boolean = false;
+export class NavbarComponent implements OnInit, OnDestroy {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private subscription!: Subscription;
+
   isUserLoggedIn: boolean = false;
 
-  constructor(private authService: AuthService) {}
+  ngOnInit(): void {
+    // Suscribirse a los cambios de estado de autenticación
+    this.subscription = this.authService.authStatus$.subscribe((status) => {
+      this.isUserLoggedIn = status;
+    });
+  }
 
-  login(): void {
-    if (this.isUserAuthenticated) {
-      this.isUserLoggedIn = true;
-    }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   logout(): void {
-    this.isUserLoggedIn = false;
-    this.authService.setAuthStatus(false);
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }
+
