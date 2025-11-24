@@ -1,15 +1,29 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ITrip } from '../../interfaces/ITrip';
+import { AuthService } from '../auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TripApiService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   private readonly baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/trips';
+
+  /**
+   * Obtiene los headers con la autorización del token
+   */
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    console.log('🛫 TripApiService - Token obtenido de AuthService:', token);
+    return new HttpHeaders({
+      'Authorization': `${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
 
   /**
    * Recuperar todos los viajes
@@ -106,8 +120,10 @@ export class TripApiService {
    * Body: id_creator, title, description, destination, start_date, end_date, cost_per_person, min_participants, transport_info, accommodation_info, itinerary, status
    */
   createTrip(payload: Partial<ITrip>): Promise<ITrip> {
+    const headers = this.getAuthHeaders();
+    console.log('📤 TripApiService - createTrip con headers:', headers.get('Authorization'));
     return firstValueFrom(
-      this.http.post<ITrip>(this.baseUrl, payload)
+      this.http.post<ITrip>(this.baseUrl, payload, { headers })
     );
   }
 
@@ -118,7 +134,7 @@ export class TripApiService {
    */
   updateTrip(id: number, payload: Partial<ITrip>): Promise<ITrip> {
     return firstValueFrom(
-      this.http.put<ITrip>(`${this.baseUrl}/${id}`, payload)
+      this.http.put<ITrip>(`${this.baseUrl}/${id}`, payload, { headers: this.getAuthHeaders() })
     );
   }
 
@@ -128,7 +144,7 @@ export class TripApiService {
    */
   deleteTrip(id: number): Promise<void> {
     return firstValueFrom(
-      this.http.delete<void>(`${this.baseUrl}/${id}`)
+      this.http.delete<void>(`${this.baseUrl}/${id}`, { headers: this.getAuthHeaders() })
     );
   }
 }

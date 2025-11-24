@@ -15,6 +15,7 @@ export class AuthService {
    */
   setToken(token: string): void {
     this.token = token;
+    console.log('🔐 AuthService - Token recogido del login:', token);
     this.setAuthStatus(true);
   }
 

@@ -75,6 +75,7 @@
   padding: 10px 14px;
   font-size: 14px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
 }
 
 .form-control:focus {
@@ -84,6 +85,48 @@
 
 .form-control::placeholder {
   color: #adb5bd;
+}
+
+/* Estilos para inputs de fecha - Optimizado para Chrome */
+
+input[type="date"] {
+  width: 100%;
+  color: #212529;
+}
+
+/* Cuando está vacío mostrar en gris */
+input[type="date"]:not([value]),
+input[type="date"][value=""] {
+  color: #adb5bd;
+}
+
+/* Icono del calendario en negro */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 4px;
+  margin-right: 2px;
+  opacity: 1;
+  color: #212529;
+  filter: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.8;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Remover spinners */
+input[type="date"]::-webkit-outer-spin-button,
+input[type="date"]::-webkit-inner-spin-button {
+  display: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Appearance */
+input[type="date"] {
+  appearance: textfield;
+  -webkit-appearance: textfield;
 }
 
 textarea.form-control {
