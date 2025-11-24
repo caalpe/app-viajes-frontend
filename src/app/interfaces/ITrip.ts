@@ -7,7 +7,7 @@ export interface ITrip {
   destination?: string | null;
   start_date: string;
   end_date: string;
-  cost_per_person?: number | string | null;
+  cost_per_person?: number | null;
   min_participants: number;
   transport_info?: string | null;
   accommodation_info?: string | null;

@@ -8,6 +8,7 @@ export class AuthService {
   private authStatus = new BehaviorSubject<boolean>(false);
   public authStatus$ = this.authStatus.asObservable();
 
+
   setAuthStatus(status: boolean): void {
     this.authStatus.next(status);
   }
