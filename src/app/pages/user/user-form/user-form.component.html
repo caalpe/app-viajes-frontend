@@ -1,9 +1,16 @@
 <div class="user-form-wrapper">
   <div class="user-form-header">
     <div class="header-content">
-      <h1 class="header-title">Crear Cuenta</h1>
-      <p class="header-subtitle">Únete a nuestra comunidad de viajeros</p>
+      <h1 class="header-title">{{ isEditMode ? 'Editar Perfil' : 'Crear Cuenta' }}</h1>
+      <p class="header-subtitle">{{ isEditMode ? 'Actualiza tus datos personales' : 'Únete a nuestra comunidad de viajeros' }}</p>
     </div>
+  </div>
+
+  <!-- Mock links para pruebas (remover en producción) -->
+  <div style="padding: 20px; text-align: center; background-color: #f0f0f0; margin: 10px;">
+    <small style="color: #666;">Enlaces de prueba:</small>
+    <a routerLink="/users/new" style="margin-right: 10px; text-decoration: underline; color: #0066cc;">Crear nuevo</a>
+    <a routerLink="/users/1/edit" style="text-decoration: underline; color: #0066cc;">Editar (Mock ID: 1)</a>
   </div>
 
   <div class="user-form-container">
@@ -136,13 +143,23 @@
               Cancelar
             </button>
 
-            <button
-              type="submit"
-              class="btn btn-create"
-              [disabled]="isSubmitting"
-            >
-              {{ isSubmitting ? 'Creando...' : 'Crear Cuenta' }}
-            </button>
+            @if (isEditMode) {
+              <button
+                type="submit"
+                class="btn btn-create"
+                [disabled]="isSubmitting"
+              >
+                {{ isSubmitting ? 'Actualizando...' : 'Actualizar Perfil' }}
+              </button>
+            } @else {
+              <button
+                type="submit"
+                class="btn btn-create"
+                [disabled]="isSubmitting"
+              >
+                {{ isSubmitting ? 'Creando...' : 'Crear Cuenta' }}
+              </button>
+            }
           </div>
         </form>
       </div>

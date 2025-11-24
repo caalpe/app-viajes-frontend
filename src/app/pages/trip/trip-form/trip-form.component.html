@@ -1,9 +1,16 @@
 <div class="trip-form-wrapper">
   <div class="trip-form-header">
     <div class="header-content">
-      <h1 class="header-title">Crear Nuevo Viaje</h1>
-      <p class="header-subtitle">Planifica tu próxima aventura</p>
+      <h1 class="header-title">{{ isEditMode ? 'Editar Viaje' : 'Crear Nuevo Viaje' }}</h1>
+      <p class="header-subtitle">{{ isEditMode ? 'Actualiza los detalles de tu viaje' : 'Planifica tu próxima aventura' }}</p>
     </div>
+  </div>
+
+  <!-- Mock links para pruebas (remover en producción) -->
+  <div style="padding: 20px; text-align: center; background-color: #f0f0f0; margin: 10px;">
+    <small style="color: #666;">Enlaces de prueba:</small>
+    <a [routerLink]="['/trips/new']" style="margin-right: 10px; text-decoration: underline; color: #0066cc;">Crear nuevo</a>
+    <a [routerLink]="['/trips/1/edit']" style="text-decoration: underline; color: #0066cc;">Editar (Mock ID: 1)</a>
   </div>
 
   <div class="trip-form-container">
@@ -33,23 +40,23 @@
           <!-- Start Location + End Location -->
           <div class="row">
             <div class="col-md-6 mb-4">
-              <label class="form-label" for="origin">Ubicación de Origen *</label>
+              <label class="form-label" for="departure">Lugar de Salida *</label>
               <input
-                id="origin"
+                id="departure"
                 type="text"
                 class="form-control"
-                formControlName="origin"
+                formControlName="departure"
                 placeholder="Ej. Los Ángeles"
               />
-              @if (tripForm.get('origin')?.touched && tripForm.get('origin')?.invalid) {
+              @if (tripForm.get('departure')?.touched && tripForm.get('departure')?.invalid) {
                 <div class="invalid-feedback d-block mt-2">
-                  La ubicación de origen es obligatoria.
+                  El lugar de salida es obligatorio.
                 </div>
               }
             </div>
 
             <div class="col-md-6 mb-4">
-              <label class="form-label" for="destination">Ubicación de Destino</label>
+              <label class="form-label" for="destination">Lugar de Destino</label>
               <input
                 id="destination"
                 type="text"
@@ -195,13 +202,23 @@
               Cancelar
             </button>
 
-            <button
-              type="submit"
-              class="btn btn-create"
-              [disabled]="isSubmitting"
-            >
-              {{ isSubmitting ? 'Creando...' : 'Crear Viaje' }}
-            </button>
+            @if (isEditMode) {
+              <button
+                type="submit"
+                class="btn btn-create"
+                [disabled]="isSubmitting"
+              >
+                {{ isSubmitting ? 'Actualizando...' : 'Actualizar Viaje' }}
+              </button>
+            } @else {
+              <button
+                type="submit"
+                class="btn btn-create"
+                [disabled]="isSubmitting"
+              >
+                {{ isSubmitting ? 'Creando...' : 'Crear Viaje' }}
+              </button>
+            }
           </div>
         </form>
       </div>

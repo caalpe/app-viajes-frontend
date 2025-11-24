@@ -4,11 +4,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { UserFormComponent } from './pages/user/user-form/user-form.component';
 import { UserDetailComponent } from './pages/user/user-detail/user-detail.component';
 import { UserListComponent } from './pages/user/user-list/user-list.component';
-import { RequestDetailComponent } from './pages/request/request-detail/request-detail.component';
-import { RequestFormComponent } from './pages/request/request-form/request-form.component';
 import { TripDetailComponent } from './pages/trip/trip-detail/trip-detail.component';
 import { TripFormComponent } from './pages/trip/trip-form/trip-form.component';
-import { RequestListComponent } from './pages/request/request-list/request-list.component';
 import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
 
  export const routes: Routes = [
@@ -60,29 +57,6 @@ import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
       {
         path: ':id/edit',
         component: TripFormComponent
-      }
-    ]
-  },
-
-  // Rutas de Solicitudes
-  {
-    path: 'requests',
-    children: [
-      {
-        path: '',
-        component: RequestListComponent // Si tienes una lista
-      },
-      {
-        path: 'new',
-        component: RequestFormComponent
-      },
-      {
-        path: ':id',
-        component: RequestDetailComponent
-      },
-      {
-        path: ':id/edit',
-        component: RequestFormComponent
       }
     ]
   },
