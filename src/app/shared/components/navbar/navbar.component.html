@@ -5,13 +5,13 @@
       <a class="navbar-brand fw-bold" [routerLink]="['/']">
         <i class="bi bi-airplane"></i> App Viajes
       </a>
-      <button 
-        class="navbar-toggler" 
-        type="button" 
-        data-bs-toggle="collapse" 
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
         data-bs-target="#navbarNav"
-        aria-controls="navbarNav" 
-        aria-expanded="false" 
+        aria-controls="navbarNav"
+        aria-expanded="false"
         aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -30,30 +30,20 @@
 
       <!-- Right section: User navigation or Auth -->
       <ul class="navbar-nav ms-auto align-items-center">
-        <!-- If user is not authenticated or not logged in -->
-        <ng-container *ngIf="!isUserAuthenticated || !isUserLoggedIn">
+        <!-- If user is not logged in -->
+        @if (!isUserLoggedIn) {
           <li class="nav-item">
-            <div class="btn-group" role="group">
-              <a 
-                class="btn btn-outline-light" 
-                [routerLink]="['/users/new']"
-                title="Sign Up">
-                <i class="bi bi-person-plus"></i> Registrarse
-              </a>
-              <button 
-                class="btn btn-outline-info" 
-                type="button"
-                (click)="login()"
-                title="Sign In"
-                [disabled]="!isUserAuthenticated">
-                <i class="bi bi-box-arrow-in-right"></i> Entrar
-              </button>
-            </div>
+            <a
+              class="btn btn-light fw-bold"
+              [routerLink]="['/login']"
+              title="Log In">
+              <i class="bi bi-box-arrow-in-right"></i> Log in
+            </a>
           </li>
-        </ng-container>
+        }
 
         <!-- If user is logged in - Show tabs -->
-        <ng-container *ngIf="isUserAuthenticated && isUserLoggedIn">
+        @if (isUserLoggedIn) {
           <!-- Mis Viajes -->
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/trips']" routerLinkActive="active">
@@ -77,15 +67,15 @@
 
           <!-- Logout button -->
           <li class="nav-item">
-            <button 
-              class="btn btn-outline-warning" 
+            <button
+              class="btn btn-outline-warning"
               type="button"
               (click)="logout()"
               title="Sign Out">
               <i class="bi bi-box-arrow-right"></i> Salir
             </button>
           </li>
-        </ng-container>
+        }
       </ul>
     </div>
   </div>

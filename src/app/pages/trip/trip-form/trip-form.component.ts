@@ -5,6 +5,7 @@ import { TripStateService } from '../../../services/trip.service';
 import { FormGroup } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TripApiService } from '../../../services/api-rest/trip-rest.service';
+import { AuthService } from '../../../services/auth.service';
 import { getIdFromRoute } from '../../../shared/utils/route.utils';
 
 @Component({
@@ -16,6 +17,7 @@ import { getIdFromRoute } from '../../../shared/utils/route.utils';
 export class TripFormComponent implements OnInit {
   private tripState = inject(TripStateService);
   private tripApi = inject(TripApiService);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
@@ -31,8 +33,15 @@ export class TripFormComponent implements OnInit {
     // Verificar si estamos en modo edición
     this.loadEditModeData();
 
+    // Si estamos en modo edición, verificar autenticación
+    if (this.isEditMode && !this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     // TODO: Remover - Solo para pruebas
     console.log('URL actual:', this.router.url);
+    console.log('Token en AuthService:', this.authService.getToken());
   }
 
   async loadEditModeData(): Promise<void> {

@@ -1,6 +1,7 @@
 
 import { Routes } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
+import { LoginComponent } from './pages/login/login.component';
 import { UserFormComponent } from './pages/user/user-form/user-form.component';
 import { UserDetailComponent } from './pages/user/user-detail/user-detail.component';
 import { UserListComponent } from './pages/user/user-list/user-list.component';
@@ -13,6 +14,12 @@ import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
     path: '',
     component: HomeComponent,
     pathMatch: 'full'
+  },
+
+  // Ruta de Login
+  {
+    path: 'login',
+    component: LoginComponent
   },
 
   // Rutas de Usuarios

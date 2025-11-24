@@ -5,6 +5,7 @@ import { UserStateService } from '../../../services/user.service';
 import { FormGroup } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
+import { AuthRestService } from '../../../services/api-rest/auth-rest.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
 import { AuthService } from '../../../services/auth.service';
 import { getIdFromRoute } from '../../../shared/utils/route.utils';
@@ -18,6 +19,7 @@ import { getIdFromRoute } from '../../../shared/utils/route.utils';
 export class UserFormComponent implements OnInit {
   private userState = inject(UserStateService);
   private userApi = inject(UserApiService);
+  private authRest = inject(AuthRestService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
@@ -39,11 +41,18 @@ export class UserFormComponent implements OnInit {
     // El FormGroup viene del state service
     this.userForm = this.userState.getForm();
 
-    // Verificar si estamos en modo edición
+    // Verificar si estamos en modo creación (registro)
     this.loadEditModeData();
+
+    // Si estamos en modo edición, verificar autenticación
+    if (this.isEditMode && !this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
 
     // TODO: Remover - Solo para pruebas
     console.log('URL actual:', this.router.url);
+    console.log('Token en AuthService:', this.authService.getToken());
   }
 
   async loadEditModeData(): Promise<void> {
@@ -86,12 +95,14 @@ export class UserFormComponent implements OnInit {
         const userActualizado = await this.userApi.updateUserPut(this.userId, payload);
         console.log('Usuario actualizado', userActualizado);
       } else {
-        // Modo alta: crear nuevo usuario
-        const userCreado = await this.userApi.createUser(payload);
-        console.log('Usuario creado', userCreado);
+        // Modo alta: crear nuevo usuario usando register del auth-rest
+        const response = await this.authRest.register(payload);
+        console.log('Usuario registrado', response);
+        // Guardar el token en el AuthService
+        this.authService.setToken(response.token);
       }
       this.showModal('¡Éxito!',
-        this.isEditMode ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente',
+        this.isEditMode ? 'Usuario actualizado correctamente' : 'Usuario registrado correctamente',
         'success',
         '/');
     } catch (error: any) {
