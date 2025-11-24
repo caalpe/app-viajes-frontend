@@ -1,3 +1,5 @@
+export type { ITrip } from './ITrip';
+
 export interface ITrip {
   id: string | number;
   title: string;

@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Observable, combineLatest } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { ITrip as TripModel } from '../../interfaces/trip';
+// Use a flexible model for the UI's mocked trips; backend uses `ITrip`.
+type TripModel = any;
 import { TripService } from '../../services/trip';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 
