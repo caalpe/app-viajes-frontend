@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
-import { Trip as TripModel } from '../interfaces/trip';
+import { ITrip as TripModel } from '../interfaces/trip';
 
 @Injectable({
   providedIn: 'root'
