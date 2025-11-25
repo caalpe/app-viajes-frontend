@@ -44,7 +44,7 @@
 }
 .search-form .field input{ padding:10px 12px; border-radius:8px; border:1px solid rgba(15,23,42,0.06); }
 .search-form .field.date input{ width:100px }
-.search-form .field.action{ display:flex; align-items:center }
+.search-form .field.action{ display:flex; align-items:center; justify-content:flex-start }
 .input-with-addon{ display:flex; align-items:center; position:relative }
 .input-with-addon input{ flex:1; padding-right:34px }
 .input-with-addon .addon{ position:absolute; right:10px; color:#374151; font-weight:600 }
@@ -54,7 +54,6 @@
 }
 @media (max-width:560px){
 	.search-form{ grid-template-columns: 1fr; }
-	.search-form .field.action{ justify-content:flex-start }
 }
 
 .form-error{ color:#b91c1c; background:rgba(185,28,28,0.03); padding:8px 10px; border-radius:6px; font-size:0.9rem; margin-top:8px }
