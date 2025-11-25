@@ -5,9 +5,11 @@ import { UserStateService } from '../../../services/user.service';
 import { FormGroup } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
+import { AuthRestService } from '../../../services/api-rest/auth-rest.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
 import { AuthService } from '../../../services/auth.service';
 import { getIdFromRoute } from '../../../shared/utils/route.utils';
+import { validateEmail, validatePhone, validateUrl, containsNumbers, onlyCharacters } from '../../../shared/utils/data.utils';
 
 @Component({
   selector: 'app-user-form',
@@ -18,6 +20,7 @@ import { getIdFromRoute } from '../../../shared/utils/route.utils';
 export class UserFormComponent implements OnInit {
   private userState = inject(UserStateService);
   private userApi = inject(UserApiService);
+  private authRest = inject(AuthRestService);
   private authService = inject(AuthService);
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
@@ -35,15 +38,25 @@ export class UserFormComponent implements OnInit {
   modalType: 'success' | 'error' = 'success';
   modalRedirectUrl: string | null = null;
 
+  // Propiedades para mostrar errores de validación custom
+  validationErrors: { [key: string]: string } = {};
+
   ngOnInit(): void {
     // El FormGroup viene del state service
     this.userForm = this.userState.getForm();
 
-    // Verificar si estamos en modo edición
+    // Verificar si estamos en modo creación (registro)
     this.loadEditModeData();
+
+    // Si estamos en modo edición, verificar autenticación
+    if (this.isEditMode && !this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
 
     // TODO: Remover - Solo para pruebas
     console.log('URL actual:', this.router.url);
+    console.log('Token en AuthService:', this.authService.getToken());
   }
 
   async loadEditModeData(): Promise<void> {
@@ -72,13 +85,42 @@ export class UserFormComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    if (this.userForm.invalid) {
+    console.log('onSubmit llamado');
+    console.log('userForm.invalid:', this.userForm.invalid);
+    console.log('userForm.valid:', this.userForm.valid);
+    console.log('userForm.value:', this.userForm.value);
+
+    // Validar solo los campos obligatorios del FormGroup
+    const nameControl = this.userForm.get('name');
+    const emailControl = this.userForm.get('email');
+    const passwordControl = this.userForm.get('password');
+
+    console.log('nameControl.invalid:', nameControl?.invalid);
+    console.log('emailControl.invalid:', emailControl?.invalid);
+    console.log('passwordControl.invalid:', passwordControl?.invalid);
+
+    const payload = this.userForm.value;
+
+    // Validar datos del formulario con validaciones personalizadas
+    console.log('Llamando a validateFormData');
+    const customValidationsPassed = this.validateFormData(payload);
+    
+    // Validar que el formulario sea válido según Angular
+    const angularValidationsPassed = this.userForm.valid;
+
+    // Si no pasa las validaciones de Angular, marcar como touched para mostrar errores
+    if (!angularValidationsPassed) {
+      console.log('Formulario inválido según Angular, marcando como touched');
       this.userForm.markAllAsTouched();
+    }
+
+    // Retornar si falla cualquiera de las validaciones
+    if (!customValidationsPassed || !angularValidationsPassed) {
+      console.log('Validaciones fallidas - Custom:', customValidationsPassed, 'Angular:', angularValidationsPassed);
       return;
     }
 
     this.isSubmitting = true;
-    const payload = this.userForm.value;
 
     try {
       if (this.isEditMode && this.userId) {
@@ -86,12 +128,14 @@ export class UserFormComponent implements OnInit {
         const userActualizado = await this.userApi.updateUserPut(this.userId, payload);
         console.log('Usuario actualizado', userActualizado);
       } else {
-        // Modo alta: crear nuevo usuario
-        const userCreado = await this.userApi.createUser(payload);
-        console.log('Usuario creado', userCreado);
+        // Modo alta: crear nuevo usuario usando register del auth-rest
+        const response = await this.authRest.register(payload);
+        console.log('Usuario registrado', response);
+        // Guardar el token en el AuthService
+        this.authService.setToken(response.token);
       }
       this.showModal('¡Éxito!',
-        this.isEditMode ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente',
+        this.isEditMode ? 'Usuario actualizado correctamente' : 'Usuario registrado correctamente',
         'success',
         '/');
     } catch (error: any) {
@@ -121,5 +165,68 @@ export class UserFormComponent implements OnInit {
   onBack(): void {
     this.userState.resetForm();
     this.router.navigate(['/']);
+  }
+
+  /**
+   * Validador personalizado para el nombre
+   * Verifica que no contenga números y que solo contenga caracteres alfabéticos
+   */
+  private nameValidator(value: any): boolean {
+    if (!value) {
+      return true; // Dejar que los validadores requeridos manejen valores vacíos
+    }
+
+    // No puede contener números
+    if (containsNumbers(value)) {
+      return false;
+    }
+
+    // Solo caracteres alfabéticos
+    if (!onlyCharacters(value)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Validar los datos del formulario antes de enviar
+   * @returns true si todas las validaciones pasan, false en caso contrario
+   */
+  private validateFormData(payload: any): boolean {
+    // Limpiar errores previos
+    this.validationErrors = {};
+    console.log('Validando payload:', payload);
+
+    // Validar nombre: no puede contener números y debe ser solo caracteres
+    if (payload.name && !this.nameValidator(payload.name)) {
+      console.log('Nombre inválido:', payload.name);
+      this.validationErrors['name'] = 'El nombre solo puede contener letras (sin números)';
+      return false;
+    }
+
+    // Validar email: formato válido
+    if (payload.email && !validateEmail(payload.email)) {
+      this.validationErrors['email'] = 'El correo electrónico no es válido';
+      return false;
+    }
+
+    // Validar teléfono: opcional, pero si está presente validar formato
+    if (payload.phone && payload.phone.trim() !== '') {
+      if (!validatePhone(payload.phone)) {
+        this.validationErrors['phone'] = 'El teléfono no es válido';
+        return false;
+      }
+    }
+
+    // Validar photo_url: opcional, pero si está presente validar formato
+    if (payload.photo_url && payload.photo_url.trim() !== '') {
+      if (!validateUrl(payload.photo_url)) {
+        this.validationErrors['photo_url'] = 'La URL de la foto no es válida';
+        return false;
+      }
+    }
+
+    return true;
   }
 }

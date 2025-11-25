@@ -1,15 +1,28 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { IUser } from '../../interfaces/IUser';
+import { AuthService } from '../auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserApiService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   private baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/users';
+
+  /**
+   * Obtiene los headers con la autorización del token
+   */
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
 
   /**
    * Recuperar todos los usuarios
@@ -37,7 +50,7 @@ export class UserApiService {
    */
   createUser(payload: Partial<IUser>): Promise<IUser> {
     return firstValueFrom(
-      this.http.post<IUser>(this.baseUrl, payload)
+      this.http.post<IUser>(this.baseUrl, payload, { headers: this.getAuthHeaders() })
     );
   }
 
@@ -47,7 +60,7 @@ export class UserApiService {
    */
   updateUserPatch(idUser: number, payload: Partial<IUser>): Promise<IUser> {
     return firstValueFrom(
-      this.http.patch<IUser>(`${this.baseUrl}/${idUser}`, payload)
+      this.http.patch<IUser>(`${this.baseUrl}/${idUser}`, payload, { headers: this.getAuthHeaders() })
     );
   }
 
@@ -57,7 +70,7 @@ export class UserApiService {
    */
   updateUserPut(idUser: number, payload: Partial<IUser>): Promise<IUser> {
     return firstValueFrom(
-      this.http.put<IUser>(`${this.baseUrl}/${idUser}`, payload)
+      this.http.put<IUser>(`${this.baseUrl}/${idUser}`, payload, { headers: this.getAuthHeaders() })
     );
   }
 
@@ -67,7 +80,7 @@ export class UserApiService {
    */
   deleteUser(idUser: number): Promise<void> {
     return firstValueFrom(
-      this.http.delete<void>(`${this.baseUrl}/${idUser}`)
+      this.http.delete<void>(`${this.baseUrl}/${idUser}`, { headers: this.getAuthHeaders() })
     );
   }
 }

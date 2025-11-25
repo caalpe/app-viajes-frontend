@@ -32,12 +32,25 @@
             />
             @if (tripForm.get('title')?.touched && tripForm.get('title')?.invalid) {
               <div class="invalid-feedback d-block mt-2">
-                El título es obligatorio (máx 150 caracteres).
+                @if (tripForm.get('title')?.errors?.['required']) {
+                  El título es obligatorio.
+                }
+                @if (tripForm.get('title')?.errors?.['minlength']) {
+                  El título debe tener al menos 3 caracteres.
+                }
+                @if (tripForm.get('title')?.errors?.['maxlength']) {
+                  El título no puede exceder 150 caracteres.
+                }
+              </div>
+            }
+            @if (validationErrors['title']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['title'] }}
               </div>
             }
           </div>
 
-          <!-- Start Location + End Location -->
+          <!-- Start Location + Destination -->
           <div class="row">
             <div class="col-md-6 mb-4">
               <label class="form-label" for="departure">Lugar de Salida *</label>
@@ -56,7 +69,7 @@
             </div>
 
             <div class="col-md-6 mb-4">
-              <label class="form-label" for="destination">Lugar de Destino</label>
+              <label class="form-label" for="destination">Lugar de Destino *</label>
               <input
                 id="destination"
                 type="text"
@@ -64,6 +77,21 @@
                 formControlName="destination"
                 placeholder="Ej. San Diego"
               />
+              @if (tripForm.get('destination')?.touched && tripForm.get('destination')?.invalid) {
+                <div class="invalid-feedback d-block mt-2">
+                  @if (tripForm.get('destination')?.errors?.['required']) {
+                    El destino es obligatorio.
+                  }
+                  @if (tripForm.get('destination')?.errors?.['maxlength']) {
+                    El destino no puede exceder 150 caracteres.
+                  }
+                </div>
+              }
+              @if (validationErrors['destination']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['destination'] }}
+                </div>
+              }
             </div>
           </div>
 
@@ -71,40 +99,62 @@
           <div class="row">
             <div class="col-md-6 mb-4">
               <label class="form-label" for="start_date">Fecha de Inicio *</label>
-              <div class="date-input-wrapper">
-                <input
-                  id="start_date"
-                  type="date"
-                  class="form-control"
-                  formControlName="start_date"
-                />
-                <i class="bi bi-calendar"></i>
-              </div>
+              <input
+                id="start_date"
+                type="date"
+                class="form-control"
+                formControlName="start_date"
+                [min]="minDate"
+              />
               @if (tripForm.get('start_date')?.touched && tripForm.get('start_date')?.invalid) {
                 <div class="invalid-feedback d-block mt-2">
-                  La fecha de inicio es obligatoria.
+                  @if (tripForm.get('start_date')?.errors?.['required']) {
+                    La fecha de inicio es obligatoria.
+                  }
+                </div>
+              }
+              @if (validationErrors['start_date']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['start_date'] }}
                 </div>
               }
             </div>
 
             <div class="col-md-6 mb-4">
               <label class="form-label" for="end_date">Fecha de Fin *</label>
-              <div class="date-input-wrapper">
-                <input
-                  id="end_date"
-                  type="date"
-                  class="form-control"
-                  formControlName="end_date"
-                />
-                <i class="bi bi-calendar"></i>
-              </div>
+              <input
+                id="end_date"
+                type="date"
+                class="form-control"
+                formControlName="end_date"
+                [min]="minDate"
+              />
               @if (tripForm.get('end_date')?.touched && tripForm.get('end_date')?.invalid) {
                 <div class="invalid-feedback d-block mt-2">
-                  La fecha de fin es obligatoria.
+                  @if (tripForm.get('end_date')?.errors?.['required']) {
+                    La fecha de fin es obligatoria.
+                  }
+                </div>
+              }
+              @if (validationErrors['end_date']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['end_date'] }}
                 </div>
               }
             </div>
           </div>
+
+          <!-- Date Range Validation Error -->
+          @if (tripForm.errors?.['startDatePast']) {
+            <div class="alert alert-danger" role="alert">
+              La fecha de inicio no puede ser en el pasado.
+            </div>
+          }
+          @if (tripForm.errors?.['invalidDateRange']) {
+            <div class="alert alert-danger" role="alert">
+              La fecha de inicio debe ser anterior a la fecha de fin.
+            </div>
+          }
 
           <!-- Min participants -->
           <div class="mb-4">
@@ -135,12 +185,25 @@
               rows="4"
               placeholder="Cuéntales a otros qué hace especial este viaje..."
             ></textarea>
-            <small class="text-muted d-block mt-2">Comparte qué pueden esperar los viajeros en esta aventura</small>
             @if (tripForm.get('description')?.touched && tripForm.get('description')?.invalid) {
               <div class="invalid-feedback d-block mt-2">
-                La descripción es obligatoria.
+                @if (tripForm.get('description')?.errors?.['required']) {
+                  La descripción es obligatoria.
+                }
+                @if (tripForm.get('description')?.errors?.['minlength']) {
+                  La descripción debe tener al menos 10 caracteres.
+                }
+                @if (tripForm.get('description')?.errors?.['maxlength']) {
+                  La descripción es demasiado larga.
+                }
               </div>
             }
+            @if (validationErrors['description']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['description'] }}
+              </div>
+            }
+            <small class="text-muted d-block mt-2">Comparte qué pueden esperar los viajeros en esta aventura</small>
           </div>
 
           <!-- Cost per Person -->
@@ -225,3 +288,13 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Alert -->
+<app-modal-alert
+  [isVisible]="modalVisible"
+  [title]="modalTitle"
+  [message]="modalMessage"
+  [type]="modalType"
+  [redirectUrl]="modalRedirectUrl"
+  (onClose)="onModalClose()"
+></app-modal-alert>

@@ -32,7 +32,23 @@
             />
             @if (userForm.get('name')?.touched && userForm.get('name')?.invalid) {
               <div class="invalid-feedback d-block mt-2">
-                El nombre es obligatorio (mín 2, máx 100 caracteres).
+                @if (userForm.get('name')?.errors?.['required']) {
+                  El nombre es obligatorio.
+                }
+                @if (userForm.get('name')?.errors?.['minlength']) {
+                  El nombre debe tener al menos 2 caracteres.
+                }
+                @if (userForm.get('name')?.errors?.['maxlength']) {
+                  El nombre no puede exceder 100 caracteres.
+                }
+                @if (userForm.get('name')?.errors?.['invalidName']) {
+                  El nombre solo puede contener letras (sin números).
+                }
+              </div>
+            }
+            @if (validationErrors['name']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['name'] }}
               </div>
             }
           </div>
@@ -50,6 +66,11 @@
             @if (userForm.get('email')?.touched && userForm.get('email')?.invalid) {
               <div class="invalid-feedback d-block mt-2">
                 Ingresa un correo electrónico válido.
+              </div>
+            }
+            @if (validationErrors['email']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['email'] }}
               </div>
             }
           </div>
@@ -79,6 +100,11 @@
                 La contraseña debe tener mínimo 8 caracteres.
               </div>
             }
+            @if (validationErrors['password']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['password'] }}
+              </div>
+            }
           </div>
 
           <!-- Phone -->
@@ -91,6 +117,11 @@
               formControlName="phone"
               placeholder="Ej. +34 612 345 678"
             />
+            @if (validationErrors['phone']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['phone'] }}
+              </div>
+            }
             <small class="text-muted d-block mt-2">Opcional. Úsalo para que otros viajeros puedan contactarte.</small>
           </div>
 
@@ -104,6 +135,11 @@
               formControlName="photo_url"
               placeholder="Ej. https://ejemplo.com/mi-foto.jpg"
             />
+            @if (validationErrors['photo_url']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['photo_url'] }}
+              </div>
+            }
             <small class="text-muted d-block mt-2">Opcional. Sube una foto tuya para que otros te reconozcan.</small>
           </div>
 
@@ -117,6 +153,11 @@
               rows="3"
               placeholder="Cuéntanos sobre ti, tus experiencias de viajes y qué te hace único..."
             ></textarea>
+            @if (validationErrors['bio']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['bio'] }}
+              </div>
+            }
             <small class="text-muted d-block mt-2">Máximo 1000 caracteres. Opcional.</small>
           </div>
 
@@ -130,6 +171,11 @@
               rows="2"
               placeholder="Ej. Aventura, Playa, Senderismo, Gastronomía, Cultura..."
             ></textarea>
+            @if (validationErrors['interests']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['interests'] }}
+              </div>
+            }
             <small class="text-muted d-block mt-2">Máximo 500 caracteres. Separa tus intereses con comas. Opcional.</small>
           </div>
 

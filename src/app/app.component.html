@@ -1,31 +1,4 @@
+<app-navbar></app-navbar>
 
-<header class="site-header">
-	<div class="container header-inner">
-		<div class="logo">TravelTogether</div>
-
-		<nav class="nav nav-desktop">
-			<a routerLink="/">Inicio</a>
-			<a routerLink="/my-trips">Mis viajes</a>
-			<a class="login" routerLink="/login">Login</a>
-		</nav>
-
-		<button class="hamburger" aria-label="Abrir menú" (click)="toggleMobile()" aria-expanded="false">
-			<span class="bar"></span>
-			<span class="bar"></span>
-			<span class="bar"></span>
-		</button>
-	</div>
-
-	<div class="mobile-menu" *ngIf="mobileOpen">
-		<nav class="nav-mobile">
-			<a routerLink="/" (click)="toggleMobile()">Inicio</a>
-			<a routerLink="/my-trips" (click)="toggleMobile()">Mis viajes</a>
-			<a routerLink="/login" (click)="toggleMobile()">Login</a>
-		</nav>
-	</div>
-</header>
-
-<main>
-	<router-outlet></router-outlet>
-</main>
+<router-outlet></router-outlet>
 
