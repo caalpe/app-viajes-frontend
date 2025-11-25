@@ -126,7 +126,7 @@ export class TripApiService {
 
   /**
    * Recuperar datos de los viajes con peticiones por el usuario
-   * GET /api/trips/me/created
+   * GET /api/trips/me/participant
    */
   getParticipationsTrip(): Promise<ITrip[]> {
     return firstValueFrom(

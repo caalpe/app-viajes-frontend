@@ -5,6 +5,8 @@ import { RouterLink } from '@angular/router';
 import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { ITrip } from '../../../interfaces/ITrip';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
+import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
+import { IParticipant, participationStatus } from '../../../interfaces/participant';
 
 @Component({
   selector: 'app-trip-list',
@@ -17,9 +19,11 @@ export class TripListComponent
     cardType = cardType;
 
     tripService = inject(TripApiService);
-    a = inject(UserApiService);
+    participationService = inject(ParticipationApiService);
 
     userTrips : ITrip[] = [];
+    userPetitionsTrips : ITrip[] = [];
+    userPetitions : IParticipant[] = [];
 
     ngOnInit()
     {
@@ -28,23 +32,10 @@ export class TripListComponent
 
     async loadUserTrips()
     {
-        try 
-        {
-            
-            const b = await this.a.getUsers();
-            console.log(b);
-        } catch (error) 
-        {
-            
-        }
-
         //Load user created trips
         try 
         {
-
             this.userTrips = await this.tripService.getCreatedTrip();
-            console.log(this.userTrips);
-            
         } 
         catch (error) 
         {
@@ -54,13 +45,32 @@ export class TripListComponent
         //Load user participation 
         try 
         {
-            const participationsTrips = await this.tripService.getParticipationsTrip();
-            console.log(this.userTrips);
+            this.userPetitionsTrips = await this.tripService.getParticipationsTrip();
         } 
         catch (error) 
         {
             console.log("Error loading trips where user send participation: " + error);
         }
-        
+
+        //Get user petitions to know the status of them
+        try 
+        {
+            this.userPetitions = await this.participationService.getUserParticipationRequests();
+        }
+        catch (error) 
+        {
+            console.log("Error loading trips where user send participation: " + error);
+        }
+    }
+    
+    getTripPetitionType(tripId? : number) : cardType
+    {
+        let tripPetition = this.userPetitions.find(({ id_trip }) => id_trip === tripId);
+
+        if(tripPetition)
+        {
+            return cardType[tripPetition.status];
+        }
+        return cardType.none;
     }
 }
