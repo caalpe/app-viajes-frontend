@@ -6,12 +6,7 @@
     </div>
   </div>
 
-  <!-- Mock links para pruebas (remover en producción) -->
-  <div style="padding: 20px; text-align: center; background-color: #f0f0f0; margin: 10px;">
-    <small style="color: #666;">Enlaces de prueba:</small>
-    <a routerLink="/users/new" style="margin-right: 10px; text-decoration: underline; color: #0066cc;">Crear nuevo</a>
-    <a routerLink="/users/1/edit" style="text-decoration: underline; color: #0066cc;">Editar (Mock ID: 1)</a>
-  </div>
+
 
   <div class="user-form-container">
     <div class="card user-card">
@@ -75,37 +70,39 @@
             }
           </div>
 
-          <!-- Password -->
-          <div class="mb-4">
-            <label class="form-label" for="password">Contraseña *</label>
-            <div class="password-input-wrapper">
-              <input
-                id="password"
-                [type]="passwordVisible ? 'text' : 'password'"
-                class="form-control"
-                formControlName="password"
-                placeholder="Mínimo 8 caracteres"
-              />
-              <button
-                type="button"
-                class="btn-toggle-password"
-                (click)="togglePasswordVisibility()"
-                tabindex="-1"
-              >
-                <i [class]="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-              </button>
+          <!-- Password - Solo en modo creación -->
+          @if (!isEditMode) {
+            <div class="mb-4">
+              <label class="form-label" for="password">Contraseña *</label>
+              <div class="password-input-wrapper">
+                <input
+                  id="password"
+                  [type]="passwordVisible ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="password"
+                  placeholder="Mínimo 8 caracteres"
+                />
+                <button
+                  type="button"
+                  class="btn-toggle-password"
+                  (click)="togglePasswordVisibility()"
+                  tabindex="-1"
+                >
+                  <i [class]="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                </button>
+              </div>
+              @if (userForm.get('password')?.touched && userForm.get('password')?.invalid) {
+                <div class="invalid-feedback d-block mt-2">
+                  La contraseña debe tener mínimo 8 caracteres.
+                </div>
+              }
+              @if (validationErrors['password']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['password'] }}
+                </div>
+              }
             </div>
-            @if (userForm.get('password')?.touched && userForm.get('password')?.invalid) {
-              <div class="invalid-feedback d-block mt-2">
-                La contraseña debe tener mínimo 8 caracteres.
-              </div>
-            }
-            @if (validationErrors['password']) {
-              <div class="invalid-feedback d-block mt-2">
-                {{ validationErrors['password'] }}
-              </div>
-            }
-          </div>
+          }
 
           <!-- Phone -->
           <div class="mb-4">

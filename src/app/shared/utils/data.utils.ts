@@ -75,8 +75,6 @@ export function onlyAlphanumeric(value: string): boolean {
   return alphanumericRegex.test(value);
 }
 
-
-
 /**
  * Validar formato de teléfono
  * @param phone - Teléfono a validar
