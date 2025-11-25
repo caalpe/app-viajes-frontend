@@ -45,7 +45,7 @@
 .search-form .field input{ padding:10px 12px; border-radius:8px; border:1px solid rgba(15,23,42,0.06); }
 .search-form .field.date input{ width:100px }
 .search-form .field.action-bottom{ grid-column: 1 / -1; display:flex; justify-content:flex-start; margin-top: 10px }
-.search-form .field.action-bottom .btn{ padding: 8px 16px; font-size: 0.9rem; min-width: auto }
+.search-form .field.action-bottom .btn{ padding: 6px 14px; font-size: 0.85rem; min-width: auto; width: auto; display: inline-block }
 .input-with-addon{ display:flex; align-items:center; position:relative }
 .input-with-addon input{ flex:1; padding-right:34px }
 .input-with-addon .addon{ position:absolute; right:10px; color:#374151; font-weight:600 }
