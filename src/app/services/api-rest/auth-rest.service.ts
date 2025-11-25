@@ -6,6 +6,8 @@ import { IUser } from '../../interfaces/IUser';
 export interface IAuthResponse {
   message: string;
   token: string;
+  userId?: number;
+  id?: number; // Alternativa si el backend usa 'id' en lugar de 'userId'
 }
 
 @Injectable({
