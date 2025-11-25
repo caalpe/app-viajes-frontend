@@ -29,16 +29,16 @@
 				</div>
 			</div>
 
-			<div class="field action">
-				<button class="btn primary" type="submit">Buscar</button>
-			</div>
-
 			<div class="form-error-full" *ngIf="searchForm.errors?.['dateRange']">
 				La fecha "Desde" debe ser anterior o igual a la fecha "Hasta".
 			</div>
 
 			<div class="form-error-full" *ngIf="budgetControl?.invalid && (budgetControl?.dirty || budgetControl?.touched)">
 				El presupuesto debe ser un número mayor o igual a 0.
+			</div>
+
+			<div class="field action-bottom">
+				<button class="btn primary" type="submit">Buscar</button>
 			</div>
 		</form>
 	</div>
