@@ -1,16 +1,29 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { IParticipant, participationStatus } from '../../interfaces/participant';
 import { firstValueFrom } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ParticipationRestService 
+export class ParticipationApiService 
 {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
   private readonly baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/participants';
-
+  
+    /**
+   * Obtiene los headers con la autorización del token
+   */
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    console.log('🛫 TripApiService - Token obtenido de AuthService:', token);
+    return new HttpHeaders({
+      'Authorization': `${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
   /**
   * VER UNA DETERMINADA SOLICITUD
   * GET /api/participants/:participation_id/
@@ -27,7 +40,7 @@ export class ParticipationRestService
   */
   getTripParticipations(tripId : number): Promise<IParticipant[]> 
   {
-    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/trip/${tripId}`));
+    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/trip/${tripId}`, { headers: this.getAuthHeaders() }));
   }
 
   /**
@@ -38,40 +51,37 @@ export class ParticipationRestService
   getTripParticipationsByStatus(tripId : number, status : participationStatus): Promise<IParticipant[]> 
   {
     let params = new HttpParams().set('status', status);
-    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/trip/${tripId}`, { params }));
+    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/trip/${tripId}`, { params,  headers: this.getAuthHeaders() }));
   }
 
   /**
   * VER TODAS LAS SOLICITUDES/PARTICIPACIONES QUE TIENE UN USUARIO COMO SOLICITANTE
   * GET /api/participants/my-requests
-  * TODO: CAMBIAR ESTA FUNCION YA QUE ESTA AUN EN TESTEO EN BACKEND
   */
   getUserParticipationRequests(): Promise<IParticipant[]> 
   {
-    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/my-requests`));
+    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/my-requests`, { headers: this.getAuthHeaders() }));
   }
 
   /**
   * VER TODAS LAS SOLICITUDES/PARTICIPACIONES QUE TIENE UN USUARIO COMO SOLICITANTE
   * POR ESTADO
   * GET /api/participants/my-requests?status=pending
-  * TODO: CAMBIAR ESTA FUNCION YA QUE ESTA AUN EN TESTEO EN BACKEND
   */
   getUserParticipationRequestsByStatus(status : participationStatus): Promise<IParticipant[]> 
   {
     let params = new HttpParams().set('status', status);
-    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/my-requests`, { params }));
+    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/my-requests`, { params, headers: this.getAuthHeaders() }));
   }
 
   /**
   * VER TODAS LAS SOLICITUDES/PARTICIPACIONES QUE TIENEN TODOS LOS VIAJES
   * QUE HE CREADO
   * GET /api/participants/my-creator-requests
-  * TODO: CAMBIAR ESTA FUNCION YA QUE ESTA AUN EN TESTEO EN BACKEND
   */
   getParticipationRequestsForMyTrips(): Promise<IParticipant[]> 
   {
-    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/my-creator-requests`));
+    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/my-creator-requests`, { headers: this.getAuthHeaders() }));
   }
 
   /**
@@ -79,12 +89,11 @@ export class ParticipationRestService
   * QUE HE CREADO
   * GET /api/participants/my-creator-requests?status=pending
   * {pending, accepted, rejected, left}
-  * TODO: CAMBIAR ESTA FUNCION YA QUE ESTA AUN EN TESTEO EN BACKEND
   */
   getParticipationRequestsForMyTripsByStatus(status : participationStatus): Promise<IParticipant[]> 
   {
     let params = new HttpParams().set('status', status);
-    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/my-creator-requests`, { params }));
+    return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/my-creator-requests`, { params, headers: this.getAuthHeaders() }));
   }
 
   /**
@@ -93,7 +102,7 @@ export class ParticipationRestService
   */
   createParticipationRequest(tripId : number, message : string): Promise<IParticipant> 
   {
-    return firstValueFrom(this.http.post<IParticipant>(`${this.baseUrl}/${tripId}`, message));
+    return firstValueFrom(this.http.post<IParticipant>(`${this.baseUrl}/${tripId}`, message, { headers: this.getAuthHeaders() }));
   }
 
   /**
@@ -103,6 +112,6 @@ export class ParticipationRestService
   */
   updateParticipationStatus(participationId : number, status : participationStatus): Promise<IParticipant> 
   {
-    return firstValueFrom(this.http.patch<IParticipant>(`${this.baseUrl}/${participationId}`, status));
+    return firstValueFrom(this.http.patch<IParticipant>(`${this.baseUrl}/${participationId}`, status, { headers: this.getAuthHeaders() }));
   }
 }

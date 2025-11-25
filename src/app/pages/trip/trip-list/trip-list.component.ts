@@ -4,6 +4,7 @@ import { cardType, TripCardComponent } from '../../../shared/components/trip-car
 import { RouterLink } from '@angular/router';
 import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { ITrip } from '../../../interfaces/ITrip';
+import { UserApiService } from '../../../services/api-rest/user-rest.service';
 
 @Component({
   selector: 'app-trip-list',
@@ -16,6 +17,7 @@ export class TripListComponent
     cardType = cardType;
 
     tripService = inject(TripApiService);
+    a = inject(UserApiService);
 
     userTrips : ITrip[] = [];
 
@@ -28,11 +30,37 @@ export class TripListComponent
     {
         try 
         {
-            this.userTrips = await this.tripService.getTripsByCreator("Juan Manolito");
+            
+            const b = await this.a.getUsers();
+            console.log(b);
+        } catch (error) 
+        {
+            
+        }
+
+        //Load user created trips
+        try 
+        {
+
+            this.userTrips = await this.tripService.getCreatedTrip();
+            console.log(this.userTrips);
+            
         } 
         catch (error) 
         {
-            console.log("Error loading user trips: " + error);
+            console.log("Error loading user created trips: " + error);
         }
+
+        //Load user participation 
+        try 
+        {
+            const participationsTrips = await this.tripService.getParticipationsTrip();
+            console.log(this.userTrips);
+        } 
+        catch (error) 
+        {
+            console.log("Error loading trips where user send participation: " + error);
+        }
+        
     }
 }
