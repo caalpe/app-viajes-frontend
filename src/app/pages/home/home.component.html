@@ -21,10 +21,6 @@
 					[class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
 			</div>
 
-			<div class="form-error" *ngIf="searchForm.errors?.['dateRange']">
-				La fecha "Desde" debe ser anterior o igual a la fecha "Hasta".
-			</div>
-
 			<div class="field">
 				<label class="label-accent label-budget">Presupuesto</label>
 				<div class="input-with-addon">
@@ -32,12 +28,17 @@
 					<span class="addon">€</span>
 				</div>
 			</div>
-			<div class="form-error" *ngIf="budgetControl?.invalid && (budgetControl?.dirty || budgetControl?.touched)">
-				El presupuesto debe ser un número mayor o igual a 0.
-			</div>
 
 			<div class="field action">
 				<button class="btn primary" type="submit">Buscar</button>
+			</div>
+
+			<div class="form-error-full" *ngIf="searchForm.errors?.['dateRange']">
+				La fecha "Desde" debe ser anterior o igual a la fecha "Hasta".
+			</div>
+
+			<div class="form-error-full" *ngIf="budgetControl?.invalid && (budgetControl?.dirty || budgetControl?.touched)">
+				El presupuesto debe ser un número mayor o igual a 0.
 			</div>
 		</form>
 	</div>
