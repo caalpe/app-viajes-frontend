@@ -8,7 +8,8 @@ import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { AuthService } from '../../../services/auth.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
 import { getIdFromRoute } from '../../../shared/utils/route.utils';
-import { validateDateNotPast, validateDateRange } from '../../../shared/utils/data.utils';
+import { validateDateNotPast, validateDateRange, convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
+import { extractErrorMessage, extractSuccessMessage } from '../../../shared/utils/http-error.utils';
 
 @Component({
   selector: 'app-trip-form',
@@ -74,6 +75,15 @@ export class TripFormComponent implements OnInit {
     try {
       const trip = await this.tripApi.getTrip(tripId);
       console.log('Trip cargado:', trip);
+      
+      // Convertir las fechas de ISO a formato YYYY-MM-DD para los inputs date
+      if (trip.start_date) {
+        trip.start_date = convertIsoToDateInputFormat(trip.start_date);
+      }
+      if (trip.end_date) {
+        trip.end_date = convertIsoToDateInputFormat(trip.end_date);
+      }
+      
       // Llenar el formulario con los datos del viaje
       this.tripState.patchForm(trip);
     } catch (error) {
@@ -112,21 +122,23 @@ export class TripFormComponent implements OnInit {
     this.isSubmitting = true;
 
     try {
+      let successMessage = '';
+
       if (this.isEditMode && this.tripId) {
         // Modo edición: actualizar viaje existente
         const tripActualizado = await this.tripApi.updateTrip(this.tripId, payload);
         console.log('Trip actualizado', tripActualizado);
+        successMessage = extractSuccessMessage(tripActualizado, 'Viaje actualizado correctamente');
       } else {
         // Modo alta: crear nuevo viaje
         const tripCreado = await this.tripApi.createTrip(payload);
         console.log('Trip creado', tripCreado);
+        successMessage = extractSuccessMessage(tripCreado, 'Viaje creado correctamente');
       }
-      this.showModal('¡Éxito!',
-        this.isEditMode ? 'Viaje actualizado correctamente' : 'Viaje creado correctamente',
-        'success',
-        '/trips');
+
+      this.showModal('¡Éxito!', successMessage, 'success', '/trips');
     } catch (error: any) {
-      const errorMessage = error?.error?.message || 'Error al procesar el viaje. Intenta nuevamente.';
+      const errorMessage = extractErrorMessage(error, 'Error al procesar el viaje. Intenta nuevamente.');
       this.showModal('Error', errorMessage, 'error');
       console.error('Error procesando trip', error);
     } finally {

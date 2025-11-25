@@ -17,6 +17,12 @@ export class AuthService {
    */
   private decodeJWT(token: string): any {
     try {
+      // Validar que token sea un string válido
+      if (!token || typeof token !== 'string') {
+        console.error('❌ Token JWT inválido: no es un string válido');
+        return null;
+      }
+
       // JWT tiene 3 partes separadas por puntos: header.payload.signature
       const parts = token.split('.');
 
@@ -69,6 +75,12 @@ export class AuthService {
    * Decodifica el JWT para extraer el ID automáticamente
    */
   setToken(token: string, userId?: number): void {
+    // Validar que token sea válido
+    if (!token || typeof token !== 'string') {
+      console.error('❌ Error en setToken: token no es un string válido', token);
+      return;
+    }
+
     this.token = token;
 
     // Si no se proporciona userId, intentar extraerlo del JWT
@@ -82,6 +94,12 @@ export class AuthService {
     } else {
       console.log('🔐 AuthService - Token guardado (sin userId)');
     }
+
+    // Mostrar las propiedades internas después de descifrar el token
+    console.log('=== AuthService - Propiedades internas tras descifrar token ===');
+    console.log('Token:', this.token);
+    console.log('User ID:', this.userId);
+    console.log('=== Fin de propiedades internas ===');
 
     this.setAuthStatus(true);
   }

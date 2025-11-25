@@ -1,4 +1,30 @@
 /**
+ * Convertir una fecha ISO 8601 a formato YYYY-MM-DD
+ * @param isoDate - Fecha en formato ISO 8601 (ej: "2025-10-10T00:00:00.000Z")
+ * @returns Fecha en formato YYYY-MM-DD, o string vacío si la entrada es falsy
+ */
+export function convertIsoToDateInputFormat(isoDate: string | Date | undefined | null): string {
+  if (!isoDate) {
+    return '';
+  }
+  return new Date(isoDate).toISOString().split('T')[0];
+}
+
+/**
+ * Convertir una fecha YYYY-MM-DD a formato ISO 8601
+ * @param dateInput - Fecha en formato YYYY-MM-DD (ej: "2025-10-10")
+ * @returns Fecha en formato ISO 8601 (ej: "2025-10-10T00:00:00.000Z"), o string vacío si la entrada es falsy
+ */
+export function convertDateInputToIso(dateInput: string | undefined | null): string {
+  if (!dateInput) {
+    return '';
+  }
+  // Crear la fecha a partir del formato YYYY-MM-DD (asume UTC)
+  const date = new Date(dateInput + 'T00:00:00.000Z');
+  return date.toISOString();
+}
+
+/**
  * Validar que una fecha no sea anterior al día de hoy
  * @param date - La fecha a validar (string en formato YYYY-MM-DD o Date)
  * @returns true si la fecha es válida (hoy o futura), false si es anterior a hoy

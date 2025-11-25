@@ -36,6 +36,16 @@ export class TripApiService {
   }
 
   /**
+   * Recuperar todos los viajes con autenticación
+   * GET /api/trips (con headers de autorización)
+   */
+  getAllTripsWithAuth(): Promise<ITrip[]> {
+    return firstValueFrom(
+      this.http.get<ITrip[]>(this.baseUrl, { headers: this.getAuthHeaders() })
+    );
+  }
+
+  /**
    * Recuperar viajes por estado
    * GET /api/trips?status=estado
    */
@@ -110,7 +120,7 @@ export class TripApiService {
    */
   getTrip(id: number): Promise<ITrip> {
     return firstValueFrom(
-      this.http.get<ITrip>(`${this.baseUrl}/${id}`)
+      this.http.get<ITrip>(`${this.baseUrl}/${id}`, { headers: this.getAuthHeaders() })
     );
   }
 
