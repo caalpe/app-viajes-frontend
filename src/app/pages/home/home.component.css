@@ -34,13 +34,13 @@
 }
 .search-form{ max-width:100%; display:grid; gap:10px; grid-template-columns: repeat(4, 1fr); align-items:end }
 .search-form .field{ display:flex; flex-direction:column }
-.search-form .field label{ font-size:0.75rem; color:rgba(17,24,39,0.6); margin-bottom:6px }
-.search-form .field label.label-accent{ color: #0b1220; font-weight:700 }
-.search-form .field label.label-budget{ color: #000 }
+.search-form .field label{ font-size:0.75rem; color:rgba(255,255,255,0.9); margin-bottom:6px; font-weight:600 }
+.search-form .field label.label-accent{ color: #ffffff; font-weight:700 }
+.search-form .field label.label-budget{ color: #ffffff }
 
-/* Ensure budget label remains black on small screens */
+/* Ensure budget label remains white on small screens */
 @media (max-width:900px){
-	.search-form .field label.label-budget{ color: #000 !important }
+	.search-form .field label.label-budget{ color: #ffffff !important }
 }
 .search-form .field input{ padding:10px 12px; border-radius:8px; border:1px solid rgba(15,23,42,0.06); }
 .search-form .field.date input{ width:100px }
