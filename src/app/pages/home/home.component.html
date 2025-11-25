@@ -55,21 +55,38 @@
 
 <section class="trips container">
 	<h2>Viajes recomendados</h2>
-	<div class="trips-grid">
-		<article class="trip-card" *ngFor="let t of (trips$ | async)">
-			<div class="image" [style.backgroundImage]="'url(' + t.img + ')'">
-			</div>
-			<div class="trip-body">
-				<div>
-					<h3>{{ t.title }}</h3>
-					<p class="muted">{{ t.description }}</p>
+	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+		<div class="col" *ngFor="let t of (trips$ | async)">
+			<article class="card" (mouseenter)="t._hover = true" (mouseleave)="t._hover = false"
+				[class.shadow]="t._hover" [class.shadow-sm]="!t._hover">
+				<div class="pt-4">
+					<img [src]="t.img" alt="" class="img-fluid card-image">
 				</div>
-				<div class="trip-meta">
-					<span class="price">{{ t.price }}</span>
-					<button class="btn">Ver</button>
+				<div class="card-body">
+					<h3 class="card-title">{{ t.title }}</h3>
+					<div>
+						<i class="bi bi-geo-alt pe-2"></i>
+						<span class="card-text">{{ t.departure || 'Sin especificar' }}</span>
+						<i class="bi bi-arrow-right pe-2"></i>
+						<span class="card-text">{{ t.destination || t.description }}</span>
+					</div>
+					<div>
+						<i class="bi bi-calendar pe-2"></i>
+						<span class="card-text">{{ t.start_date || t.availableFrom || 'Disponible' }}</span>
+					</div>
+					<div>
+						<i class="bi bi-people pe-2"></i>
+						<span class="card-text">{{ t.min_participants || 'Varios' }} personas</span>
+					</div>
+					<div>
+						<i class="bi bi-cash pe-2"></i>
+						<span class="card-text">{{ t.cost_per_person || t.priceNumber || t.price }} €</span>
+					</div>
 				</div>
-			</div>
-		</article>
+
+				<a href="#" class="stretched-link"></a>
+			</article>
+		</div>
 	</div>
 </section>
 
