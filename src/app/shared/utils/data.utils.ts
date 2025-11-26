@@ -112,3 +112,20 @@ export function validateUrl(url: string): boolean {
 export function validateNumberRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
 }
+
+
+/**
+ * Cambiar un string en formato ISO a fecha tipo XX/XX/XXXX
+ * @param dateString - String en formato ISO
+ * @returns string en formato fecha usando numbers
+ */
+export function changeISODate(dateString : string) : string
+{
+  const options: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "numeric",
+  day: "numeric"
+  };
+
+  return new Date(dateString).toLocaleDateString(undefined, options);
+}
