@@ -139,9 +139,7 @@
   to {
     transform: rotate(360deg);
   }
-}
-
-.detail-actions {
+}.detail-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;

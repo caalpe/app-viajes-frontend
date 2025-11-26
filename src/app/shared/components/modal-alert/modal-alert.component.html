@@ -1,21 +1,23 @@
-<div *ngIf="isVisible" class="modal-overlay">
-  <div class="modal-content" [ngClass]="'modal-' + type">
-    <div class="modal-header">
-      <h5 class="modal-title">
-        <span [ngClass]="type === 'success' ? 'icon-success' : 'icon-error'">
-          <i [ngClass]="type === 'success' ? 'bi bi-check-circle' : 'bi bi-exclamation-circle'"></i>
-        </span>
-        {{ title }}
-      </h5>
-      <button type="button" class="btn-close" (click)="closeModal()" aria-label="Cerrar"></button>
-    </div>
-    <div class="modal-body">
-      <p>{{ message }}</p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-primary" (click)="closeModal()">
-        Aceptar
-      </button>
+@if (isVisible) {
+  <div class="modal-overlay">
+    <div class="modal-content" [ngClass]="'modal-' + type">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <span [ngClass]="type === 'success' ? 'icon-success' : 'icon-error'">
+            <i [ngClass]="type === 'success' ? 'bi bi-check-circle' : 'bi bi-exclamation-circle'"></i>
+          </span>
+          {{ title }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ message }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="closeModal()">
+          Aceptar
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}
