@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
       const response = await this.authRest.login(credentials);
       console.log('Login exitoso:', response);
 
-      // Guardar el token en el AuthService
+      // Guardar el token en el AuthService (decodifica JWT automáticamente)
       this.authService.setToken(response.token);
 
       // Mostrar modal de éxito y redirigir
@@ -90,6 +90,6 @@ export class LoginComponent implements OnInit {
   }
 
   onRegisterClick(): void {
-    this.router.navigate(['/users/new']);
+    this.router.navigate(['/user/new']);
   }
 }

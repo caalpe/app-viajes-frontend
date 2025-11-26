@@ -8,6 +8,29 @@
                 <i class="bi bi-plus-circle"></i> Nuevo Viaje
             </a>
 		</div>
+
+    <!-- Sección de prueba para editar viajes -->
+    <div style="padding: 15px; background-color: #e8f4f8; border-radius: 6px; margin-bottom: 20px;">
+      <small style="display: block; margin-bottom: 10px; color: #666;">Herramienta de prueba - Editar viaje por ID:</small>
+      <div class="d-flex gap-2">
+        <input 
+          type="number" 
+          [(ngModel)]="tripIdToEdit" 
+          min="1" 
+          class="form-control" 
+          style="max-width: 100px;"
+          placeholder="ID viaje"
+        />
+        <button 
+          (click)="onEditTrip()" 
+          [disabled]="isLoadingTrip"
+          class="btn btn-secondary"
+        >
+          {{ isLoadingTrip ? 'Cargando...' : 'Editar Viaje' }}
+        </button>
+      </div>
+    </div>
+
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
        @for(trip of userTrips; track trip.id_trip)
       {
@@ -20,13 +43,12 @@
     <h2 class="mb-4">
       Viajes donde participo
     </h2>
-	<!-- <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      <app-trip-card class="col" [type]="cardType.participant"></app-trip-card>
-      <app-trip-card class="col" [type]="cardType.participant"></app-trip-card>
-      <app-trip-card class="col" [type]="cardType.participant"></app-trip-card>
-      <app-trip-card class="col" [type]="cardType.pending"></app-trip-card>
-      <app-trip-card class="col" [type]="cardType.pending"></app-trip-card>
-      <app-trip-card class="col" [type]="cardType.pending"></app-trip-card>
-	</div> -->
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+       @for(trip of userPetitionsTrips; track trip.id_trip)
+      {
+        <app-trip-card class="col" [type]="getTripPetitionType(trip.id_trip)" [tripInfo]="trip"></app-trip-card>
+      }
+    </div>
   </section>
 </div>

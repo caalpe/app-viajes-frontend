@@ -24,6 +24,7 @@ export class TripService {
         destination: 'Barcelona',
         start_date: '2025-04-01',
         min_participants: 4,
+        accepted_participants: 2,
         availableFrom: '2025-04-01', 
         availableTo: '2025-10-31' 
       },
@@ -39,6 +40,7 @@ export class TripService {
         destination: 'Sevilla',
         start_date: '2025-03-15',
         min_participants: 6,
+        accepted_participants: 4,
         availableFrom: '2025-03-15', 
         availableTo: '2025-11-30' 
       },
@@ -54,6 +56,7 @@ export class TripService {
         destination: 'Huesca',
         start_date: '2025-05-01',
         min_participants: 5,
+        accepted_participants: 3,
         availableFrom: '2025-05-01', 
         availableTo: '2025-09-30' 
       }

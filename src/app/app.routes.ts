@@ -4,7 +4,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { UserFormComponent } from './pages/user/user-form/user-form.component';
 import { UserDetailComponent } from './pages/user/user-detail/user-detail.component';
-import { UserListComponent } from './pages/user/user-list/user-list.component';
+import { ChangePasswordComponent } from './pages/user/change-password/change-password.component';
 import { TripDetailComponent } from './pages/trip/trip-detail/trip-detail.component';
 import { TripFormComponent } from './pages/trip/trip-form/trip-form.component';
 import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
@@ -22,30 +22,30 @@ import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
     component: LoginComponent
   },
 
-  // Rutas de Usuarios
+  // Rutas de Usuario
   {
-    path: 'users',
+    path: 'user',
     children: [
-      {
-        path: '',
-        component: UserListComponent
-      },
       {
         path: 'new',
         component: UserFormComponent
       },
       {
-        path: ':id',
+        path: 'profile',
         component: UserDetailComponent
       },
       {
-        path: ':id/edit',
+        path: 'profile/edit',
         component: UserFormComponent
+      },
+      {
+        path: 'change-password',
+        component: ChangePasswordComponent
       }
     ]
   },
 
-  // Rutas de Viajes
+  // Rutas de Viaje
   {
     path: 'trips',
     children: [

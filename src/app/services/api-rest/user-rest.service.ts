@@ -19,7 +19,7 @@ export class UserApiService {
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
+      'Authorization': token || '',
       'Content-Type': 'application/json'
     });
   }
@@ -40,7 +40,7 @@ export class UserApiService {
    */
   getUser(idUser: number): Promise<IUser> {
     return firstValueFrom(
-      this.http.get<IUser>(`${this.baseUrl}/${idUser}`)
+      this.http.get<IUser>(`${this.baseUrl}/${idUser}`, { headers: this.getAuthHeaders() })
     );
   }
 

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ITrip } from '../../interfaces/ITrip';
 import { AuthService } from '../auth.service';
@@ -13,7 +13,7 @@ export class TripApiService {
 
   private readonly baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/trips';
 
-  /**
+    /**
    * Obtiene los headers con la autorización del token
    */
   private getAuthHeaders(): HttpHeaders {
@@ -32,6 +32,16 @@ export class TripApiService {
   getTrips(): Promise<ITrip[]> {
     return firstValueFrom(
       this.http.get<ITrip[]>(this.baseUrl)
+    );
+  }
+
+  /**
+   * Recuperar todos los viajes con autenticación
+   * GET /api/trips (con headers de autorización)
+   */
+  getAllTripsWithAuth(): Promise<ITrip[]> {
+    return firstValueFrom(
+      this.http.get<ITrip[]>(this.baseUrl, { headers: this.getAuthHeaders() })
     );
   }
 
@@ -110,7 +120,27 @@ export class TripApiService {
    */
   getTrip(id: number): Promise<ITrip> {
     return firstValueFrom(
-      this.http.get<ITrip>(`${this.baseUrl}/${id}`)
+      this.http.get<ITrip>(`${this.baseUrl}/${id}`, { headers: this.getAuthHeaders() })
+    );
+  }
+
+  /**
+   * Recuperar datos de los viajes creados por el usuario
+   * GET /api/trips/me/created
+   */
+  getCreatedTrip(): Promise<ITrip[]> {
+    return firstValueFrom(
+      this.http.get<ITrip[]>(`${this.baseUrl}/me/created`, { headers: this.getAuthHeaders() })
+    );
+  }
+
+  /**
+   * Recuperar datos de los viajes con peticiones por el usuario
+   * GET /api/trips/me/participant
+   */
+  getParticipationsTrip(): Promise<ITrip[]> {
+    return firstValueFrom(
+      this.http.get<ITrip[]>(`${this.baseUrl}/me/participant`, { headers: this.getAuthHeaders() })
     );
   }
 
@@ -120,10 +150,8 @@ export class TripApiService {
    * Body: id_creator, title, description, destination, start_date, end_date, cost_per_person, min_participants, transport_info, accommodation_info, itinerary, status
    */
   createTrip(payload: Partial<ITrip>): Promise<ITrip> {
-    const headers = this.getAuthHeaders();
-    console.log('📤 TripApiService - createTrip con headers:', headers.get('Authorization'));
     return firstValueFrom(
-      this.http.post<ITrip>(this.baseUrl, payload, { headers })
+      this.http.post<ITrip>(this.baseUrl, payload, { headers: this.getAuthHeaders() })
     );
   }
 

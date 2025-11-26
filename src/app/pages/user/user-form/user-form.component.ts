@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserStateService } from '../../../services/user.service';
 import { FormGroup } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -8,8 +8,8 @@ import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { AuthRestService } from '../../../services/api-rest/auth-rest.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
 import { AuthService } from '../../../services/auth.service';
-import { getIdFromRoute } from '../../../shared/utils/route.utils';
 import { validateEmail, validatePhone, validateUrl, containsNumbers, onlyCharacters } from '../../../shared/utils/data.utils';
+import { extractErrorMessage, extractSuccessMessage } from '../../../shared/utils/http-error.utils';
 
 @Component({
   selector: 'app-user-form',
@@ -23,7 +23,6 @@ export class UserFormComponent implements OnInit {
   private authRest = inject(AuthRestService);
   private authService = inject(AuthService);
   private router = inject(Router);
-  private activatedRoute = inject(ActivatedRoute);
 
   userForm!: FormGroup;
   isSubmitting = false;
@@ -45,7 +44,7 @@ export class UserFormComponent implements OnInit {
     // El FormGroup viene del state service
     this.userForm = this.userState.getForm();
 
-    // Verificar si estamos en modo creación (registro)
+    // Verificar si estamos en modo edición (Mi Perfil)
     this.loadEditModeData();
 
     // Si estamos en modo edición, verificar autenticación
@@ -60,11 +59,21 @@ export class UserFormComponent implements OnInit {
   }
 
   async loadEditModeData(): Promise<void> {
-    const id = await getIdFromRoute(this.activatedRoute);
-    if (id) {
+    // Obtener ID del usuario autenticado (del JWT decodificado)
+    const userId = this.authService.getUserId();
+
+    if (userId) {
       this.isEditMode = true;
-      this.userId = id;
-      await this.loadUserData(id);
+      this.userId = userId;
+      // En modo edición, la password es opcional
+      // Se ajustan los validadores del campo password
+      const passwordControl = this.userForm.get('password');
+      if (passwordControl) {
+        // Remover validadores y hacer el campo opcional
+        passwordControl.clearValidators();
+        passwordControl.updateValueAndValidity();
+      }
+      await this.loadUserData(userId);
     }
   }
 
@@ -72,8 +81,10 @@ export class UserFormComponent implements OnInit {
     try {
       const user = await this.userApi.getUser(userId);
       console.log('Usuario cargado:', user);
-      // Llenar el formulario con los datos del usuario
-      this.userState.patchForm(user);
+      // Crear una copia del usuario sin la contraseña
+      const { password, ...userWithoutPassword } = user;
+      // Llenar el formulario con los datos del usuario (sin password)
+      this.userState.patchForm(userWithoutPassword);
     } catch (error) {
       console.error('Error cargando usuario', error);
       this.router.navigate(['/']);
@@ -104,7 +115,7 @@ export class UserFormComponent implements OnInit {
     // Validar datos del formulario con validaciones personalizadas
     console.log('Llamando a validateFormData');
     const customValidationsPassed = this.validateFormData(payload);
-    
+
     // Validar que el formulario sea válido según Angular
     const angularValidationsPassed = this.userForm.valid;
 
@@ -123,23 +134,32 @@ export class UserFormComponent implements OnInit {
     this.isSubmitting = true;
 
     try {
+      let successMessage = '';
+      let payload = this.userForm.value;
+
       if (this.isEditMode && this.userId) {
         // Modo edición: actualizar usuario existente
+        // Si la password está vacía, no la incluimos en el payload
+        if (!payload.password || payload.password.trim() === '') {
+          payload = { ...payload, password: undefined };
+          // Eliminar password del objeto
+          delete payload.password;
+        }
         const userActualizado = await this.userApi.updateUserPut(this.userId, payload);
         console.log('Usuario actualizado', userActualizado);
+        successMessage = extractSuccessMessage(userActualizado, 'Usuario actualizado correctamente');
       } else {
         // Modo alta: crear nuevo usuario usando register del auth-rest
         const response = await this.authRest.register(payload);
         console.log('Usuario registrado', response);
-        // Guardar el token en el AuthService
+        // Guardar el token en el AuthService (decodifica JWT automáticamente)
         this.authService.setToken(response.token);
+        successMessage = extractSuccessMessage(response, 'Usuario registrado correctamente');
       }
-      this.showModal('¡Éxito!',
-        this.isEditMode ? 'Usuario actualizado correctamente' : 'Usuario registrado correctamente',
-        'success',
-        '/');
+
+      this.showModal('¡Éxito!', successMessage, 'success', '/');
     } catch (error: any) {
-      const errorMessage = error?.error?.message || 'Error al procesar el usuario. Intenta nuevamente.';
+      const errorMessage = extractErrorMessage(error, 'Error al procesar el usuario. Intenta nuevamente.');
       this.showModal('Error', errorMessage, 'error');
       console.error('Error procesando usuario', error);
     } finally {

@@ -18,7 +18,7 @@
         </div>
         <div>
             <i class="bi bi-people pe-2"></i>
-            <span class="card-text">{{participant}} / {{tripInfo.min_participants}}</span>
+            <span class="card-text">{{tripInfo.accepted_participants}} / {{tripInfo.min_participants}}</span>
         </div>
         <div>
             <i class="bi bi-cash pe-2"></i>
@@ -26,5 +26,5 @@
         </div>
     </div>
 
-    <a href="#" class="stretched-link"></a>
+    <a [routerLink]="[`/trips/${tripInfo.id_trip}`]" class="stretched-link"></a>
 </article>
