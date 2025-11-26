@@ -148,7 +148,7 @@ export function formatDateToSpanish(date: string | Date | undefined | null): str
   }
 
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  
+
   const options: Intl.DateTimeFormatOptions = {
     year: 'numeric',
     month: 'long',

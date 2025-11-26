@@ -29,15 +29,17 @@
 				</div>
 			</div>
 
-			<div class="form-error-full" *ngIf="searchForm.errors?.['dateRange']">
+		@if (searchForm.errors?.['dateRange']) {
+			<div class="form-error-full">
 				La fecha "Desde" debe ser anterior o igual a la fecha "Hasta".
 			</div>
+		}
 
-			<div class="form-error-full" *ngIf="budgetControl?.invalid && (budgetControl?.dirty || budgetControl?.touched)">
+		@if (budgetControl?.invalid && (budgetControl?.dirty || budgetControl?.touched)) {
+			<div class="form-error-full">
 				El presupuesto debe ser un número mayor o igual a 0.
 			</div>
-
-			<div class="field action-bottom">
+		}			<div class="field action-bottom">
 				<button class="btn primary" type="submit">Buscar</button>
 			</div>
 		</form>
@@ -46,47 +48,51 @@
 
 <section class="features container">
 	<div class="features-grid">
-		<div class="feature" *ngFor="let f of features">
-			<h3>{{ f.title }}</h3>
-			<p>{{ f.desc }}</p>
-		</div>
+		@for (f of features; track f.title) {
+			<div class="feature">
+				<h3>{{ f.title }}</h3>
+				<p>{{ f.desc }}</p>
+			</div>
+		}
 	</div>
 </section>
 
 <section class="trips container">
 	<h2>Viajes recomendados</h2>
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-		<div class="col" *ngFor="let t of (trips$ | async)">
-			<article class="card" (mouseenter)="t._hover = true" (mouseleave)="t._hover = false"
-				[class.shadow]="t._hover" [class.shadow-sm]="!t._hover">
-				<div class="pt-4">
-					<img [src]="t.img" alt="" class="img-fluid card-image">
-				</div>
-				<div class="card-body">
-					<h3 class="card-title">{{ t.title }}</h3>
-					<div>
-						<i class="bi bi-geo-alt pe-2"></i>
-						<span class="card-text">{{ t.departure || 'Sin especificar' }}</span>
-						<i class="bi bi-arrow-right pe-2"></i>
-						<span class="card-text">{{ t.destination || t.description }}</span>
+		@for (t of (trips$ | async); track t.id) {
+			<div class="col">
+				<article class="card" (mouseenter)="t._hover = true" (mouseleave)="t._hover = false"
+					[class.shadow]="t._hover" [class.shadow-sm]="!t._hover">
+					<div class="pt-4">
+						<img [src]="t.img" alt="" class="img-fluid card-image">
 					</div>
-					<div>
-						<i class="bi bi-calendar pe-2"></i>
-						<span class="card-text">{{ t.start_date || t.availableFrom || 'Disponible' }}</span>
+					<div class="card-body">
+						<h3 class="card-title">{{ t.title }}</h3>
+						<div>
+							<i class="bi bi-geo-alt pe-2"></i>
+							<span class="card-text">{{ t.departure || 'Sin especificar' }}</span>
+							<i class="bi bi-arrow-right pe-2"></i>
+							<span class="card-text">{{ t.destination || t.description }}</span>
+						</div>
+						<div>
+							<i class="bi bi-calendar pe-2"></i>
+							<span class="card-text">{{ t.start_date || t.availableFrom || 'Disponible' }}</span>
+						</div>
+						<div>
+							<i class="bi bi-people pe-2"></i>
+							<span class="card-text">{{ t.min_participants || 'Varios' }} personas</span>
+						</div>
+						<div>
+							<i class="bi bi-cash pe-2"></i>
+							<span class="card-text">{{ t.cost_per_person || t.priceNumber || t.price }} €</span>
+						</div>
 					</div>
-					<div>
-						<i class="bi bi-people pe-2"></i>
-						<span class="card-text">{{ t.min_participants || 'Varios' }} personas</span>
-					</div>
-					<div>
-						<i class="bi bi-cash pe-2"></i>
-						<span class="card-text">{{ t.cost_per_person || t.priceNumber || t.price }} €</span>
-					</div>
-				</div>
 
-				<a href="#" class="stretched-link"></a>
-			</article>
-		</div>
+					<a href="#" class="stretched-link"></a>
+				</article>
+			</div>
+		}
 	</div>
 </section>
 

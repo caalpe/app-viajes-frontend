@@ -1,16 +1,17 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
+import { SpinnerComponent } from '../../../shared/components/spinner/spinner.component';
 import { IUser } from '../../../interfaces/IUser';
 import { extractErrorMessage } from '../../../shared/utils/http-error.utils';
 import { formatDateToSpanish } from '../../../shared/utils/data.utils';
 
 @Component({
   selector: 'app-user-detail',
-  imports: [CommonModule, ModalAlertComponent],
+  imports: [CommonModule, ModalAlertComponent, SpinnerComponent],
   styleUrl: './user-detail.component.css',
   templateUrl: './user-detail.component.html',
 })
