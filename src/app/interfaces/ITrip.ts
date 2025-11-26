@@ -3,10 +3,10 @@ export interface ITrip {
   id_creator?: number;
   title: string;
   description: string;
-  departure: string;
+  departure?: string;
   destination?: string | null;
-  start_date: string;
-  end_date: string;
+  start_date?: string;
+  end_date?: string;
   cost_per_person?: number | null;
   min_participants: number;
   accepted_participants: number;
@@ -17,4 +17,11 @@ export interface ITrip {
   created_at?: string;
   updated_at?: string;
   creator_name?: string;
+  // UI / frontend convenience fields (optional)
+  id?: number;
+  price?: string;
+  priceNumber?: number;
+  img?: string;
+  availableFrom?: string;
+  availableTo?: string;
 }
