@@ -1,9 +1,84 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+import { UserApiService } from '../../../services/api-rest/user-rest.service';
+import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
+import { IUser } from '../../../interfaces/IUser';
+import { extractErrorMessage } from '../../../shared/utils/http-error.utils';
+import { formatDateToSpanish } from '../../../shared/utils/data.utils';
 
 @Component({
   selector: 'app-user-detail',
-  imports: [],
+  imports: [CommonModule, ModalAlertComponent],
   styleUrl: './user-detail.component.css',
   templateUrl: './user-detail.component.html',
 })
-export class UserDetailComponent { }
+export class UserDetailComponent implements OnInit {
+  private authService = inject(AuthService);
+  private userApi = inject(UserApiService);
+  private router = inject(Router);
+
+  user: IUser | null = null;
+  isLoading = true;
+
+  // Modal properties
+  modalVisible = false;
+  modalTitle = '';
+  modalMessage = '';
+  modalType: 'success' | 'error' = 'success';
+  modalRedirectUrl: string | null = null;
+
+  ngOnInit(): void {
+    // Verificar autenticación
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.loadUserData();
+  }
+
+  async loadUserData(): Promise<void> {
+    try {
+      const userId = this.authService.getUserId();
+      if (!userId) {
+        throw new Error('No se pudo obtener el ID del usuario');
+      }
+
+      this.user = await this.userApi.getUser(userId);
+      console.log('Datos del usuario cargados:', this.user);
+    } catch (error: any) {
+      const errorMessage = extractErrorMessage(error, 'Error al cargar los datos del usuario. Intenta nuevamente.');
+      this.showModal('Error', errorMessage, 'error');
+      console.error('Error cargando usuario', error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  onEditProfile(): void {
+    this.router.navigate(['/user/profile/edit']);
+  }
+
+  onBack(): void {
+    this.router.navigate(['/']);
+  }
+
+  showModal(title: string, message: string, type: 'success' | 'error', redirectUrl: string | null = null): void {
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.modalType = type;
+    this.modalRedirectUrl = redirectUrl;
+    this.modalVisible = true;
+  }
+
+  onModalClose(): void {
+    this.modalVisible = false;
+  }
+
+  formatDate(date: string | Date | undefined | null): string {
+    return formatDateToSpanish(date);
+  }
+}
+

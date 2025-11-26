@@ -13,7 +13,7 @@ import { extractErrorMessage, extractSuccessMessage } from '../../../shared/util
 
 @Component({
   selector: 'app-trip-form',
-  imports: [CommonModule, ReactiveFormsModule, ModalAlertComponent, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, ModalAlertComponent],
   styleUrl: './trip-form.component.css',
   templateUrl: './trip-form.component.html',
 })
@@ -75,7 +75,7 @@ export class TripFormComponent implements OnInit {
     try {
       const trip = await this.tripApi.getTrip(tripId);
       console.log('Trip cargado:', trip);
-      
+
       // Convertir las fechas de ISO a formato YYYY-MM-DD para los inputs date
       if (trip.start_date) {
         trip.start_date = convertIsoToDateInputFormat(trip.start_date);
@@ -83,7 +83,7 @@ export class TripFormComponent implements OnInit {
       if (trip.end_date) {
         trip.end_date = convertIsoToDateInputFormat(trip.end_date);
       }
-      
+
       // Llenar el formulario con los datos del viaje
       this.tripState.patchForm(trip);
     } catch (error) {

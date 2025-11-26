@@ -184,7 +184,12 @@ export class UserFormComponent implements OnInit {
 
   onBack(): void {
     this.userState.resetForm();
-    this.router.navigate(['/']);
+    // Si estamos en modo edición, volver a user-detail, sino a home
+    if (this.isEditMode) {
+      this.router.navigate(['/user/profile']);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   /**

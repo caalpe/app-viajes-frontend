@@ -61,6 +61,19 @@
   margin-bottom: 30px;
 }
 
+/* Header wrapper with image on the right */
+.form-header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.form-header-content {
+  flex: 1;
+}
+
 .form-label {
   font-size: 14px;
   font-weight: 500;
@@ -227,5 +240,72 @@ textarea.form-control {
   .btn-create,
   .btn-cancel {
     width: 100%;
+  }
+}
+
+/* Image Preview Box Styles */
+.image-preview-box {
+  flex-shrink: 0;
+  width: 280px;
+}
+
+.image-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 12px;
+  display: none;
+}
+
+.image-container {
+  width: 100%;
+  height: 200px;
+  background-color: #ffffff;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.trip-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 200px;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.image-placeholder svg {
+  opacity: 0.4;
+}
+
+.form-control-sm {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .form-header-wrapper {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .image-preview-box {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
   }
 }
