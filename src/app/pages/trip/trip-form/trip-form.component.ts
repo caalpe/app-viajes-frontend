@@ -166,18 +166,18 @@ export class TripFormComponent implements OnInit {
       if (this.isEditMode && this.tripId) {
         // Modo edición: actualizar viaje existente
         const tripActualizado = await this.tripApi.updateTrip(this.tripId, payload);
-        console.log('Trip actualizado', tripActualizado);
+        console.log('Viaje actualizado', tripActualizado);
         successMessage = extractSuccessMessage(tripActualizado, 'Viaje actualizado correctamente');
       } else {
         // Modo alta: crear nuevo viaje
         const tripCreado = await this.tripApi.createTrip(payload);
-        console.log('Trip creado', tripCreado);
+        console.log('Viaje creado', tripCreado);
         successMessage = extractSuccessMessage(tripCreado, 'Viaje creado correctamente');
       }
 
       this.showModal('¡Éxito!', successMessage, 'success', '/trips');
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error, 'Error al procesar el viaje. Intenta nuevamente.');
+      const errorMessage = extractErrorMessage(error);
       this.showModal('Error', errorMessage, 'error');
       console.error('Error procesando trip', error);
     } finally {

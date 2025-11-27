@@ -141,7 +141,8 @@
                 [type]="passwordVisible ? 'text' : 'password'"
                 class="form-control"
                 formControlName="password"
-                [placeholder]="isEditMode ? 'Dejar en blanco para no cambiar' : 'Mínimo 8 caracteres'"
+                [readonly]="isEditMode"
+                [placeholder]="isEditMode ? 'Contraseña protegida' : 'Mínimo 8 caracteres'"
               />
               <button
                 type="button"
@@ -163,7 +164,7 @@
               </div>
             }
             @if (isEditMode) {
-              <small class="text-muted d-block mt-2">Opcional. Deja en blanco para mantener tu contraseña actual.</small>
+              <small class="text-muted d-block mt-2">Tu contraseña está protegida. Para cambiarla, ve a la sección de Seguridad.</small>
             }
           </div>
 

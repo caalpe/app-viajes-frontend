@@ -50,7 +50,7 @@ export class UserDetailComponent implements OnInit {
       this.user = await this.userApi.getUser(userId);
       console.log('Datos del usuario cargados:', this.user);
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error, 'Error al cargar los datos del usuario. Intenta nuevamente.');
+      const errorMessage = extractErrorMessage(error);
       this.showModal('Error', errorMessage, 'error');
       console.error('Error cargando usuario', error);
     } finally {
@@ -80,6 +80,21 @@ export class UserDetailComponent implements OnInit {
 
   formatDate(date: string | Date | undefined | null): string {
     return formatDateToSpanish(date);
+  }
+
+  /**
+   * Parsear los intereses desde una cadena separada por comas
+   * @param interests - String con intereses separados por comas o ", "
+   * @returns Array de intereses limpios
+   */
+  parseInterests(interests: string | undefined | null): string[] {
+    if (!interests) {
+      return [];
+    }
+    return interests
+      .split(/,\s*/)
+      .map(interest => interest.trim())
+      .filter(interest => interest.length > 0);
   }
 }
 

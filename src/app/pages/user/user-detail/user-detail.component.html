@@ -57,9 +57,13 @@
 
             <!-- Interests -->
             @if (user.interests) {
-              <div class="info-section">
+              <div class="info-section full-width">
                 <label class="info-label">Intereses</label>
-                <p class="info-value">{{ user.interests }}</p>
+                <div class="chips-container">
+                  @for (interest of parseInterests(user.interests); track interest) {
+                    <span class="chip">{{ interest }}</span>
+                  }
+                </div>
               </div>
             }
 

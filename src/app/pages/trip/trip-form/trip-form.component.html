@@ -242,15 +242,18 @@
           <!-- Cost per Person -->
           <div class="mb-4">
             <label class="form-label" for="cost_per_person">Costo por Persona</label>
-            <input
-              id="cost_per_person"
-              type="number"
-              class="form-control"
-              formControlName="cost_per_person"
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-            />
+            <div class="input-group">
+              <input
+                id="cost_per_person"
+                type="number"
+                class="form-control"
+                formControlName="cost_per_person"
+                step="0.01"
+                min="0"
+                placeholder="0.00"
+              />
+              <span class="input-group-text">€</span>
+            </div>
           </div>
 
           <!-- Transport Info -->

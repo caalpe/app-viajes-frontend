@@ -10,16 +10,12 @@
  * 2. error.error.message (mensaje dentro del objeto error)
  * 3. error.error como string (error como cadena de texto)
  * 4. error.message (mensaje genérico HTTP)
- * 5. Mensaje por defecto
+ * 5. Para status 500: mensaje por defecto | Para otros: cadena vacía
  *
  * @param error - El objeto de error HttpErrorResponse capturado en el catch
- * @param defaultMessage - Mensaje por defecto si no se encuentra otro
- * @returns El mensaje de error extraído
+ * @returns El mensaje de error extraído del backend o por defecto para 500
  */
-export function extractErrorMessage(
-  error: any,
-  defaultMessage: string = 'Error al procesar la solicitud. Intenta nuevamente.'
-): string {
+export function extractErrorMessage(error: any): string {
   // Prioridad 1: error.error.error (campo error en la respuesta)
   if (error?.error?.error) {
     return error.error.error;
@@ -40,8 +36,13 @@ export function extractErrorMessage(
     return error.message;
   }
 
-  // Fallback: mensaje por defecto
-  return defaultMessage;
+  // Prioridad 5: Para status 500, devolver mensaje por defecto
+  if (error?.status === 500) {
+    return 'Error interno del servidor. Por favor, intenta nuevamente más tarde.';
+  }
+
+  // Para otros errores sin mensaje, devolver cadena vacía
+  return '';
 }
 
 /**
@@ -49,10 +50,10 @@ export function extractErrorMessage(
  * Busca en:
  * 1. response.message (mensaje de éxito del backend)
  * 2. response.data?.message (mensaje dentro de data)
- * 3. Mensaje por defecto
+ * 3. Mensaje por defecto (si no encuentra nada en el backend)
  *
  * @param response - El objeto de respuesta exitosa del backend
- * @param defaultMessage - Mensaje por defecto si no se encuentra otro
+ * @param defaultMessage - Mensaje por defecto si no se encuentra otro en la respuesta
  * @returns El mensaje de éxito extraído
  */
 export function extractSuccessMessage(
@@ -80,17 +81,15 @@ export function extractSuccessMessage(
  * @param response - Objeto de respuesta HTTP
  * @param isError - true si es una respuesta de error, false si es éxito
  * @param defaultSuccessMessage - Mensaje por defecto para éxitos
- * @param defaultErrorMessage - Mensaje por defecto para errores
  * @returns El mensaje extraído
  */
 export function extractHttpMessage(
   response: any,
   isError: boolean = false,
-  defaultSuccessMessage: string = 'Operación completada exitosamente',
-  defaultErrorMessage: string = 'Error al procesar la solicitud. Intenta nuevamente.'
+  defaultSuccessMessage: string = 'Operación completada exitosamente'
 ): string {
   if (isError) {
-    return extractErrorMessage(response, defaultErrorMessage);
+    return extractErrorMessage(response);
   }
   return extractSuccessMessage(response, defaultSuccessMessage);
 }
