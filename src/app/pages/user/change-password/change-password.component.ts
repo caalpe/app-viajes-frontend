@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { FormGroup, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { AuthService } from '../../../services/auth.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
@@ -42,13 +42,63 @@ export class ChangePasswordComponent implements OnInit {
     }
 
     this.initializeForm();
+    this.setupPasswordMatchValidation();
   }
 
   private initializeForm(): void {
     this.changePasswordForm = this.fb.group({
       newPassword: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
+    }, {
+      validators: this.passwordMatchValidator()
     });
+  }
+
+  /**
+   * Validador personalizado que verifica que las contraseñas coincidan
+   */
+  private passwordMatchValidator() {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const newPassword = group.get('newPassword')?.value;
+      const confirmPassword = group.get('confirmPassword')?.value;
+
+      if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+        return { passwordMismatch: true };
+      }
+      return null;
+    };
+  }
+
+  /**
+   * Configurar reactividad para limpiar el error cuando las contraseñas coincidan
+   */
+  private setupPasswordMatchValidation(): void {
+    this.changePasswordForm.get('newPassword')?.valueChanges.subscribe(() => {
+      this.updatePasswordMatchError();
+    });
+
+    this.changePasswordForm.get('confirmPassword')?.valueChanges.subscribe(() => {
+      this.updatePasswordMatchError();
+    });
+  }
+
+  /**
+   * Actualizar el error de contraseña en tiempo real
+   */
+  private updatePasswordMatchError(): void {
+    const newPassword = this.changePasswordForm.get('newPassword')?.value;
+    const confirmPassword = this.changePasswordForm.get('confirmPassword')?.value;
+
+    if (newPassword && confirmPassword && newPassword === confirmPassword) {
+      // Las contraseñas coinciden, limpiar el error
+      delete this.validationErrors['confirmPassword'];
+    } else if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+      // Las contraseñas no coinciden, mostrar el error
+      this.validationErrors['confirmPassword'] = 'Las contraseñas no coinciden';
+    } else {
+      // Si uno de los campos está vacío, limpiar el error
+      delete this.validationErrors['confirmPassword'];
+    }
   }
 
   togglePasswordVisibility(): void {
@@ -114,10 +164,9 @@ export class ChangePasswordComponent implements OnInit {
     this.validationErrors = {};
     console.log('Validando payload:', payload);
 
-    // Validar que las contraseñas coincidan
-    if (payload.newPassword !== payload.confirmPassword) {
-      console.log('Las contraseñas no coinciden');
-      this.validationErrors['confirmPassword'] = 'Las contraseñas no coinciden';
+    // La validación de coincidencia de contraseñas ya se hace de forma reactiva
+    // Solo verificar que ambas contraseñas tengan contenido
+    if (!payload.newPassword || !payload.confirmPassword) {
       return false;
     }
 
