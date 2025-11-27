@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ITrip } from '../../../interfaces/ITrip';
 import { RouterLink } from '@angular/router';
+import { convertIsoToDateInputFormat } from '../../utils/data.utils';
 
 export enum cardType
 {
@@ -31,6 +32,18 @@ export class TripCardComponent {
     {
     }
 
+    ngAfterViewInit() 
+    {
+        const observer = new ResizeObserver(entries => 
+        {
+            for (const entry of entries) 
+            {
+              entry.target.parentElement!.style.height = entry.contentRect.height + "px";
+            }
+        });
+
+        document.querySelectorAll('.card-image').forEach(img => observer.observe(img));
+    }
     selectCardType() : string
     {
         switch(this.type)
@@ -59,4 +72,12 @@ export class TripCardComponent {
         [cardType.left]: "text-bg-info",
     };
 
+    changeDate(dateString : string | undefined) : string
+    {
+        if(dateString == undefined)
+        {
+        return "";
+        }
+        return convertIsoToDateInputFormat(dateString);
+    }
 }

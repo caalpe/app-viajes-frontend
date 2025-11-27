@@ -8,8 +8,16 @@
 {
     transform: scale(1.08);
 }
+.image-wrapper 
+{
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
 .card-image 
 {
+    width: 100%;
+    object-fit: cover;    /* Mantiene el encuadre */
     transition: transform 300ms ease;
     transform-origin: center center;
     backface-visibility: hidden;
@@ -17,5 +25,5 @@
 .owner-display
 {
     right: 10px;
-    top: 30px;
+    top: 10px;
 }
