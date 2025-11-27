@@ -161,4 +161,3 @@ export function formatDateToSpanish(date: string | Date | undefined | null): str
 
   return dateObj.toLocaleDateString('es-ES', options);
 }
-

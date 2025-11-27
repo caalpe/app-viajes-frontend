@@ -4,9 +4,8 @@ import { cardType, TripCardComponent } from '../../../shared/components/trip-car
 import { Router, RouterLink } from '@angular/router';
 import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { ITrip } from '../../../interfaces/ITrip';
-import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
-import { IParticipant, participationStatus } from '../../../interfaces/participant';
+import { IParticipant } from '../../../interfaces/participant';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -27,8 +26,6 @@ export class TripListComponent
     userPetitionsTrips : ITrip[] = [];
     userPetitions : IParticipant[] = [];
     allTrips: ITrip[] = [];
-    tripIdToEdit: number = 2; // Por defecto id 2
-    isLoadingTrip = false;
 
     ngOnInit()
     {
@@ -93,27 +90,5 @@ export class TripListComponent
             return cardType[tripPetition.status];
         }
         return cardType.none;
-    }
-
-    async onEditTrip(): Promise<void>
-    {
-        if (!this.tripIdToEdit || this.tripIdToEdit <= 0) {
-            alert('Por favor ingresa un ID de viaje válido');
-            return;
-        }
-
-        this.isLoadingTrip = true;
-
-        try {
-            const trip = await this.tripService.getTrip(this.tripIdToEdit);
-            console.log('Viaje cargado para editar:', trip);
-            // Navegar a trip-form con el id
-            this.router.navigate([`/trips/${this.tripIdToEdit}/edit`]);
-        } catch (error) {
-            console.error('Error cargando viaje:', error);
-            alert('No se pudo cargar el viaje. Verifica el ID e intenta de nuevo.');
-        } finally {
-            this.isLoadingTrip = false;
-        }
     }
 }
