@@ -1,16 +1,17 @@
 import { Component, inject, Input } from '@angular/core';
 import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { ITrip } from '../../../interfaces/ITrip';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
 import { IParticipant } from '../../../interfaces/participant';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { IUser } from '../../../interfaces/IUser';
 import { convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-trip-detail',
-  imports: [],
+  imports: [RouterLink],
   styleUrl: './trip-detail.component.css',
   templateUrl: './trip-detail.component.html',
 })
@@ -20,6 +21,7 @@ export class TripDetailComponent
   tripService           = inject(TripApiService);
   participationService  = inject(ParticipationApiService);
   userService           = inject(UserApiService);
+  authService           = inject(AuthService);
 
 	tripId! : number;
   tripInfo! : ITrip;
@@ -27,6 +29,7 @@ export class TripDetailComponent
   tripParticipantsInfo : IUser[] = [];
   image : string = "https://www.mercurynews.com/wp-content/uploads/2021/04/SJM-L-ROADTRIP-0502-01.jpg?w=1024";
 
+  userIsOwner : boolean = false;
   
   ngOnInit()
   {
@@ -75,6 +78,14 @@ export class TripDetailComponent
     }
 
     //Check if the user seeing this trip is the owner
+    let userID = this.authService.getUserId();
+    if(userID)
+    {
+      if(userID == this.tripInfo.id_creator)
+      {
+        this.userIsOwner = true;
+      }
+    }
   }
 
   changeDate(dateString : string | undefined) : string

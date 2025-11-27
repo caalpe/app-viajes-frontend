@@ -59,6 +59,10 @@
 
   <!-- Seccion derecha  -->
   <div class="col-12 col-md-4 d-flex flex-column gap-4">
+    @if (userIsOwner) 
+    {
+        <button class="btn btn-primary" [routerLink]="['/trips', tripInfo.id_trip, 'edit']">Editar Viaje</button>
+    }
 
     <section class="card p-3 rounded-4 shadow-sm">
       <div class="d-flex flex-column gap-3">
@@ -67,7 +71,7 @@
             <img src="{{image}}" alt="" class="img-fluid rounded-circle creator-img">
             <p class="m-0 ps-2 fw-medium">{{tripInfo.creator_name}}</p>
         </div>
-        <button class="btn btn-primary">Mandar peticion</button>
+        <button class="btn btn-primary" [disabled]="userIsOwner" [attr.aria-disabled]="userIsOwner">Mandar peticion</button>
       </div>
     </section>
 
