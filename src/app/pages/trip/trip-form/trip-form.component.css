@@ -164,80 +164,6 @@ textarea.form-control {
   font-size: 13px;
 }
 
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 40px;
-  padding-top: 30px;
-  border-top: 1px solid #e9ecef;
-}
-
-.btn-cancel {
-  background-color: #ffffff;
-  color: #6c757d;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  padding: 10px 24px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-cancel:hover {
-  background-color: #f8f9fa;
-  border-color: #adb5bd;
-  color: #495057;
-}
-
-.btn-create {
-  background-color: #17a2b8;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 32px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-create:hover:not(:disabled) {
-  background-color: #138496;
-  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
-}
-
-.btn-create:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-@media (max-width: 768px) {
-  .trip-form-header {
-    padding: 20px;
-    flex-direction: column;
-  }
-
-  .trip-card .card-body {
-    padding: 25px;
-  }
-
-  .header-title {
-    font-size: 22px;
-  }
-
-  .form-actions {
-    flex-direction: column-reverse;
-  }
-
-  .btn-create,
-  .btn-cancel {
-    width: 100%;
-  }
-}
-
 /* Image Preview Box Styles */
 .image-preview-box {
   flex-shrink: 0;
@@ -307,6 +233,19 @@ textarea.form-control {
 }
 
 @media (max-width: 768px) {
+  .trip-form-header {
+    padding: 20px;
+    flex-direction: column;
+  }
+
+  .trip-card .card-body {
+    padding: 25px;
+  }
+
+  .header-title {
+    font-size: 22px;
+  }
+
   .form-header-wrapper {
     flex-direction: column;
     gap: 20px;
