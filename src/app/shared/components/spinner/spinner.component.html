@@ -1,0 +1,17 @@
+@if (isGlobal) {
+  <!-- Global Overlay Spinner -->
+  @if (isVisible$ | async) {
+    <div class="spinner-overlay">
+      <div class="spinner-container spinner-md">
+        <div class="spinner"></div>
+        <p class="spinner-message">{{ (message$ | async) || 'Cargando...' }}</p>
+      </div>
+    </div>
+  }
+} @else {
+  <!-- Local Spinner -->
+  <div class="spinner-container" [class]="'spinner-' + size">
+    <div class="spinner"></div>
+    <p class="spinner-message">{{ message }}</p>
+  </div>
+}

@@ -19,13 +19,8 @@
 
     <!-- Navbar items -->
     <div class="collapse navbar-collapse" id="navbarNav">
-      <!-- Left section: Home -->
+      <!-- Left section: Empty (logo already navigates to home) -->
       <ul class="navbar-nav me-auto">
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/']" routerLinkActive="active" routerLinkActiveOptions="{exact: true}">
-            <i class="bi bi-house"></i> Inicio
-          </a>
-        </li>
       </ul>
 
       <!-- Right section: User navigation or Auth -->
@@ -53,7 +48,7 @@
 
           <!-- Mi Perfil -->
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/users/1']" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="['/user/profile']" routerLinkActive="active">
               <i class="bi bi-person-circle"></i> Mi perfil
             </a>
           </li>

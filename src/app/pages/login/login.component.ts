@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthRestService } from '../../services/api-rest/auth-rest.service';
 import { AuthService } from '../../services/auth.service';
 import { ModalAlertComponent } from '../../shared/components/modal-alert/modal-alert.component';
+import { IMAGE_URLS } from '../../shared/constants/images.constants';
 
 @Component({
   selector: 'app-login',
@@ -37,6 +38,15 @@ export class LoginComponent implements OnInit {
     }
 
     this.initializeForm();
+    this.setBackgroundImage();
+  }
+
+  private setBackgroundImage(): void {
+    // Establecer la variable CSS para la imagen de fondo
+    document.documentElement.style.setProperty(
+      '--login-bg-image',
+      `url('${IMAGE_URLS.LOGIN_BACKGROUND}')`
+    );
   }
 
   private initializeForm(): void {
@@ -63,7 +73,7 @@ export class LoginComponent implements OnInit {
       const response = await this.authRest.login(credentials);
       console.log('Login exitoso:', response);
 
-      // Guardar el token en el AuthService
+      // Guardar el token en el AuthService (decodifica JWT automáticamente)
       this.authService.setToken(response.token);
 
       // Mostrar modal de éxito y redirigir
@@ -90,6 +100,6 @@ export class LoginComponent implements OnInit {
   }
 
   onRegisterClick(): void {
-    this.router.navigate(['/users/new']);
+    this.router.navigate(['/user/new']);
   }
 }

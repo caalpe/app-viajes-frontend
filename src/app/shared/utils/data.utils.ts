@@ -1,4 +1,30 @@
 /**
+ * Convertir una fecha ISO 8601 a formato YYYY-MM-DD
+ * @param isoDate - Fecha en formato ISO 8601 (ej: "2025-10-10T00:00:00.000Z")
+ * @returns Fecha en formato YYYY-MM-DD, o string vacío si la entrada es falsy
+ */
+export function convertIsoToDateInputFormat(isoDate: string | Date | undefined | null): string {
+  if (!isoDate) {
+    return '';
+  }
+  return new Date(isoDate).toISOString().split('T')[0];
+}
+
+/**
+ * Convertir una fecha YYYY-MM-DD a formato ISO 8601
+ * @param dateInput - Fecha en formato YYYY-MM-DD (ej: "2025-10-10")
+ * @returns Fecha en formato ISO 8601 (ej: "2025-10-10T00:00:00.000Z"), o string vacío si la entrada es falsy
+ */
+export function convertDateInputToIso(dateInput: string | undefined | null): string {
+  if (!dateInput) {
+    return '';
+  }
+  // Crear la fecha a partir del formato YYYY-MM-DD (asume UTC)
+  const date = new Date(dateInput + 'T00:00:00.000Z');
+  return date.toISOString();
+}
+
+/**
  * Validar que una fecha no sea anterior al día de hoy
  * @param date - La fecha a validar (string en formato YYYY-MM-DD o Date)
  * @returns true si la fecha es válida (hoy o futura), false si es anterior a hoy
@@ -75,8 +101,6 @@ export function onlyAlphanumeric(value: string): boolean {
   return alphanumericRegex.test(value);
 }
 
-
-
 /**
  * Validar formato de teléfono
  * @param phone - Teléfono a validar
@@ -112,6 +136,32 @@ export function validateUrl(url: string): boolean {
 export function validateNumberRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
 }
+
+/**
+ * Convertir una fecha a formato en español legible
+ * @param date - Fecha a convertir (string ISO o Date)
+ * @returns Fecha formateada en español (ej: "26 de noviembre de 2025")
+ */
+export function formatDateToSpanish(date: string | Date | undefined | null): string {
+  if (!date) {
+    return '';
+  }
+
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'UTC'
+  };
+
+  return dateObj.toLocaleDateString('es-ES', options);
+}
+
 
 
 /**
