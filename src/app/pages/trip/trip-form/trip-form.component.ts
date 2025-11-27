@@ -29,6 +29,7 @@ export class TripFormComponent implements OnInit {
   isEditMode = false;
   tripId: number | null = null;
   minDate: string = ''; // Fecha mínima para el campo start_date
+  minEndDate: string = ''; // Fecha mínima para el campo end_date (dinámica basada en start_date)
 
   // Modal properties
   modalVisible = false;
@@ -47,6 +48,20 @@ export class TripFormComponent implements OnInit {
     // Establecer la fecha mínima como hoy en formato YYYY-MM-DD
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
+    this.minEndDate = this.minDate;
+
+    // Suscribirse a cambios en start_date para actualizar minEndDate
+    this.tripForm.get('start_date')?.valueChanges.subscribe((startDate: string) => {
+      if (startDate) {
+        this.minEndDate = startDate;
+      } else {
+        this.minEndDate = this.minDate;
+      }
+    });
+
+    // Aplicar estilos dinámicos a los inputs de fecha
+    setTimeout(() => this.updateDateInputStyles(), 100);
+    this.tripForm.valueChanges.subscribe(() => this.updateDateInputStyles());
 
     // Verificar si estamos en modo edición
     this.loadEditModeData();
@@ -60,6 +75,30 @@ export class TripFormComponent implements OnInit {
     // TODO: Remover - Solo para pruebas
     console.log('URL actual:', this.router.url);
     console.log('Token en AuthService:', this.authService.getToken());
+  }
+
+  /**
+   * Actualizar estilos de los inputs de fecha según su valor
+   */
+  private updateDateInputStyles(): void {
+    const startDateInput = document.getElementById('start_date') as HTMLInputElement;
+    const endDateInput = document.getElementById('end_date') as HTMLInputElement;
+
+    if (startDateInput) {
+      if (startDateInput.value) {
+        startDateInput.style.color = '#212529';
+      } else {
+        startDateInput.style.color = '#adb5bd';
+      }
+    }
+
+    if (endDateInput) {
+      if (endDateInput.value) {
+        endDateInput.style.color = '#212529';
+      } else {
+        endDateInput.style.color = '#adb5bd';
+      }
+    }
   }
 
   async loadEditModeData(): Promise<void> {

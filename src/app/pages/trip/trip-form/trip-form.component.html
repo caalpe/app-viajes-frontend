@@ -160,7 +160,7 @@
                 type="date"
                 class="form-control"
                 formControlName="end_date"
-                [min]="minDate"
+                [min]="minEndDate"
               />
               @if (tripForm.get('end_date')?.touched && tripForm.get('end_date')?.invalid) {
                 <div class="invalid-feedback d-block mt-2">
