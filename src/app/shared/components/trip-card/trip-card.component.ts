@@ -72,8 +72,12 @@ export class TripCardComponent {
         [cardType.left]: "text-bg-info",
     };
 
-    changeDate(dateString : string) : string
+    changeDate(dateString : string | undefined) : string
     {
-      return changeISODate(dateString);
+        if(dateString == undefined)
+        {
+        return "";
+        }
+        return changeISODate(dateString);
     }
 }

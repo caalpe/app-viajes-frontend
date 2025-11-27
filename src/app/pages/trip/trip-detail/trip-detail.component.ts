@@ -77,8 +77,12 @@ export class TripDetailComponent
     //Check if the user seeing this trip is the owner
   }
 
-  changeDate(dateString : string) : string
+  changeDate(dateString : string | undefined) : string
   {
+    if(dateString == undefined)
+    {
+      return "";
+    }
     return changeISODate(dateString);
   }
 }
