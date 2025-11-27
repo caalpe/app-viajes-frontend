@@ -30,6 +30,7 @@ export class TripDetailComponent
   image : string = "https://www.mercurynews.com/wp-content/uploads/2021/04/SJM-L-ROADTRIP-0502-01.jpg?w=1024";
 
   userIsOwner : boolean = false;
+  pageLoaded : boolean  = false;
   
   ngOnInit()
   {
@@ -86,6 +87,8 @@ export class TripDetailComponent
         this.userIsOwner = true;
       }
     }
+
+    this.pageLoaded = true;
   }
 
   changeDate(dateString : string | undefined) : string
@@ -95,5 +98,10 @@ export class TripDetailComponent
       return "";
     }
     return convertIsoToDateInputFormat(dateString);
+  }
+
+  petitionButtonPressed()
+  {
+    console.log("TODO: Modal de peticion");
   }
 }

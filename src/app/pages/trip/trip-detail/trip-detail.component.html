@@ -1,5 +1,5 @@
 <!-- Esperamos a recuperar por las promesas la informacion necesaria para la pagina -->
-@if (tripInfo) 
+@if (pageLoaded) 
 {
 <article class="row justify-content-around m-0 py-4 gap-4">
   <!-- Seccion izquierda -->
@@ -71,7 +71,7 @@
             <img src="{{image}}" alt="" class="img-fluid rounded-circle creator-img">
             <p class="m-0 ps-2 fw-medium">{{tripInfo.creator_name}}</p>
         </div>
-        <button class="btn btn-primary" [disabled]="userIsOwner" [attr.aria-disabled]="userIsOwner">Mandar peticion</button>
+        <button class="btn btn-primary" [disabled]="userIsOwner" [attr.aria-disabled]="userIsOwner" (click)="petitionButtonPressed()">Mandar peticion</button>
       </div>
     </section>
 
