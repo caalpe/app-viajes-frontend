@@ -7,3 +7,9 @@
     width: 50px;
     height: 50px;
 }
+
+.cost-display
+{
+    right: 20px;
+    top: 30px;
+}

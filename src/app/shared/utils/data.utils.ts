@@ -161,21 +161,3 @@ export function formatDateToSpanish(date: string | Date | undefined | null): str
 
   return dateObj.toLocaleDateString('es-ES', options);
 }
-
-
-
-/**
- * Cambiar un string en formato ISO a fecha tipo XX/XX/XXXX
- * @param dateString - String en formato ISO
- * @returns string en formato fecha usando numbers
- */
-export function changeISODate(dateString : string) : string
-{
-  const options: Intl.DateTimeFormatOptions = {
-  year: "numeric",
-  month: "numeric",
-  day: "numeric"
-  };
-
-  return new Date(dateString).toLocaleDateString(undefined, options);
-}

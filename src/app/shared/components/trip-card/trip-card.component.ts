@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ITrip } from '../../../interfaces/ITrip';
 import { RouterLink } from '@angular/router';
-import { changeISODate } from '../../utils/data.utils';
+import { convertIsoToDateInputFormat } from '../../utils/data.utils';
 
 export enum cardType
 {
@@ -78,6 +78,6 @@ export class TripCardComponent {
         {
         return "";
         }
-        return changeISODate(dateString);
+        return convertIsoToDateInputFormat(dateString);
     }
 }

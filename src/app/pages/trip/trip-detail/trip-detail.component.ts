@@ -6,7 +6,7 @@ import { ParticipationApiService } from '../../../services/api-rest/participatio
 import { IParticipant } from '../../../interfaces/participant';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { IUser } from '../../../interfaces/IUser';
-import { changeISODate } from '../../../shared/utils/data.utils';
+import { convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
 
 @Component({
   selector: 'app-trip-detail',
@@ -83,6 +83,6 @@ export class TripDetailComponent
     {
       return "";
     }
-    return changeISODate(dateString);
+    return convertIsoToDateInputFormat(dateString);
   }
 }
