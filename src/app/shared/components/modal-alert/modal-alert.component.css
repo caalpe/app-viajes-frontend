@@ -28,7 +28,7 @@
   max-width: 500px;
   width: 90%;
   animation: slideUp 0.3s ease-in-out;
-  border-left: 4px solid #17a2b8;
+  border-left: 5px solid #17a2b8;
 }
 
 @keyframes slideUp {
@@ -43,7 +43,7 @@
 }
 
 .modal-content.modal-success {
-  border-left-color: #28a745;
+  border-left-color: #17a2b8;
 }
 
 .modal-content.modal-error {
@@ -69,7 +69,7 @@
 }
 
 .icon-success {
-  color: #28a745;
+  color: #17a2b8;
   font-size: 24px;
   display: flex;
   align-items: center;
@@ -122,26 +122,6 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-}
-
-.btn {
-  border: none;
-  border-radius: 6px;
-  padding: 10px 24px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-primary {
-  background-color: #17a2b8;
-  color: #ffffff;
-}
-
-.btn-primary:hover {
-  background-color: #138496;
-  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
 }
 
 @media (max-width: 576px) {

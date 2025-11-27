@@ -65,14 +65,8 @@ export class UserFormComponent implements OnInit {
     if (userId) {
       this.isEditMode = true;
       this.userId = userId;
-      // En modo edición, la password es opcional
-      // Se ajustan los validadores del campo password
-      const passwordControl = this.userForm.get('password');
-      if (passwordControl) {
-        // Remover validadores y hacer el campo opcional
-        passwordControl.clearValidators();
-        passwordControl.updateValueAndValidity();
-      }
+      // En modo edición, la password viene del backend y es readonly
+      // No es necesario ajustar validadores
       await this.loadUserData(userId);
     }
   }
@@ -81,10 +75,8 @@ export class UserFormComponent implements OnInit {
     try {
       const user = await this.userApi.getUser(userId);
       console.log('Usuario cargado:', user);
-      // Crear una copia del usuario sin la contraseña
-      const { password, ...userWithoutPassword } = user;
-      // Llenar el formulario con los datos del usuario (sin password)
-      this.userState.patchForm(userWithoutPassword);
+      // En modo edición, llenamos el formulario con todos los datos incluyendo password
+      this.userState.patchForm(user);
     } catch (error) {
       console.error('Error cargando usuario', error);
       this.router.navigate(['/']);
@@ -139,12 +131,7 @@ export class UserFormComponent implements OnInit {
 
       if (this.isEditMode && this.userId) {
         // Modo edición: actualizar usuario existente
-        // Si la password está vacía, no la incluimos en el payload
-        if (!payload.password || payload.password.trim() === '') {
-          payload = { ...payload, password: undefined };
-          // Eliminar password del objeto
-          delete payload.password;
-        }
+        // Enviamos la password tal como llega del backend (sin cambios)
         const userActualizado = await this.userApi.updateUserPut(this.userId, payload);
         console.log('Usuario actualizado', userActualizado);
         successMessage = extractSuccessMessage(userActualizado, 'Usuario actualizado correctamente');
@@ -157,9 +144,9 @@ export class UserFormComponent implements OnInit {
         successMessage = extractSuccessMessage(response, 'Usuario registrado correctamente');
       }
 
-      this.showModal('¡Éxito!', successMessage, 'success', '/');
+      this.showModal('¡Éxito!', successMessage, 'success', '/user/profile');
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error, 'Error al procesar el usuario. Intenta nuevamente.');
+      const errorMessage = extractErrorMessage(error);
       this.showModal('Error', errorMessage, 'error');
       console.error('Error procesando usuario', error);
     } finally {

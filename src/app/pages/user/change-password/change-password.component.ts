@@ -101,7 +101,7 @@ export class ChangePasswordComponent implements OnInit {
       const successMessage = extractSuccessMessage(response, 'Contraseña actualizada correctamente');
       this.showModal('¡Éxito!', successMessage, 'success', '/user/profile/edit');
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error, 'Error al actualizar la contraseña. Intenta nuevamente.');
+      const errorMessage = extractErrorMessage(error);
       this.showModal('Error', errorMessage, 'error');
       console.error('Error actualizando contraseña', error);
     } finally {
