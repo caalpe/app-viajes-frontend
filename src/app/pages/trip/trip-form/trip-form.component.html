@@ -9,10 +9,49 @@
   <div class="trip-form-container">
     <div class="card trip-card">
       <div class="card-body">
-        <h2 class="form-section-title">Detalles del Viaje</h2>
-        <p class="form-section-subtitle">Completa la información sobre tu viaje</p>
-
         <form [formGroup]="tripForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-header-wrapper">
+            <div class="form-header-content">
+              <h2 class="form-section-title">Detalles del Viaje</h2>
+              <p class="form-section-subtitle">Completa la información sobre tu viaje</p>
+            </div>
+
+            <!-- Image Box - Top Right -->
+            <div class="image-preview-box">
+              @if (tripForm.get('photo_url')?.value) {
+                <div class="image-container">
+                  <img [src]="tripForm.get('photo_url')?.value" alt="Foto del viaje" class="trip-image" />
+                </div>
+              } @else {
+                <div class="image-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 5H35V35H5V5Z" stroke="#dee2e6" stroke-width="2" fill="none"/>
+                    <line x1="5" y1="5" x2="35" y2="35" stroke="#dee2e6" stroke-width="2"/>
+                    <line x1="35" y1="5" x2="5" y2="35" stroke="#dee2e6" stroke-width="2"/>
+                  </svg>
+                </div>
+              }
+
+              <!-- URL Field -->
+              <div class="mt-3">
+                <label class="form-label" for="photo_url">URL de la Foto</label>
+                <input
+                  id="photo_url"
+                  type="url"
+                  class="form-control form-control-sm"
+                  formControlName="photo_url"
+                  placeholder="https://ejemplo.com/foto.jpg"
+                />
+                @if (tripForm.get('photo_url')?.touched && tripForm.get('photo_url')?.invalid) {
+                  <div class="invalid-feedback d-block mt-2">
+                    @if (tripForm.get('photo_url')?.errors?.['pattern']) {
+                      Por favor ingresa una URL válida.
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
           <!-- Title -->
           <div class="mb-4">
             <label class="form-label" for="title">Título del Viaje *</label>
@@ -120,7 +159,7 @@
                 type="date"
                 class="form-control"
                 formControlName="end_date"
-                [min]="minDate"
+                [min]="minEndDate"
               />
               @if (tripForm.get('end_date')?.touched && tripForm.get('end_date')?.invalid) {
                 <div class="invalid-feedback d-block mt-2">
@@ -201,16 +240,28 @@
 
           <!-- Cost per Person -->
           <div class="mb-4">
-            <label class="form-label" for="cost_per_person">Costo por Persona</label>
-            <input
-              id="cost_per_person"
-              type="number"
-              class="form-control"
-              formControlName="cost_per_person"
-              step="0.01"
-              min="0"
-              placeholder="0.00"
-            />
+            <label class="form-label" for="cost_per_person">Coste por Persona *</label>
+            <div class="input-group">
+              <input
+                id="cost_per_person"
+                type="number"
+                class="form-control"
+                formControlName="cost_per_person"
+                step="0.01"
+                min="0"
+                placeholder="0.00 €"
+              />
+            </div>
+            @if (tripForm.get('cost_per_person')?.touched && tripForm.get('cost_per_person')?.invalid) {
+              <div class="invalid-feedback d-block mt-2">
+                @if (tripForm.get('cost_per_person')?.errors?.['required']) {
+                  El coste por persona es obligatorio.
+                }
+                @if (tripForm.get('cost_per_person')?.errors?.['min']) {
+                  El coste debe ser mayor o igual a 0.
+                }
+              </div>
+            }
           </div>
 
           <!-- Transport Info -->
@@ -249,34 +300,34 @@
             ></textarea>
           </div>
 
-          <div class="form-actions">
-            <button
-              type="button"
-              class="btn btn-cancel"
-              (click)="onBack()"
-            >
-              Cancelar
-            </button>
+            <div class="form-actions">
+              <button
+                type="button"
+                class="btn btn-cancel"
+                (click)="onBack()"
+              >
+                Cancelar
+              </button>
 
-            @if (isEditMode) {
-              <button
-                type="submit"
-                class="btn btn-create"
-                [disabled]="isSubmitting"
-              >
-                {{ isSubmitting ? 'Actualizando...' : 'Actualizar Viaje' }}
-              </button>
-            } @else {
-              <button
-                type="submit"
-                class="btn btn-create"
-                [disabled]="isSubmitting"
-              >
-                {{ isSubmitting ? 'Creando...' : 'Crear Viaje' }}
-              </button>
-            }
-          </div>
-        </form>
+              @if (isEditMode) {
+                <button
+                  type="submit"
+                  class="btn btn-create"
+                  [disabled]="isSubmitting"
+                >
+                  {{ isSubmitting ? 'Actualizando...' : 'Actualizar Viaje' }}
+                </button>
+              } @else {
+                <button
+                  type="submit"
+                  class="btn btn-create"
+                  [disabled]="isSubmitting"
+                >
+                  {{ isSubmitting ? 'Creando...' : 'Crear Viaje' }}
+                </button>
+              }
+            </div>
+            </form>
       </div>
     </div>
   </div>

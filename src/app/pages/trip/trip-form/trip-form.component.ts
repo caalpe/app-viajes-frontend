@@ -13,7 +13,7 @@ import { extractErrorMessage, extractSuccessMessage } from '../../../shared/util
 
 @Component({
   selector: 'app-trip-form',
-  imports: [CommonModule, ReactiveFormsModule, ModalAlertComponent, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, ModalAlertComponent],
   styleUrl: './trip-form.component.css',
   templateUrl: './trip-form.component.html',
 })
@@ -29,6 +29,7 @@ export class TripFormComponent implements OnInit {
   isEditMode = false;
   tripId: number | null = null;
   minDate: string = ''; // Fecha mínima para el campo start_date
+  minEndDate: string = ''; // Fecha mínima para el campo end_date (dinámica basada en start_date)
 
   // Modal properties
   modalVisible = false;
@@ -47,6 +48,20 @@ export class TripFormComponent implements OnInit {
     // Establecer la fecha mínima como hoy en formato YYYY-MM-DD
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
+    this.minEndDate = this.minDate;
+
+    // Suscribirse a cambios en start_date para actualizar minEndDate
+    this.tripForm.get('start_date')?.valueChanges.subscribe((startDate: string) => {
+      if (startDate) {
+        this.minEndDate = startDate;
+      } else {
+        this.minEndDate = this.minDate;
+      }
+    });
+
+    // Aplicar estilos dinámicos a los inputs de fecha
+    setTimeout(() => this.updateDateInputStyles(), 100);
+    this.tripForm.valueChanges.subscribe(() => this.updateDateInputStyles());
 
     // Verificar si estamos en modo edición
     this.loadEditModeData();
@@ -62,6 +77,30 @@ export class TripFormComponent implements OnInit {
     console.log('Token en AuthService:', this.authService.getToken());
   }
 
+  /**
+   * Actualizar estilos de los inputs de fecha según su valor
+   */
+  private updateDateInputStyles(): void {
+    const startDateInput = document.getElementById('start_date') as HTMLInputElement;
+    const endDateInput = document.getElementById('end_date') as HTMLInputElement;
+
+    if (startDateInput) {
+      if (startDateInput.value) {
+        startDateInput.style.color = '#212529';
+      } else {
+        startDateInput.style.color = '#adb5bd';
+      }
+    }
+
+    if (endDateInput) {
+      if (endDateInput.value) {
+        endDateInput.style.color = '#212529';
+      } else {
+        endDateInput.style.color = '#adb5bd';
+      }
+    }
+  }
+
   async loadEditModeData(): Promise<void> {
     const id = await getIdFromRoute(this.activatedRoute);
     if (id) {
@@ -75,7 +114,7 @@ export class TripFormComponent implements OnInit {
     try {
       const trip = await this.tripApi.getTrip(tripId);
       console.log('Trip cargado:', trip);
-      
+
       // Convertir las fechas de ISO a formato YYYY-MM-DD para los inputs date
       if (trip.start_date) {
         trip.start_date = convertIsoToDateInputFormat(trip.start_date);
@@ -83,7 +122,7 @@ export class TripFormComponent implements OnInit {
       if (trip.end_date) {
         trip.end_date = convertIsoToDateInputFormat(trip.end_date);
       }
-      
+
       // Llenar el formulario con los datos del viaje
       this.tripState.patchForm(trip);
     } catch (error) {
@@ -127,18 +166,18 @@ export class TripFormComponent implements OnInit {
       if (this.isEditMode && this.tripId) {
         // Modo edición: actualizar viaje existente
         const tripActualizado = await this.tripApi.updateTrip(this.tripId, payload);
-        console.log('Trip actualizado', tripActualizado);
+        console.log('Viaje actualizado', tripActualizado);
         successMessage = extractSuccessMessage(tripActualizado, 'Viaje actualizado correctamente');
       } else {
         // Modo alta: crear nuevo viaje
         const tripCreado = await this.tripApi.createTrip(payload);
-        console.log('Trip creado', tripCreado);
+        console.log('Viaje creado', tripCreado);
         successMessage = extractSuccessMessage(tripCreado, 'Viaje creado correctamente');
       }
 
       this.showModal('¡Éxito!', successMessage, 'success', '/trips');
     } catch (error: any) {
-      const errorMessage = extractErrorMessage(error, 'Error al procesar el viaje. Intenta nuevamente.');
+      const errorMessage = extractErrorMessage(error);
       this.showModal('Error', errorMessage, 'error');
       console.error('Error procesando trip', error);
     } finally {

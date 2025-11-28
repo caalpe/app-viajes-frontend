@@ -33,12 +33,13 @@ export class TripStateService {
       description: new FormControl<ITrip['description']>('', [Validators.required, Validators.minLength(10), Validators.maxLength(TRIP_DESCRIPTION_MAX_LENGTH)]),
       start_date: new FormControl<ITrip['start_date']>('', [Validators.required]),
       end_date: new FormControl<ITrip['end_date']>('', [Validators.required]),
-      cost_per_person: new FormControl<ITrip['cost_per_person']>(null),
+      cost_per_person: new FormControl<ITrip['cost_per_person']>(null, [Validators.required, Validators.min(0)]),
       min_participants: new FormControl<ITrip['min_participants']>(1, [Validators.required, Validators.min(1), Validators.max(TRIP_MIN_PARTICIPANTS_MAX)]),
       transport_info: new FormControl<ITrip['transport_info']>('', [Validators.maxLength(TRIP_TRANSPORT_INFO_MAX_LENGTH)]),
       accommodation_info: new FormControl<ITrip['accommodation_info']>('', [Validators.maxLength(TRIP_ACCOMMODATION_INFO_MAX_LENGTH)]),
       itinerary: new FormControl<ITrip['itinerary']>('', [Validators.maxLength(TRIP_ITINERARY_MAX_LENGTH)]),
       status: new FormControl<ITrip['status']>('open', [Validators.required]),
+      photo_url: new FormControl<string>(''),
     });
   }
 

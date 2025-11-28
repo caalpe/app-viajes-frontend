@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthRestService } from '../../services/api-rest/auth-rest.service';
 import { AuthService } from '../../services/auth.service';
 import { ModalAlertComponent } from '../../shared/components/modal-alert/modal-alert.component';
+import { IMAGE_URLS } from '../../shared/constants/images.constants';
 
 @Component({
   selector: 'app-login',
@@ -37,6 +38,15 @@ export class LoginComponent implements OnInit {
     }
 
     this.initializeForm();
+    this.setBackgroundImage();
+  }
+
+  private setBackgroundImage(): void {
+    // Establecer la variable CSS para la imagen de fondo
+    document.documentElement.style.setProperty(
+      '--login-bg-image',
+      `url('${IMAGE_URLS.LOGIN_BACKGROUND}')`
+    );
   }
 
   private initializeForm(): void {

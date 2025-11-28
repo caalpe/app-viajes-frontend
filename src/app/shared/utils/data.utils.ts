@@ -136,3 +136,28 @@ export function validateUrl(url: string): boolean {
 export function validateNumberRange(value: number, min: number, max: number): boolean {
   return value >= min && value <= max;
 }
+
+/**
+ * Convertir una fecha a formato en español legible
+ * @param date - Fecha a convertir (string ISO o Date)
+ * @returns Fecha formateada en español (ej: "26 de noviembre de 2025")
+ */
+export function formatDateToSpanish(date: string | Date | undefined | null): string {
+  if (!date) {
+    return '';
+  }
+
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'UTC'
+  };
+
+  return dateObj.toLocaleDateString('es-ES', options);
+}
