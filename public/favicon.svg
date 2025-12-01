@@ -1,22 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <!-- Avión estilizado Boeing moderno, hacia arriba -->
   <g transform="translate(100, 100) rotate(0) scale(1.5)">
-    <!-- Fuselaje central alargado -->
-    <rect x="-14" y="-60" width="28" height="115" fill="#17a2b8" rx="10"/>
+    <!-- Fuselaje central redondeado con punta curva ovalada -->
+    <path d="M -14 -40 C -14 -65 14 -65 14 -40 L 14 55 Q 0 57 -14 55 Z" fill="#17a2b8"/>
 
     <!-- Ala principal izquierda (triángulo rectángulo) -->
-    <polygon points="-14,35 -105,35 -14,5" fill="#17a2b8"/>
+    <polygon points="-14,30 -120,45 -14,0" fill="#17a2b8"/>
 
     <!-- Ala principal derecha (triángulo rectángulo) -->
-    <polygon points="14,35 105,35 14,5" fill="#17a2b8"/>
+    <polygon points="14,30 120,45 14,0" fill="#17a2b8"/>
 
-    <!-- Ala horizontal de cola (estabilizador horizontal) -->
-    <polygon points="-18,50 -28,60 28,60 18,50" fill="#17a2b8"/>
+    <!-- Ala horizontal de cola (triángulo puntiagudo) -->
+    <polygon points="-14,55 0,70 14,55" fill="#17a2b8"/>
 
     <!-- Estabilizador vertical dorsal (cola) -->
-    <polygon points="-8,50 8,50 0,75" fill="#17a2b8"/>
+    <polygon points="0,55 -6,80 6,80" fill="#17a2b8"/>
 
-    <!-- Cabina/Morro afilado -->
-    <polygon points="0,82 -8,45 8,45" fill="#17a2b8"/>
+    <!-- Ala izquierda de la cola -->
+    <polygon points="-6,50 -55,80 -15,90" fill="#17a2b8"/>
+
+    <!-- Ala derecha de la cola -->
+    <polygon points="6,50 55,80 15,90" fill="#17a2b8"/>
   </g>
 </svg>
