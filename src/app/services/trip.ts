@@ -34,7 +34,7 @@ export class TripService {
         price: '340€', 
         priceNumber: 340, 
         cost_per_person: 340,
-        img: 'https://images.unsplash.com/photo-1558969524-06dd5ae97210?w=800&h=600&fit=crop', 
+        img: 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=800&h=600&fit=crop', 
         description: 'Sur de España', 
         departure: 'Madrid',
         destination: 'Sevilla',
