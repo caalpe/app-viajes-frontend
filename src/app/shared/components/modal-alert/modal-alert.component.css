@@ -50,6 +50,10 @@
   border-left-color: #dc3545;
 }
 
+.modal-content.modal-confirmation {
+  border-left-color: #ffc107;
+}
+
 .modal-header {
   display: flex;
   align-items: center;
@@ -78,6 +82,14 @@
 
 .icon-error {
   color: #dc3545;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-warning {
+  color: #ffc107;
   font-size: 24px;
   display: flex;
   align-items: center;

@@ -311,6 +311,14 @@
 
               @if (isEditMode) {
                 <button
+                  type="button"
+                  class="btn btn-delete"
+                  (click)="onDeleteTrip()"
+                  [disabled]="isSubmitting"
+                >
+                  {{ isSubmitting ? 'Eliminando...' : 'Eliminar Viaje' }}
+                </button>
+                <button
                   type="submit"
                   class="btn btn-create"
                   [disabled]="isSubmitting"
@@ -341,4 +349,5 @@
   [type]="modalType"
   [redirectUrl]="modalRedirectUrl"
   (onClose)="onModalClose()"
+  (onConfirm)="onModalConfirm()"
 ></app-modal-alert>
