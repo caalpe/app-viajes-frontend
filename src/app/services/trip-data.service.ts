@@ -1,16 +1,24 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { delay, catchError } from 'rxjs/operators';
 import { ITrip as TripModel } from '../interfaces/ITrip';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TripService {
-  constructor() { }
+export class TripDataService {
+  private apiUrl = 'https://app-viajes-backend-amla.onrender.com/api/trips';
+
+  constructor(private http: HttpClient) { }
 
   getTrips(): Observable<TripModel[]> {
-    // Mocked data: replace with real HTTP call when backend is ready
+    // IMPORTANTE: Para usar la API real, descomenta la línea siguiente y comenta el bloque de datos mock
+    // return this.http.get<TripModel[]>(this.apiUrl);
+    // NOTA: El servidor Render tarda ~15 segundos en la primera petición si estaba inactivo
+    
+    // ============= DATOS MOCK PARA DESARROLLO =============
+    // Comentar todo este bloque cuando la API esté lista y funcione correctamente
     const data: TripModel[] = [
       { 
         id: 1, 
