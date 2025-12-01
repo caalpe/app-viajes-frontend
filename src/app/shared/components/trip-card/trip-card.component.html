@@ -1,7 +1,7 @@
 <article class="card rounded-4 pt-4" (mouseenter)="hover = true" (mouseleave)="hover = false"
          [class.shadow]="hover" [class.shadow-sm]="!hover">
     <div class="image-wrapper">
-        <img src="{{image}}" alt="" class="img-fluid card-image">
+        <img [src]="tripInfo.image_url ?? image" alt="" class="img-fluid card-image">
         <span class="badge rounded-pill position-absolute owner-display {{badgeClassMap[type]}}">{{selectCardType()}}</span>        
     </div>
     <div class="card-body">
