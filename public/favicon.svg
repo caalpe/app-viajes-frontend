@@ -3,19 +3,19 @@
   <g transform="translate(100, 100) rotate(0) scale(1.5)">
     <!-- Fuselaje central alargado -->
     <rect x="-14" y="-60" width="28" height="115" fill="#17a2b8" rx="10"/>
-    
+
     <!-- Ala principal izquierda (triángulo rectángulo) -->
     <polygon points="-14,35 -105,35 -14,5" fill="#17a2b8"/>
-    
+
     <!-- Ala principal derecha (triángulo rectángulo) -->
     <polygon points="14,35 105,35 14,5" fill="#17a2b8"/>
-    
+
     <!-- Ala horizontal de cola (estabilizador horizontal) -->
     <polygon points="-18,50 -28,60 28,60 18,50" fill="#17a2b8"/>
-    
+
     <!-- Estabilizador vertical dorsal (cola) -->
     <polygon points="-8,50 8,50 0,75" fill="#17a2b8"/>
-    
+
     <!-- Cabina/Morro afilado -->
     <polygon points="0,82 -8,45 8,45" fill="#17a2b8"/>
   </g>
