@@ -18,9 +18,9 @@
 
             <!-- Image Box - Top Right -->
             <div class="image-preview-box">
-              @if (tripForm.get('photo_url')?.value) {
+              @if (tripForm.get('image_url')?.value) {
                 <div class="image-container">
-                  <img [src]="tripForm.get('photo_url')?.value" alt="Foto del viaje" class="trip-image" />
+                  <img [src]="tripForm.get('image_url')?.value" alt="Foto del viaje" class="trip-image" />
                 </div>
               } @else {
                 <div class="image-placeholder">
@@ -34,17 +34,17 @@
 
               <!-- URL Field -->
               <div class="mt-3">
-                <label class="form-label" for="photo_url">URL de la Foto</label>
+                <label class="form-label" for="image_url">URL de la Foto</label>
                 <input
-                  id="photo_url"
+                  id="image_url"
                   type="url"
                   class="form-control form-control-sm"
-                  formControlName="photo_url"
+                  formControlName="image_url"
                   placeholder="https://ejemplo.com/foto.jpg"
                 />
-                @if (tripForm.get('photo_url')?.touched && tripForm.get('photo_url')?.invalid) {
+                @if (tripForm.get('image_url')?.touched && tripForm.get('image_url')?.invalid) {
                   <div class="invalid-feedback d-block mt-2">
-                    @if (tripForm.get('photo_url')?.errors?.['pattern']) {
+                    @if (tripForm.get('image_url')?.errors?.['pattern']) {
                       Por favor ingresa una URL válida.
                     }
                   </div>

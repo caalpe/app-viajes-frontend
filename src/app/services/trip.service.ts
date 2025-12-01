@@ -39,7 +39,7 @@ export class TripStateService {
       accommodation_info: new FormControl<ITrip['accommodation_info']>('', [Validators.maxLength(TRIP_ACCOMMODATION_INFO_MAX_LENGTH)]),
       itinerary: new FormControl<ITrip['itinerary']>('', [Validators.maxLength(TRIP_ITINERARY_MAX_LENGTH)]),
       status: new FormControl<ITrip['status']>('open', [Validators.required]),
-      photo_url: new FormControl<string>(''),
+      image_url: new FormControl<string>(''),
     });
   }
 
