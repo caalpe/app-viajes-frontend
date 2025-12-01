@@ -1,33 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { delay, catchError } from 'rxjs/operators';
 import { ITrip as TripModel } from '../interfaces/ITrip';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TripDataService {
+export class TripService {
   private apiUrl = 'https://app-viajes-backend-amla.onrender.com/api/trips';
 
   constructor(private http: HttpClient) { }
 
   getTrips(): Observable<TripModel[]> {
-    // Conectado con el backend real
+    // IMPORTANTE: Para usar la API real, descomenta la línea siguiente y comenta el bloque de datos mock
+    // return this.http.get<TripModel[]>(this.apiUrl);
     // NOTA: El servidor Render tarda ~15 segundos en la primera petición si estaba inactivo
-    return this.http.get<TripModel[]>(this.apiUrl).pipe(
-      catchError(error => {
-        console.error('❌ Error al obtener viajes del backend:', error);
-        console.warn('⚠️ Usando datos mock como fallback');
-        // Si falla, devuelve datos mock como fallback
-        return of(this.getMockData());
-      })
-    );
-  }
-
-  /** Datos mock de respaldo por si falla el backend */
-  private getMockData(): TripModel[] {
-    return [
+    
+    // ============= DATOS MOCK PARA DESARROLLO =============
+    // Comentar todo este bloque cuando la API esté lista y funcione correctamente
+    const data: TripModel[] = [
       { 
         id: 1, 
         title: 'Escapada a Barcelona', 
@@ -77,5 +69,7 @@ export class TripDataService {
         availableTo: '2025-09-30' 
       }
     ];
+
+    return of(data).pipe(delay(300));
   }
 }
