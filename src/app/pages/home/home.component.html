@@ -3,10 +3,15 @@
 		<h1>Viaja. Descubre. Vive.</h1>
 		<p class="lead">Encuentra las mejores ofertas y experiencias únicas para tu próxima aventura.</p>
 
-		<form class="search-form" [formGroup]="searchForm" (ngSubmit)="$event.preventDefault()">
+		<form class="search-form" [formGroup]="searchForm" (ngSubmit)="onSearch()">
 			<div class="field">
 				<label class="label-accent">Destino</label>
-				<input type="text" formControlName="destination" placeholder="¿A dónde?" />
+				<input type="text" formControlName="destination" placeholder="¿A dónde?" list="destinations" />
+				<datalist id="destinations">
+					@for (dest of destinations; track dest) {
+						<option [value]="dest"></option>
+					}
+				</datalist>
 			</div>
 
 			<div class="field">
@@ -89,7 +94,7 @@
 						</div>
 					</div>
 
-					<a href="#" class="stretched-link"></a>
+					<a [routerLink]="['/trips', t.id_trip || t.id]" class="stretched-link"></a>
 				</article>
 			</div>
 		}
@@ -100,6 +105,6 @@
 	<div class="container cta-inner">
 		<h2>Listo para tu próxima aventura?</h2>
 		<p>Reserva ahora y obtén descuentos exclusivos en destinos seleccionados.</p>
-		<button class="btn primary large">Empieza ahora</button>
+		<a routerLink="/trips" class="btn primary large">Empieza ahora</a>
 	</div>
 </section>
