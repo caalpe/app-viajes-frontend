@@ -3,20 +3,43 @@
     <div class="modal-content" [ngClass]="'modal-' + type">
       <div class="modal-header">
         <h5 class="modal-title">
-          <span [ngClass]="type === 'success' ? 'icon-success' : 'icon-error'">
-            <i [ngClass]="type === 'success' ? 'bi bi-check-circle' : 'bi bi-exclamation-circle'"></i>
-          </span>
+          @if (type === 'success') {
+            <span class="icon-success">
+              <i class="bi bi-check-circle"></i>
+            </span>
+          }
+          @if (type === 'error') {
+            <span class="icon-error">
+              <i class="bi bi-exclamation-circle"></i>
+            </span>
+          }
+          @if (type === 'confirmation') {
+            <span class="icon-warning">
+              <i class="bi bi-question-circle"></i>
+            </span>
+          }
           {{ title }}
         </h5>
-        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Cerrar"></button>
+        @if (type !== 'confirmation') {
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Cerrar"></button>
+        }
       </div>
       <div class="modal-body">
         <p>{{ message }}</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="closeModal()">
-          Aceptar
-        </button>
+        @if (type === 'confirmation') {
+          <button type="button" class="btn btn-cancel" (click)="closeModal()">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-delete" (click)="confirmAction()">
+            Confirmar
+          </button>
+        } @else {
+          <button type="button" class="btn btn-primary" (click)="closeModal()">
+            Aceptar
+          </button>
+        }
       </div>
     </div>
   </div>

@@ -1,8 +1,8 @@
 <div class="user-detail-wrapper">
   <div class="user-detail-header">
     <div class="header-content">
-      <h1 class="header-title">Mi Perfil</h1>
-      <p class="header-subtitle">Información de tu cuenta</p>
+      <h1 class="header-title">{{ isOwnProfile ? 'Mi Perfil' : 'Perfil del Usuario' }}</h1>
+      <p class="header-subtitle">{{ isOwnProfile ? 'Información de tu cuenta' : 'Información del usuario' }}</p>
     </div>
   </div>
 
@@ -67,6 +67,25 @@
               </div>
             }
 
+            <!-- Average Rating -->
+            @if (user.average_rating !== undefined && user.average_rating !== null) {
+              <div class="info-section">
+                <label class="info-label">Puntuación Promedio</label>
+                <p class="info-value">
+                  {{ user.average_rating | number:'1.1-2' }}
+                  <i class="bi bi-star-fill" style="color: #ffc107;"></i>
+                </p>
+              </div>
+            }
+
+            <!-- Rating Count -->
+            @if (user.rating_count !== undefined && user.rating_count !== null) {
+              <div class="info-section">
+                <label class="info-label">Número de Valoraciones</label>
+                <p class="info-value">{{ user.rating_count }}</p>
+              </div>
+            }
+
             <!-- Created At -->
             @if (user.created_at) {
               <div class="info-section">
@@ -85,13 +104,62 @@
             >
               Volver
             </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="onEditProfile()"
-            >
-              <i class="bi bi-pencil"></i> Editar Perfil
-            </button>
+            @if (isOwnProfile) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="onEditProfile()"
+              >
+                <i class="bi bi-pencil"></i> Editar Perfil
+              </button>
+            }
+          </div>
+
+          <!-- Test Form (Development only) -->
+          <div class="test-form-section">
+            <div class="test-form-separator"></div>
+            <h3 class="test-form-title">🧪 Formulario de Prueba</h3>
+            <p class="test-form-description">Prueba la navegación entre perfiles</p>
+            <div class="test-form-container">
+              <div class="test-form-options">
+                <label class="test-form-radio">
+                  <input
+                    type="radio"
+                    name="profileType"
+                    value="own"
+                    [(ngModel)]="testProfileType"
+                  />
+                  Ver mi perfil (sin ID)
+                </label>
+                <label class="test-form-radio">
+                  <input
+                    type="radio"
+                    name="profileType"
+                    value="other"
+                    [(ngModel)]="testProfileType"
+                  />
+                  Ver perfil de otro usuario
+                </label>
+              </div>
+
+              @if (testProfileType === 'other') {
+                <input
+                  type="number"
+                  class="form-control"
+                  [(ngModel)]="testUserId"
+                  placeholder="Ingresa el ID del usuario"
+                  min="1"
+                />
+              }
+
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="onNavigateToUserProfile()"
+              >
+                Ver Perfil
+              </button>
+            </div>
           </div>
         </div>
       </div>
