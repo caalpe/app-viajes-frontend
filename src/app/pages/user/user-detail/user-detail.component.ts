@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
@@ -8,6 +8,7 @@ import { SpinnerComponent } from '../../../shared/components/spinner/spinner.com
 import { IUser } from '../../../interfaces/IUser';
 import { extractErrorMessage } from '../../../shared/utils/http-error.utils';
 import { formatDateToSpanish } from '../../../shared/utils/data.utils';
+import { getIdFromRoute } from '../../../shared/utils/route.utils';
 
 @Component({
   selector: 'app-user-detail',
@@ -19,9 +20,12 @@ export class UserDetailComponent implements OnInit {
   private authService = inject(AuthService);
   private userApi = inject(UserApiService);
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
   user: IUser | null = null;
   isLoading = true;
+  isOwnProfile = false;
+  targetUserId: number | null = null;
 
   // Modal properties
   modalVisible = false;
@@ -42,11 +46,18 @@ export class UserDetailComponent implements OnInit {
 
   async loadUserData(): Promise<void> {
     try {
-      const userId = this.authService.getUserId();
+      // Obtener el ID del usuario de la ruta (si existe)
+      const idFromRoute = await getIdFromRoute(this.activatedRoute, 'idUser');
+      
+      // Si hay ID en la ruta, mostrar ese usuario; si no, mostrar perfil propio
+      const userId = idFromRoute || this.authService.getUserId();
+      
       if (!userId) {
         throw new Error('No se pudo obtener el ID del usuario');
       }
 
+      this.targetUserId = userId;
+      this.isOwnProfile = userId === this.authService.getUserId();
       this.user = await this.userApi.getUser(userId);
       console.log('Datos del usuario cargados:', this.user);
     } catch (error: any) {

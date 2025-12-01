@@ -35,6 +35,10 @@ import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
         component: UserDetailComponent
       },
       {
+        path: 'profile/:idUser',
+        component: UserDetailComponent
+      },
+      {
         path: 'profile/edit',
         component: UserFormComponent
       },

@@ -1,8 +1,8 @@
 <div class="user-detail-wrapper">
   <div class="user-detail-header">
     <div class="header-content">
-      <h1 class="header-title">Mi Perfil</h1>
-      <p class="header-subtitle">Información de tu cuenta</p>
+      <h1 class="header-title">{{ isOwnProfile ? 'Mi Perfil' : 'Perfil del Usuario' }}</h1>
+      <p class="header-subtitle">{{ isOwnProfile ? 'Información de tu cuenta' : 'Información del usuario' }}</p>
     </div>
   </div>
 
@@ -104,13 +104,15 @@
             >
               Volver
             </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="onEditProfile()"
-            >
-              <i class="bi bi-pencil"></i> Editar Perfil
-            </button>
+            @if (isOwnProfile) {
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="onEditProfile()"
+              >
+                <i class="bi bi-pencil"></i> Editar Perfil
+              </button>
+            }
           </div>
         </div>
       </div>
