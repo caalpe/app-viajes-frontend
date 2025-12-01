@@ -1,0 +1,353 @@
+<div class="trip-form-wrapper">
+  <div class="trip-form-header">
+    <div class="header-content">
+      <h1 class="header-title">{{ isEditMode ? 'Editar Viaje' : 'Crear Nuevo Viaje' }}</h1>
+      <p class="header-subtitle">{{ isEditMode ? 'Actualiza los detalles de tu viaje' : 'Planifica tu próxima aventura' }}</p>
+    </div>
+  </div>
+
+  <div class="trip-form-container">
+    <div class="card trip-card">
+      <div class="card-body">
+        <form [formGroup]="tripForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-header-wrapper">
+            <div class="form-header-content">
+              <h2 class="form-section-title">Detalles del Viaje</h2>
+              <p class="form-section-subtitle">Completa la información sobre tu viaje</p>
+            </div>
+
+            <!-- Image Box - Top Right -->
+            <div class="image-preview-box">
+              @if (tripForm.get('image_url')?.value) {
+                <div class="image-container">
+                  <img [src]="tripForm.get('image_url')?.value" alt="Foto del viaje" class="trip-image" />
+                </div>
+              } @else {
+                <div class="image-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 5H35V35H5V5Z" stroke="#dee2e6" stroke-width="2" fill="none"/>
+                    <line x1="5" y1="5" x2="35" y2="35" stroke="#dee2e6" stroke-width="2"/>
+                    <line x1="35" y1="5" x2="5" y2="35" stroke="#dee2e6" stroke-width="2"/>
+                  </svg>
+                </div>
+              }
+
+              <!-- URL Field -->
+              <div class="mt-3">
+                <label class="form-label" for="image_url">URL de la Foto</label>
+                <input
+                  id="image_url"
+                  type="url"
+                  class="form-control form-control-sm"
+                  formControlName="image_url"
+                  placeholder="https://ejemplo.com/foto.jpg"
+                />
+                @if (tripForm.get('image_url')?.touched && tripForm.get('image_url')?.invalid) {
+                  <div class="invalid-feedback d-block mt-2">
+                    @if (tripForm.get('image_url')?.errors?.['pattern']) {
+                      Por favor ingresa una URL válida.
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+          <!-- Title -->
+          <div class="mb-4">
+            <label class="form-label" for="title">Título del Viaje *</label>
+            <input
+              id="title"
+              type="text"
+              class="form-control"
+              formControlName="title"
+              placeholder="Ej. Fin de semana en la playa"
+            />
+            @if (tripForm.get('title')?.touched && tripForm.get('title')?.invalid) {
+              <div class="invalid-feedback d-block mt-2">
+                @if (tripForm.get('title')?.errors?.['required']) {
+                  El título es obligatorio.
+                }
+                @if (tripForm.get('title')?.errors?.['minlength']) {
+                  El título debe tener al menos 3 caracteres.
+                }
+                @if (tripForm.get('title')?.errors?.['maxlength']) {
+                  El título no puede exceder 150 caracteres.
+                }
+              </div>
+            }
+            @if (validationErrors['title']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['title'] }}
+              </div>
+            }
+          </div>
+
+          <!-- Start Location + Destination -->
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <label class="form-label" for="departure">Lugar de Salida *</label>
+              <input
+                id="departure"
+                type="text"
+                class="form-control"
+                formControlName="departure"
+                placeholder="Ej. Los Ángeles"
+              />
+              @if (tripForm.get('departure')?.touched && tripForm.get('departure')?.invalid) {
+                <div class="invalid-feedback d-block mt-2">
+                  El lugar de salida es obligatorio.
+                </div>
+              }
+            </div>
+
+            <div class="col-md-6 mb-4">
+              <label class="form-label" for="destination">Lugar de Destino *</label>
+              <input
+                id="destination"
+                type="text"
+                class="form-control"
+                formControlName="destination"
+                placeholder="Ej. San Diego"
+              />
+              @if (tripForm.get('destination')?.touched && tripForm.get('destination')?.invalid) {
+                <div class="invalid-feedback d-block mt-2">
+                  @if (tripForm.get('destination')?.errors?.['required']) {
+                    El destino es obligatorio.
+                  }
+                  @if (tripForm.get('destination')?.errors?.['maxlength']) {
+                    El destino no puede exceder 150 caracteres.
+                  }
+                </div>
+              }
+              @if (validationErrors['destination']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['destination'] }}
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Start Date + End Date -->
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <label class="form-label" for="start_date">Fecha de Inicio *</label>
+              <input
+                id="start_date"
+                type="date"
+                class="form-control"
+                formControlName="start_date"
+                [min]="minDate"
+              />
+              @if (tripForm.get('start_date')?.touched && tripForm.get('start_date')?.invalid) {
+                <div class="invalid-feedback d-block mt-2">
+                  @if (tripForm.get('start_date')?.errors?.['required']) {
+                    La fecha de inicio es obligatoria.
+                  }
+                </div>
+              }
+              @if (validationErrors['start_date']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['start_date'] }}
+                </div>
+              }
+            </div>
+
+            <div class="col-md-6 mb-4">
+              <label class="form-label" for="end_date">Fecha de Fin *</label>
+              <input
+                id="end_date"
+                type="date"
+                class="form-control"
+                formControlName="end_date"
+                [min]="minEndDate"
+              />
+              @if (tripForm.get('end_date')?.touched && tripForm.get('end_date')?.invalid) {
+                <div class="invalid-feedback d-block mt-2">
+                  @if (tripForm.get('end_date')?.errors?.['required']) {
+                    La fecha de fin es obligatoria.
+                  }
+                </div>
+              }
+              @if (validationErrors['end_date']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['end_date'] }}
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Date Range Validation Error -->
+          @if (tripForm.errors?.['startDatePast']) {
+            <div class="alert alert-danger" role="alert">
+              La fecha de inicio no puede ser en el pasado.
+            </div>
+          }
+          @if (tripForm.errors?.['invalidDateRange']) {
+            <div class="alert alert-danger" role="alert">
+              La fecha de inicio debe ser anterior a la fecha de fin.
+            </div>
+          }
+
+          <!-- Min participants -->
+          <div class="mb-4">
+            <label class="form-label" for="min_participants">Máximo de Participantes *</label>
+            <input
+              id="min_participants"
+              type="number"
+              class="form-control"
+              formControlName="min_participants"
+              min="1"
+              placeholder="4"
+            />
+            <small class="text-muted d-block mt-2">¿Cuántas personas pueden unirse a este viaje (incluyéndote a ti)?</small>
+            @if (tripForm.get('min_participants')?.touched && tripForm.get('min_participants')?.invalid) {
+              <div class="invalid-feedback d-block mt-2">
+                Mínimo 1 participante.
+              </div>
+            }
+          </div>
+
+          <!-- Description -->
+          <div class="mb-4">
+            <label class="form-label" for="description-textarea">Descripción *</label>
+            <textarea
+              id="description-textarea"
+              class="form-control"
+              formControlName="description"
+              rows="4"
+              placeholder="Cuéntales a otros qué hace especial este viaje..."
+            ></textarea>
+            @if (tripForm.get('description')?.touched && tripForm.get('description')?.invalid) {
+              <div class="invalid-feedback d-block mt-2">
+                @if (tripForm.get('description')?.errors?.['required']) {
+                  La descripción es obligatoria.
+                }
+                @if (tripForm.get('description')?.errors?.['minlength']) {
+                  La descripción debe tener al menos 10 caracteres.
+                }
+                @if (tripForm.get('description')?.errors?.['maxlength']) {
+                  La descripción es demasiado larga.
+                }
+              </div>
+            }
+            @if (validationErrors['description']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['description'] }}
+              </div>
+            }
+            <small class="text-muted d-block mt-2">Comparte qué pueden esperar los viajeros en esta aventura</small>
+          </div>
+
+          <!-- Cost per Person -->
+          <div class="mb-4">
+            <label class="form-label" for="cost_per_person">Coste por Persona *</label>
+            <div class="input-group">
+              <input
+                id="cost_per_person"
+                type="number"
+                class="form-control"
+                formControlName="cost_per_person"
+                step="0.01"
+                min="0"
+                placeholder="0.00 €"
+              />
+            </div>
+            @if (tripForm.get('cost_per_person')?.touched && tripForm.get('cost_per_person')?.invalid) {
+              <div class="invalid-feedback d-block mt-2">
+                @if (tripForm.get('cost_per_person')?.errors?.['required']) {
+                  El coste por persona es obligatorio.
+                }
+                @if (tripForm.get('cost_per_person')?.errors?.['min']) {
+                  El coste debe ser mayor o igual a 0.
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Transport Info -->
+          <div class="mb-4">
+            <label class="form-label" for="transport_info">Información de Transporte</label>
+            <input
+              id="transport_info"
+              type="text"
+              class="form-control"
+              formControlName="transport_info"
+              placeholder="Ej. Viaje compartido, vuelos..."
+            />
+          </div>
+
+          <!-- Accommodation Info -->
+          <div class="mb-4">
+            <label class="form-label" for="accommodation_info">Información de Alojamiento</label>
+            <input
+              id="accommodation_info"
+              type="text"
+              class="form-control"
+              formControlName="accommodation_info"
+              placeholder="Ej. Hotel, Airbnb..."
+            />
+          </div>
+
+          <!-- Itinerary -->
+          <div class="mb-4">
+            <label class="form-label" for="itinerary">Itinerario</label>
+            <textarea
+              id="itinerary"
+              class="form-control"
+              formControlName="itinerary"
+              rows="3"
+              placeholder="Agrega un plan día a día..."
+            ></textarea>
+          </div>
+
+            <div class="form-actions">
+              <button
+                type="button"
+                class="btn btn-cancel"
+                (click)="onBack()"
+              >
+                Cancelar
+              </button>
+
+              @if (isEditMode) {
+                <button
+                  type="button"
+                  class="btn btn-delete"
+                  (click)="onDeleteTrip()"
+                  [disabled]="isSubmitting"
+                >
+                  {{ isSubmitting ? 'Eliminando...' : 'Eliminar Viaje' }}
+                </button>
+                <button
+                  type="submit"
+                  class="btn btn-create"
+                  [disabled]="isSubmitting"
+                >
+                  {{ isSubmitting ? 'Actualizando...' : 'Actualizar Viaje' }}
+                </button>
+              } @else {
+                <button
+                  type="submit"
+                  class="btn btn-create"
+                  [disabled]="isSubmitting"
+                >
+                  {{ isSubmitting ? 'Creando...' : 'Crear Viaje' }}
+                </button>
+              }
+            </div>
+            </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Alert -->
+<app-modal-alert
+  [isVisible]="modalVisible"
+  [title]="modalTitle"
+  [message]="modalMessage"
+  [type]="modalType"
+  [redirectUrl]="modalRedirectUrl"
+  (onClose)="onModalClose()"
+  (onConfirm)="onModalConfirm()"
+></app-modal-alert>

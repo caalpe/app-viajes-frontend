@@ -1,0 +1,154 @@
+:host {
+	display: block;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	color: #1f2937;
+}
+
+.container {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 0 16px;
+}
+
+.hero {
+	background: linear-gradient(180deg, rgba(3,7,18,0.35), rgba(3,7,18,0.15)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=60') center/cover no-repeat;
+	color: #fff;
+	padding: 84px 0 64px 0;
+	text-align: left;
+}
+.hero-inner h1 {
+	font-size: 3.2rem;
+	margin: 0 0 10px 0;
+	line-height: 1.05;
+	font-weight: 700;
+}
+.hero-inner .lead {
+	margin-bottom: 20px;
+	opacity: 0.95;
+	font-size: 1.05rem;
+}
+.search {
+	display:flex;
+	gap:8px;
+	max-width:680px;
+}
+.search-form{ max-width:100%; display:grid; gap:10px; grid-template-columns: repeat(4, 1fr); align-items:end }
+.search-form .field{ display:flex; flex-direction:column }
+.search-form .field label{ font-size:0.75rem; color:rgba(255,255,255,0.9); margin-bottom:6px; font-weight:600 }
+.search-form .field label.label-accent{ color: #ffffff; font-weight:700 }
+.search-form .field label.label-budget{ color: #ffffff }
+
+/* Ensure budget label remains white on small screens */
+@media (max-width:900px){
+	.search-form .field label.label-budget{ color: #ffffff !important }
+}
+.search-form .field input{ padding:10px 12px; border-radius:8px; border:1px solid rgba(15,23,42,0.06); }
+.search-form .field.date input{ width:100px }
+.search-form .field.action-bottom{ grid-column: 1 / -1; display:flex; justify-content:flex-start; margin-top: 10px }
+.search-form .field.action-bottom .btn{ padding: 6px 14px; font-size: 0.85rem; min-width: auto; width: auto; display: inline-block }
+.input-with-addon{ display:flex; align-items:center; position:relative }
+.input-with-addon input{ flex:1; padding-right:34px }
+.input-with-addon .addon{ position:absolute; right:10px; color:#374151; font-weight:600 }
+
+.form-error-full{ grid-column: 1 / -1; color:#b91c1c; background:rgba(185,28,28,0.03); padding:8px 10px; border-radius:6px; font-size:0.9rem; margin-top:0 }
+
+@media (max-width:900px){
+	.search-form{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width:560px){
+	.search-form{ grid-template-columns: 1fr; }
+}
+
+.form-error{ color:#b91c1c; background:rgba(185,28,28,0.03); padding:8px 10px; border-radius:6px; font-size:0.9rem; margin-top:8px }
+
+.input-error{ border-color:#b91c1c !important; box-shadow:0 6px 18px rgba(185,28,28,0.08); }
+.label-error{ color:#b91c1c !important }
+
+.search-form .field input.input-error{ background: #fff6f6 }
+.btn { 
+	background: transparent;
+	border: 1px solid rgba(17,24,39,0.08);
+	padding:8px 12px;
+	border-radius:8px;
+	cursor:pointer;
+	transition:all .18s ease;
+}
+.btn:hover{ transform: translateY(-2px); box-shadow: 0 6px 18px rgba(2,6,23,0.06); }
+.btn.primary{
+	background: linear-gradient(90deg,#2563eb,#7c3aed);
+	color: white;
+	border: none;
+}
+.btn.large{ padding:12px 20px; font-size:1.05rem; }
+
+.features { padding:40px 0; }
+.features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; }
+.feature { background:#fff; padding:18px; border-radius:8px; box-shadow:0 4px 14px rgba(2,6,23,0.08); }
+.feature h3 { margin:0 0 8px 0; }
+
+.trips { padding: 0 0 40px 0; }
+.trips h2 { margin: 8px 0 18px 0; }
+
+/* Trip cards - using Gaizka's Bootstrap card style */
+.card {
+	overflow: hidden;
+	transition: box-shadow 0.3s;
+	height: 100%;
+	background: #fff;
+	border-radius: 0.375rem;
+	border: 1px solid rgba(0,0,0,.125);
+	position: relative;
+}
+.card:hover .card-image {
+	transform: scale(1.08);
+}
+.card-image {
+	transition: transform 300ms ease;
+	transform-origin: center center;
+	backface-visibility: hidden;
+	width: 100%;
+	height: 200px;
+	object-fit: cover;
+}
+.card-body {
+	padding: 1rem;
+}
+.card-title {
+	margin-top: 0;
+	margin-bottom: 0.5rem;
+	font-size: 1.25rem;
+	font-weight: 500;
+}
+.card-text {
+	color: #6c757d;
+	margin-bottom: 0.5rem;
+}
+.stretched-link::after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+	content: "";
+}
+
+/* Bootstrap icons (assuming bootstrap icons are loaded) */
+.bi {
+	display: inline-block;
+	vertical-align: -.125em;
+	fill: currentColor;
+}
+
+
+.cta { background:#f8fafc; padding:36px 0; text-align:center; }
+.cta-inner h2 { margin:0 0 8px 0; }
+
+@media (max-width:600px){
+	.hero-inner h1{ font-size:2rem }
+	.search { flex-direction:column }
+}
+
+@media (min-width:1100px){
+	.hero-inner{ max-width:680px }
+}

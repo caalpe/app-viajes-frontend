@@ -1,0 +1,29 @@
+.card
+{
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+    height: 100%;
+}
+.card:hover .card-image
+{
+    transform: scale(1.08);
+}
+.image-wrapper 
+{
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+.card-image 
+{
+    width: 100%;
+    object-fit: cover;    /* Mantiene el encuadre */
+    transition: transform 300ms ease;
+    transform-origin: center center;
+    backface-visibility: hidden;
+}
+.owner-display
+{
+    right: 10px;
+    top: 10px;
+}

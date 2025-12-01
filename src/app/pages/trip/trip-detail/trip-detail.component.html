@@ -1,0 +1,119 @@
+@if (pageLoaded) 
+{
+<div class="container">
+    <article class="row justify-content-around m-0 py-4 gap-4">
+        <!-- Left Section -->
+        <div class="col-12 col-md-7 d-flex flex-column gap-4">
+            <section class="card rounded-4 shadow-sm">
+                <img [src]="tripInfo.image_url ?? image" alt="" class="img-fluid card-image mt-4 mb-4">
+                <span class="fs-5 badge text-bg-success rounded-pill position-absolute cost-display">{{tripInfo.cost_per_person}}€</span>
+            </section>
+            
+            <!-- Parte de iconos {Ruta-Fecha-Participantes} -->
+            <section class="card p-3 rounded-4 shadow-sm">
+                <h1>{{tripInfo.title}}</h1>
+                
+                <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between justify-content-start">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-geo-alt pe-2"></i>
+                        <div class="d-flex flex-column">
+                            <p class="m-0 fw-medium">Ruta</p>
+                            <div>
+                                <span class="card-text">{{tripInfo.departure}}</span>
+                                <i class="bi bi-arrow-right pe-2"></i>
+                                <span class="card-text">{{tripInfo.destination}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-calendar pe-2"></i>
+                        <div class="d-flex flex-column">
+                            <p class="m-0 fw-medium">Fecha</p>
+                            <div>
+                                <span class="card-text">{{changeDate(tripInfo.start_date)}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-people pe-2"></i>
+                        <div class="d-flex flex-column">
+                            <p class="m-0 fw-medium">Participantes</p>
+                            <div>
+                                <span class="card-text">{{tripInfo.accepted_participants}} / {{tripInfo.min_participants}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h2>Sobre este viaje</h2>
+                <p>{{tripInfo.description}}</p>
+                
+                <hr>
+                
+                <h2>Itinerario</h2>
+                <p>{{tripInfo.itinerary}}</p>
+            </section>
+        </div>
+        
+        <!-- Right Section  -->
+        <div class="col-12 col-md-4 d-flex flex-column gap-4">
+            @if (userIsOwner) 
+            {
+                <button class="btn btn-primary" [routerLink]="['/trips', tripInfo.id_trip, 'edit']">Editar Viaje</button>
+            }
+            
+            <section class="card p-3 rounded-4 shadow-sm">
+                <div class="d-flex flex-column gap-3">
+                    <h4>Organizador</h4>
+                    <div class="d-flex align-items-center">
+                        <img src="{{image}}" alt="" class="img-fluid rounded-circle creator-img">
+                        <p class="m-0 ps-2 fw-medium">{{tripInfo.creator_name}}</p>
+                    </div>
+                    @if(userHasSendRequest)
+                    {
+                        <span class="btn btn-primary {{participationClass}}">{{changePetitionText()}}</span>
+                    }
+                    @else 
+                    {
+                        @if (showMessageBox) 
+                        {
+                            <div class="test">
+                                <textarea class="form-control enter-form"></textarea>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <button class="btn btn-danger enter-buttons" 
+                                    (click)="cancelPetitionButtonPressed()">Cancelar</button>
+                                    
+                                    <button class="btn btn-success enter-buttons" 
+                                    (click)="sendPetitionButtonPressed()">Enviar</button>
+                                </div>
+                            </div>
+                        }
+                        @else 
+                        {
+                            <button class="btn btn-primary simple-animation" [class.button-hide]="requestingPetition" [disabled]="userIsOwner" [attr.aria-disabled]="userIsOwner" 
+                            (click)="petitionButtonPressed()">Mandar peticion</button>
+                        }
+                    }
+                </div>
+            </section>
+            
+            <section class="card p-3 rounded-4 shadow-sm gap-3">
+                <h4>Participantes</h4>
+                @for (participants of tripParticipantsInfo; track participants.id_user)
+                {
+                    <div class="d-flex align-items-center">
+                        <img [src]=participants.photo_url alt="" class="img-fluid rounded-circle creator-img">
+                        <p class="m-0 ps-2 fw-medium">{{participants.name}}</p>
+                    </div>
+                }
+            </section>
+        </div>
+    </article>
+</div>
+}
+@else 
+{
+      <app-spinner message="Cargando datos del viaje..." size="md"></app-spinner>
+}

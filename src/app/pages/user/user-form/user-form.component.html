@@ -1,0 +1,268 @@
+<div class="user-form-wrapper">
+  <div class="user-form-header">
+    <div class="header-content">
+      <h1 class="header-title">{{ isEditMode ? 'Editar Perfil' : 'Crear Cuenta' }}</h1>
+      <p class="header-subtitle">{{ isEditMode ? 'Actualiza tus datos personales' : 'Únete a nuestra comunidad de viajeros' }}</p>
+    </div>
+  </div>
+
+  <div class="user-form-container">
+    @if (isEditMode) {
+      <div class="tabs-wrapper">
+        <div class="tabs-nav">
+          <button
+            class="tab-btn"
+            [class.active]="true"
+            type="button"
+            disabled
+          >
+            <i class="bi bi-person"></i>
+            Mi Perfil
+          </button>
+          <a [routerLink]="['/user/change-password']" class="tab-btn security-tab">
+            <i class="bi bi-shield-lock"></i>
+            Seguridad
+          </a>
+        </div>
+      </div>
+    }
+
+    <div class="card user-card" [class.with-tabs]="isEditMode">
+      <div class="card-body">
+        <form [formGroup]="userForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-header-wrapper">
+            <div class="form-header-content">
+              <h2 class="form-section-title">Información Personal</h2>
+              <p class="form-section-subtitle">Completa tus datos para crear tu perfil</p>
+            </div>
+
+            <!-- Image Box - Top Right -->
+            <div class="image-preview-box">
+              @if (userForm.get('photo_url')?.value) {
+                <div class="image-container">
+                  <img [src]="userForm.get('photo_url')?.value" alt="Foto de perfil" class="user-image" />
+                </div>
+              } @else {
+                <div class="image-placeholder">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 5H35V35H5V5Z" stroke="#dee2e6" stroke-width="2" fill="none"/>
+                    <line x1="5" y1="5" x2="35" y2="35" stroke="#dee2e6" stroke-width="2"/>
+                    <line x1="35" y1="5" x2="5" y2="35" stroke="#dee2e6" stroke-width="2"/>
+                  </svg>
+                </div>
+              }
+
+              <!-- URL Field -->
+              <div class="mt-3">
+                <label class="form-label" for="photo_url">URL de la Foto</label>
+                <input
+                  id="photo_url"
+                  type="url"
+                  class="form-control form-control-sm"
+                  formControlName="photo_url"
+                  placeholder="https://ejemplo.com/foto.jpg"
+                />
+                @if (userForm.get('photo_url')?.touched && userForm.get('photo_url')?.invalid) {
+                  <div class="invalid-feedback d-block mt-2">
+                    @if (userForm.get('photo_url')?.errors?.['pattern']) {
+                      Por favor ingresa una URL válida.
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+          <!-- Name -->
+          <div class="mb-4">
+            <label class="form-label" for="name">Nombre Completo *</label>
+            <input
+              id="name"
+              type="text"
+              class="form-control"
+              formControlName="name"
+              placeholder="Ej. Juan García López"
+            />
+            @if (userForm.get('name')?.touched && userForm.get('name')?.invalid) {
+              <div class="invalid-feedback d-block mt-2">
+                @if (userForm.get('name')?.errors?.['required']) {
+                  El nombre es obligatorio.
+                }
+                @if (userForm.get('name')?.errors?.['minlength']) {
+                  El nombre debe tener al menos 2 caracteres.
+                }
+                @if (userForm.get('name')?.errors?.['maxlength']) {
+                  El nombre no puede exceder 100 caracteres.
+                }
+                @if (userForm.get('name')?.errors?.['invalidName']) {
+                  El nombre solo puede contener letras (sin números).
+                }
+              </div>
+            }
+            @if (validationErrors['name']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['name'] }}
+              </div>
+            }
+          </div>
+
+          <!-- Email -->
+          <div class="mb-4">
+            <label class="form-label" for="email">Correo Electrónico *</label>
+            <input
+              id="email"
+              type="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="Ej. juan@ejemplo.com"
+            />
+            @if (userForm.get('email')?.touched && userForm.get('email')?.invalid) {
+              <div class="invalid-feedback d-block mt-2">
+                Ingresa un correo electrónico válido.
+              </div>
+            }
+            @if (validationErrors['email']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['email'] }}
+              </div>
+            }
+          </div>
+
+          <!-- Password - Only visible in create mode -->
+          @if (!isEditMode) {
+            <div class="mb-4">
+              <label class="form-label" for="password">
+                Contraseña <span>*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  id="password"
+                  [type]="passwordVisible ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="password"
+                  placeholder="Mínimo 8 caracteres"
+                />
+                <button
+                  type="button"
+                  class="btn-toggle-password"
+                  (click)="togglePasswordVisibility()"
+                  tabindex="-1"
+                >
+                  <i [class]="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                </button>
+              </div>
+              @if (userForm.get('password')?.touched && userForm.get('password')?.invalid) {
+                <div class="invalid-feedback d-block mt-2">
+                  La contraseña debe tener mínimo 8 caracteres.
+                </div>
+              }
+              @if (validationErrors['password']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['password'] }}
+                </div>
+              }
+            </div>
+          } @else {
+            <!-- Hidden password field in edit mode - value is sent to backend but not displayed -->
+            <input
+              type="hidden"
+              formControlName="password"
+            />
+          }
+
+          <!-- Phone -->
+          <div class="mb-4">
+            <label class="form-label" for="phone">Teléfono</label>
+            <input
+              id="phone"
+              type="tel"
+              class="form-control"
+              formControlName="phone"
+              placeholder="Ej. +34 612 345 678"
+            />
+            @if (validationErrors['phone']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['phone'] }}
+              </div>
+            }
+            <small class="text-muted d-block mt-2">Opcional. Úsalo para que otros viajeros puedan contactarte.</small>
+          </div>
+
+          <!-- Bio -->
+          <div class="mb-4">
+            <label class="form-label" for="bio">Biografía</label>
+            <textarea
+              id="bio"
+              class="form-control"
+              formControlName="bio"
+              rows="3"
+              placeholder="Cuéntanos sobre ti, tus experiencias de viajes y qué te hace único..."
+            ></textarea>
+            @if (validationErrors['bio']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['bio'] }}
+              </div>
+            }
+            <small class="text-muted d-block mt-2">Máximo 1000 caracteres. Opcional.</small>
+          </div>
+
+          <!-- Interests -->
+          <div class="mb-4">
+            <label class="form-label" for="interests">Intereses</label>
+            <textarea
+              id="interests"
+              class="form-control"
+              formControlName="interests"
+              rows="2"
+              placeholder="Ej. Aventura, Playa, Senderismo, Gastronomía, Cultura..."
+            ></textarea>
+            @if (validationErrors['interests']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['interests'] }}
+              </div>
+            }
+            <small class="text-muted d-block mt-2">Máximo 500 caracteres. Separa tus intereses con comas. Opcional.</small>
+          </div>
+
+          <!-- Buttons -->
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-cancel"
+              (click)="onBack()"
+            >
+              Cancelar
+            </button>
+
+            @if (isEditMode) {
+              <button
+                type="submit"
+                class="btn btn-create"
+                [disabled]="isSubmitting"
+              >
+                {{ isSubmitting ? 'Actualizando...' : 'Actualizar Perfil' }}
+              </button>
+            } @else {
+              <button
+                type="submit"
+                class="btn btn-create"
+                [disabled]="isSubmitting"
+              >
+                {{ isSubmitting ? 'Creando...' : 'Crear Cuenta' }}
+              </button>
+            }
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Alert -->
+<app-modal-alert
+  [isVisible]="modalVisible"
+  [title]="modalTitle"
+  [message]="modalMessage"
+  [type]="modalType"
+  [redirectUrl]="modalRedirectUrl"
+  (onClose)="onModalClose()"
+></app-modal-alert>

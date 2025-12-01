@@ -1,0 +1,77 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-navbar-green">
+  <div class="container-fluid">
+    <!-- Brand/Logo - Left side -->
+    <div class="navbar-left">
+      <a class="navbar-brand fw-bold" [routerLink]="['/']">
+        <i class="bi bi-airplane"></i> App Viajes
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+
+    <!-- Navbar items -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Left section: Empty (logo already navigates to home) -->
+      <ul class="navbar-nav me-auto">
+      </ul>
+
+      <!-- Right section: User navigation or Auth -->
+      <ul class="navbar-nav ms-auto align-items-center">
+        <!-- If user is not logged in -->
+        @if (!isUserLoggedIn) {
+          <li class="nav-item">
+            <a
+              class="btn btn-light fw-bold"
+              [routerLink]="['/login']"
+              title="Log In">
+              <i class="bi bi-box-arrow-in-right"></i> Log in
+            </a>
+          </li>
+        }
+
+        <!-- If user is logged in - Show tabs -->
+        @if (isUserLoggedIn) {
+          <!-- Mis Viajes -->
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/trips']" routerLinkActive="active">
+              <i class="bi bi-map"></i> Mis viajes
+            </a>
+          </li>
+
+          <!-- Mi Perfil -->
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/user/profile']" routerLinkActive="active">
+              <i class="bi bi-person-circle"></i> Mi perfil
+            </a>
+          </li>
+
+          <!-- Mis Solicitudes -->
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/requests']" routerLinkActive="active">
+              <i class="bi bi-chat-dots"></i> Mis solicitudes
+            </a>
+          </li>
+
+          <!-- Logout button -->
+          <li class="nav-item">
+            <button
+              class="btn btn-outline-warning"
+              type="button"
+              (click)="logout()"
+              title="Sign Out">
+              <i class="bi bi-box-arrow-right"></i> Salir
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</nav>

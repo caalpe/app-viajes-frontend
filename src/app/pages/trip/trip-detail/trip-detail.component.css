@@ -1,0 +1,57 @@
+:host 
+{
+  display: block;
+}
+
+.creator-img
+{
+    width: 50px;
+    height: 50px;
+}
+
+.cost-display
+{
+    right: 20px;
+    top: 30px;
+}
+
+.simple-animation
+{
+    transition: all 0.5s; /* Transition time must be set in the .ts to make the animation work */
+}
+.button-hide
+{
+    height: 0;
+    padding: 0;
+}
+
+/*
+.enter-form 
+{
+    @starting-style 
+    {
+        height: 0px !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden;
+    }
+    
+    height: 110px;
+    min-height: unset;
+    overflow: hidden;
+    opacity: 1;
+    transition: height 5000ms ease-in-out, opacity 5000ms ease-in-out;
+}
+
+.enter-buttons
+{
+    @starting-style 
+    {
+        height: 0px !important;
+        padding: 0px !important;
+    }
+    transition: height 10000ms ease-in-out, opacity 10000ms ease-in-out;
+} */
+
+/*151 de altura final*/
