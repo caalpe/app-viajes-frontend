@@ -8,8 +8,30 @@ export class AuthService {
   private authStatus = new BehaviorSubject<boolean>(false);
   public authStatus$ = this.authStatus.asObservable();
 
+  private readonly TOKEN_KEY = 'auth_token';
+  private readonly USER_ID_KEY = 'user_id';
+
   private token: string | null = null;
   private userId: number | null = null;
+
+  constructor() {
+    this.restoreSession();
+  }
+
+  /**
+   * Restaurar sesión desde localStorage al inicializar el servicio
+   */
+  private restoreSession(): void {
+    const storedToken = localStorage.getItem(this.TOKEN_KEY);
+    const storedUserId = localStorage.getItem(this.USER_ID_KEY);
+
+    if (storedToken) {
+      this.token = storedToken;
+      this.userId = storedUserId ? Number(storedUserId) : null;
+      this.setAuthStatus(true);
+      console.log('🔄 Sesión restaurada desde localStorage. User ID:', this.userId);
+    }
+  }
 
   /**
    * Decodificar un JWT sin librerías externas
@@ -73,6 +95,7 @@ export class AuthService {
   /**
    * Establecer el token de autenticación y el ID del usuario
    * Decodifica el JWT para extraer el ID automáticamente
+   * Guarda el token en localStorage para persistencia
    */
   setToken(token: string, userId?: number): void {
     // Validar que token sea válido
@@ -93,6 +116,12 @@ export class AuthService {
       console.log('🔐 AuthService - Token guardado. User ID:', userId);
     } else {
       console.log('🔐 AuthService - Token guardado (sin userId)');
+    }
+
+    // Guardar en localStorage para persistencia
+    localStorage.setItem(this.TOKEN_KEY, token);
+    if (this.userId) {
+      localStorage.setItem(this.USER_ID_KEY, String(this.userId));
     }
 
     // Mostrar las propiedades internas después de descifrar el token
@@ -127,10 +156,13 @@ export class AuthService {
 
   /**
    * Limpiar token y datos de usuario (logout)
+   * Elimina también del localStorage
    */
   logout(): void {
     this.token = null;
     this.userId = null;
+    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.USER_ID_KEY);
     this.setAuthStatus(false);
   }
 

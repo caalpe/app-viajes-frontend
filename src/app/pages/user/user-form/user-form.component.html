@@ -127,45 +127,47 @@
             }
           </div>
 
-          <!-- Password -->
-          <div class="mb-4">
-            <label class="form-label" for="password">
-              Contraseña
-              @if (!isEditMode) {
-                <span>*</span>
+          <!-- Password - Only visible in create mode -->
+          @if (!isEditMode) {
+            <div class="mb-4">
+              <label class="form-label" for="password">
+                Contraseña <span>*</span>
+              </label>
+              <div class="password-input-wrapper">
+                <input
+                  id="password"
+                  [type]="passwordVisible ? 'text' : 'password'"
+                  class="form-control"
+                  formControlName="password"
+                  placeholder="Mínimo 8 caracteres"
+                />
+                <button
+                  type="button"
+                  class="btn-toggle-password"
+                  (click)="togglePasswordVisibility()"
+                  tabindex="-1"
+                >
+                  <i [class]="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                </button>
+              </div>
+              @if (userForm.get('password')?.touched && userForm.get('password')?.invalid) {
+                <div class="invalid-feedback d-block mt-2">
+                  La contraseña debe tener mínimo 8 caracteres.
+                </div>
               }
-            </label>
-            <div class="password-input-wrapper">
-              <input
-                id="password"
-                [type]="passwordVisible ? 'text' : 'password'"
-                class="form-control"
-                formControlName="password"
-                [placeholder]="isEditMode ? 'Dejar en blanco para no cambiar' : 'Mínimo 8 caracteres'"
-              />
-              <button
-                type="button"
-                class="btn-toggle-password"
-                (click)="togglePasswordVisibility()"
-                tabindex="-1"
-              >
-                <i [class]="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
-              </button>
+              @if (validationErrors['password']) {
+                <div class="invalid-feedback d-block mt-2">
+                  {{ validationErrors['password'] }}
+                </div>
+              }
             </div>
-            @if (userForm.get('password')?.touched && userForm.get('password')?.invalid) {
-              <div class="invalid-feedback d-block mt-2">
-                La contraseña debe tener mínimo 8 caracteres.
-              </div>
-            }
-            @if (validationErrors['password']) {
-              <div class="invalid-feedback d-block mt-2">
-                {{ validationErrors['password'] }}
-              </div>
-            }
-            @if (isEditMode) {
-              <small class="text-muted d-block mt-2">Opcional. Deja en blanco para mantener tu contraseña actual.</small>
-            }
-          </div>
+          } @else {
+            <!-- Hidden password field in edit mode - value is sent to backend but not displayed -->
+            <input
+              type="hidden"
+              formControlName="password"
+            />
+          }
 
           <!-- Phone -->
           <div class="mb-4">
