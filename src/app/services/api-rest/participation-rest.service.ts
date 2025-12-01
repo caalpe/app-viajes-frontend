@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { IParticipant, participationStatus } from '../../interfaces/participant';
+import { IParticipant, IParticipantInfo, participationStatus } from '../../interfaces/participant';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth.service';
 
@@ -41,6 +41,16 @@ export class ParticipationApiService
   getTripParticipations(tripId : number): Promise<IParticipant[]> 
   {
     return firstValueFrom(this.http.get<IParticipant[]>(`${this.baseUrl}/trip/${tripId}`, { headers: this.getAuthHeaders() }));
+  }
+
+  /**
+  * VER INFORMACION DE PARTICIPANTES DE UN VIAJE
+  * AL AÑADIR UN TOKEN DEVUELVE MAS INFORMACION
+  * GET /api/participants/trip-info/:trip_id/
+  */
+  getTripParticipantInformation(tripId : number)
+  {
+    return firstValueFrom(this.http.get<IParticipantInfo[]>(`${this.baseUrl}/trip-info/${tripId}`, { headers: this.getAuthHeaders() }));
   }
 
   /**
