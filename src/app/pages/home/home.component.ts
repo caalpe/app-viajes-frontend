@@ -5,7 +5,7 @@ import { map, startWith } from 'rxjs/operators';
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 // Use a flexible model for the UI's mocked trips; backend uses `ITrip`.
 type TripModel = any;
-import { TripDataService } from '../../services/trip-data.service';
+import { TripService } from '../../services/trip';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -24,7 +24,7 @@ export class HomeComponent {
   searchForm: FormGroup;
   trips$!: Observable<TripModel[]>;
 
-  constructor(private tripDataService: TripDataService, fb: FormBuilder) {
+  constructor(private tripService: TripService, fb: FormBuilder) {
     this.searchForm = fb.group({
       destination: [''],
       from: [''],
@@ -32,7 +32,7 @@ export class HomeComponent {
       budget: ['', [Validators.min(0)]]
     }, { validators: this.dateRangeValidator() });
 
-    const tripsSource$ = this.tripDataService.getTrips();
+    const tripsSource$ = this.tripService.getTrips();
     const formValues$ = this.searchForm.valueChanges.pipe(startWith(this.searchForm.value));
 
     this.trips$ = combineLatest([tripsSource$, formValues$]).pipe(

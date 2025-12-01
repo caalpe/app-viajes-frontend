@@ -8,6 +8,19 @@ export interface IParticipant
   created_at: string;
   updated_at: string;
 }
+
+export interface IParticipantInfo 
+{
+  average_rating: number,
+  bio: string,
+  email: string,
+  id_user: number,
+  interests: string,
+  name: string,
+  phone: string,
+  photo_url: string
+}
+
 export enum participationStatus
 {
     pending = "pending",
