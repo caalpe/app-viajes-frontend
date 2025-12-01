@@ -67,6 +67,25 @@
               </div>
             }
 
+            <!-- Average Rating -->
+            @if (user.average_rating !== undefined && user.average_rating !== null) {
+              <div class="info-section">
+                <label class="info-label">Puntuación Promedio</label>
+                <p class="info-value">
+                  {{ user.average_rating | number:'1.1-2' }}
+                  <i class="bi bi-star-fill" style="color: #ffc107;"></i>
+                </p>
+              </div>
+            }
+
+            <!-- Rating Count -->
+            @if (user.rating_count !== undefined && user.rating_count !== null) {
+              <div class="info-section">
+                <label class="info-label">Número de Valoraciones</label>
+                <p class="info-value">{{ user.rating_count }}</p>
+              </div>
+            }
+
             <!-- Created At -->
             @if (user.created_at) {
               <div class="info-section">
