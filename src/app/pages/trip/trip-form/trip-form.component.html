@@ -190,7 +190,7 @@
 
           <!-- Min participants -->
           <div class="mb-4">
-            <label class="form-label" for="min_participants">Máximo de Participantes *</label>
+            <label class="form-label" for="min_participants">Mínimo de Participantes *</label>
             <input
               id="min_participants"
               type="number"
@@ -199,7 +199,7 @@
               min="1"
               placeholder="4"
             />
-            <small class="text-muted d-block mt-2">¿Cuántas personas pueden unirse a este viaje (incluyéndote a ti)?</small>
+            <small class="text-muted d-block mt-2">¿Cuántas personas mínimo se necesitan para que el viaje se lleve a cabo (incluyéndote a ti)?</small>
             @if (tripForm.get('min_participants')?.touched && tripForm.get('min_participants')?.invalid) {
               <div class="invalid-feedback d-block mt-2">
                 Mínimo 1 participante.
