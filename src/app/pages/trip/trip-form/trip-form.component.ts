@@ -35,8 +35,9 @@ export class TripFormComponent implements OnInit {
   modalVisible = false;
   modalTitle = '';
   modalMessage = '';
-  modalType: 'success' | 'error' = 'success';
+  modalType: 'success' | 'error' | 'confirmation' = 'success';
   modalRedirectUrl: string | null = null;
+  pendingAction: (() => Promise<void>) | null = null;
 
   // Propiedades para mostrar errores de validación custom
   validationErrors: { [key: string]: string } = {};
@@ -185,11 +186,12 @@ export class TripFormComponent implements OnInit {
     }
   }
 
-  showModal(title: string, message: string, type: 'success' | 'error', redirectUrl: string | null = null): void {
+  showModal(title: string, message: string, type: 'success' | 'error' | 'confirmation' = 'success', redirectUrl: string | null = null, action?: () => Promise<void>): void {
     this.modalTitle = title;
     this.modalMessage = message;
     this.modalType = type;
     this.modalRedirectUrl = redirectUrl;
+    this.pendingAction = action || null;
     this.modalVisible = true;
   }
 
@@ -197,6 +199,17 @@ export class TripFormComponent implements OnInit {
     this.modalVisible = false;
     if (this.modalType === 'success') {
       this.tripState.resetForm();
+    }
+    this.pendingAction = null;
+  }
+
+  async onModalConfirm(): Promise<void> {
+    if (this.pendingAction) {
+      await this.pendingAction();
+    }
+    this.modalVisible = false;
+    if (this.modalRedirectUrl) {
+      this.router.navigate([this.modalRedirectUrl]);
     }
   }
 
@@ -207,6 +220,35 @@ export class TripFormComponent implements OnInit {
   onBack(): void {
     this.tripState.resetForm();
     this.router.navigate(['/trips']);
+  }
+
+  async onDeleteTrip(): Promise<void> {
+    if (!this.isEditMode || !this.tripId) {
+      return;
+    }
+
+    // Mostrar modal de confirmación
+    const deleteAction = async () => {
+      this.isSubmitting = true;
+      try {
+        await this.tripApi.deleteTrip(this.tripId!);
+        this.showModal('¡Éxito!', 'Viaje eliminado correctamente', 'success', '/trips');
+      } catch (error: any) {
+        const errorMessage = extractErrorMessage(error);
+        this.showModal('Error', errorMessage, 'error');
+        console.error('Error eliminando trip', error);
+      } finally {
+        this.isSubmitting = false;
+      }
+    };
+
+    this.showModal(
+      'Confirmar eliminación',
+      '¿Estás seguro de que deseas eliminar este viaje? Esta acción no se puede deshacer.',
+      'confirmation',
+      null,
+      deleteAction
+    );
   }
 
   /**

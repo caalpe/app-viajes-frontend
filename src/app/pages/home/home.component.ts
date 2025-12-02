@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, combineLatest } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { RouterLink } from '@angular/router';
+import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 // Use a flexible model for the UI's mocked trips; backend uses `ITrip`.
 type TripModel = any;
@@ -10,7 +11,8 @@ import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
@@ -23,6 +25,8 @@ export class HomeComponent {
 
   searchForm: FormGroup;
   trips$!: Observable<TripModel[]>;
+  destinations: string[] = [];
+  private searchTrigger$ = new BehaviorSubject<any>({});
 
   constructor(private tripService: TripService, fb: FormBuilder) {
     this.searchForm = fb.group({
@@ -33,11 +37,27 @@ export class HomeComponent {
     }, { validators: this.dateRangeValidator() });
 
     const tripsSource$ = this.tripService.getTrips();
-    const formValues$ = this.searchForm.valueChanges.pipe(startWith(this.searchForm.value));
 
-    this.trips$ = combineLatest([tripsSource$, formValues$]).pipe(
-      map(([trips, form]) => this.filterTrips(trips, form))
+    // Filtrar solo cuando se dispara la búsqueda
+    this.trips$ = combineLatest([tripsSource$, this.searchTrigger$]).pipe(
+      map(([trips, _]) => this.filterTrips(trips, this.searchForm.value))
     );
+
+    // Obtener lista única de destinos
+    tripsSource$.subscribe(trips => {
+      const uniqueDestinations = new Set<string>();
+      trips.forEach(trip => {
+        if (trip.destination) uniqueDestinations.add(trip.destination);
+        if (trip.title) uniqueDestinations.add(trip.title);
+      });
+      this.destinations = Array.from(uniqueDestinations).sort();
+    });
+  }
+
+  onSearch(): void {
+    if (this.searchForm.valid) {
+      this.searchTrigger$.next(this.searchForm.value);
+    }
   }
 
   private filterTrips(trips: TripModel[], form: any): TripModel[] {
