@@ -1,24 +1,40 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { ITrip as TripModel } from '../interfaces/ITrip';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TripService {
-  constructor() { }
+  private apiUrl = 'https://app-viajes-backend-amla.onrender.com/api/trips';
+
+  constructor(private http: HttpClient) { }
 
   getTrips(): Observable<TripModel[]> {
-    // Mocked data: replace with real HTTP call when backend is ready
-    const data: TripModel[] = [
+    // Conectado con el backend real
+    // NOTA: El servidor Render tarda ~15 segundos en la primera petición si estaba inactivo
+    return this.http.get<TripModel[]>(this.apiUrl).pipe(
+      catchError(error => {
+        console.error('❌ Error al obtener viajes del backend:', error);
+        console.warn('⚠️ Usando datos mock como fallback');
+        // Si falla, devuelve datos mock como fallback
+        return of(this.getMockData());
+      })
+    );
+  }
+
+  /** Datos mock de respaldo por si falla el backend */
+  private getMockData(): TripModel[] {
+    return [
       { 
         id: 1, 
         title: 'Escapada a Barcelona', 
         price: '120€', 
         priceNumber: 120, 
         cost_per_person: 120,
-        img: 'https://source.unsplash.com/800x600/?barcelona', 
+        image_url: 'https://images.unsplash.com/photo-1583422409516-2895a77efded?w=800&h=600&fit=crop', 
         description: 'Costa mediterránea', 
         departure: 'Madrid',
         destination: 'Barcelona',
@@ -34,7 +50,7 @@ export class TripService {
         price: '340€', 
         priceNumber: 340, 
         cost_per_person: 340,
-        img: 'https://source.unsplash.com/800x600/?andalucia', 
+        image_url: 'https://images.unsplash.com/photo-1543783207-ec64e4d95325?w=800&h=600&fit=crop', 
         description: 'Sur de España', 
         departure: 'Madrid',
         destination: 'Sevilla',
@@ -50,7 +66,7 @@ export class TripService {
         price: '255€', 
         priceNumber: 255, 
         cost_per_person: 255,
-        img: 'https://source.unsplash.com/800x600/?mountains', 
+        image_url: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop', 
         description: 'Montañas del norte', 
         departure: 'Zaragoza',
         destination: 'Huesca',
@@ -61,7 +77,5 @@ export class TripService {
         availableTo: '2025-09-30' 
       }
     ];
-
-    return of(data).pipe(delay(300));
   }
 }

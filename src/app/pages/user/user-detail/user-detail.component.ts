@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
@@ -8,10 +9,11 @@ import { SpinnerComponent } from '../../../shared/components/spinner/spinner.com
 import { IUser } from '../../../interfaces/IUser';
 import { extractErrorMessage } from '../../../shared/utils/http-error.utils';
 import { formatDateToSpanish } from '../../../shared/utils/data.utils';
+import { getIdFromRoute } from '../../../shared/utils/route.utils';
 
 @Component({
   selector: 'app-user-detail',
-  imports: [CommonModule, ModalAlertComponent, SpinnerComponent],
+  imports: [CommonModule, ModalAlertComponent, SpinnerComponent, FormsModule],
   styleUrl: './user-detail.component.css',
   templateUrl: './user-detail.component.html',
 })
@@ -19,9 +21,14 @@ export class UserDetailComponent implements OnInit {
   private authService = inject(AuthService);
   private userApi = inject(UserApiService);
   private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
 
   user: IUser | null = null;
   isLoading = true;
+  isOwnProfile = false;
+  targetUserId: number | null = null;
+  testUserId: number | null = null;
+  testProfileType: 'own' | 'other' = 'own';
 
   // Modal properties
   modalVisible = false;
@@ -42,11 +49,18 @@ export class UserDetailComponent implements OnInit {
 
   async loadUserData(): Promise<void> {
     try {
-      const userId = this.authService.getUserId();
+      // Obtener el ID del usuario de la ruta (si existe)
+      const idFromRoute = await getIdFromRoute(this.activatedRoute, 'idUser');
+      
+      // Si hay ID en la ruta, mostrar ese usuario; si no, mostrar perfil propio
+      const userId = idFromRoute || this.authService.getUserId();
+      
       if (!userId) {
         throw new Error('No se pudo obtener el ID del usuario');
       }
 
+      this.targetUserId = userId;
+      this.isOwnProfile = userId === this.authService.getUserId();
       this.user = await this.userApi.getUser(userId);
       console.log('Datos del usuario cargados:', this.user);
     } catch (error: any) {
@@ -95,6 +109,23 @@ export class UserDetailComponent implements OnInit {
       .split(/,\s*/)
       .map(interest => interest.trim())
       .filter(interest => interest.length > 0);
+  }
+
+  /**
+   * Navegar al perfil de usuario según la opción seleccionada (para pruebas)
+   */
+  onNavigateToUserProfile(): void {
+    if (this.testProfileType === 'own') {
+      // Navegar al perfil propio sin ID
+      this.router.navigate(['/user/profile']);
+    } else {
+      // Navegar al perfil de otro usuario con ID
+      if (!this.testUserId) {
+        alert('Por favor ingresa un ID de usuario');
+        return;
+      }
+      this.router.navigate(['/user/profile', this.testUserId]);
+    }
   }
 }
 
