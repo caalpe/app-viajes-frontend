@@ -1,4 +1,4 @@
-export interface IParticipant 
+export interface IParticipant
 {
   id_participation: number;
   id_trip: number;
@@ -9,7 +9,7 @@ export interface IParticipant
   updated_at: string;
 }
 
-export interface IParticipantInfo 
+export interface IParticipantInfo
 {
   average_rating: number,
   bio: string,
@@ -28,4 +28,3 @@ export enum participationStatus
     rejected = "rejected",
     left = "left"
 }
-
