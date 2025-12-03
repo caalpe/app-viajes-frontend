@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { validateDateRange, validateDateNotPast } from '../../shared/utils/data.utils';
 // Use a flexible model for the UI's mocked trips; backend uses `ITrip`.
 type TripModel = any;
 import { TripService } from '../../services/trip';
@@ -16,7 +17,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   features = [
     { title: 'Explora destinos', desc: 'Encuentra viajes hechos a tu medida.' },
     { title: 'Reservas seguras', desc: 'Transacciones protegidas y confirmaciones instantáneas.' },
@@ -26,21 +27,42 @@ export class HomeComponent {
   searchForm: FormGroup;
   trips$!: Observable<TripModel[]>;
   destinations: string[] = [];
+  minDate: string = '';
+  minEndDate: string = '';
   private searchTrigger$ = new BehaviorSubject<any>({});
 
-  constructor(private tripService: TripService, fb: FormBuilder) {
+  constructor(private tripService: TripService, private fb: FormBuilder) {
     this.searchForm = fb.group({
       destination: [''],
       from: [''],
       to: [''],
       budget: ['', [Validators.min(0)]]
     }, { validators: this.dateRangeValidator() });
+  }
 
-    const tripsSource$ = this.tripService.getTrips();
+  ngOnInit(): void {
+    // Establecer la fecha mínima como hoy en formato YYYY-MM-DD
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0];
+    this.minEndDate = this.minDate;
+
+    // Suscribirse a cambios en from para actualizar minEndDate
+    this.searchForm.get('from')?.valueChanges.subscribe((fromDate: string) => {
+      if (fromDate) {
+        this.minEndDate = fromDate;
+      } else {
+        this.minEndDate = this.minDate;
+      }
+    });
+
+    const tripsSource$ = this.tripService.getTrips('open');
 
     // Filtrar solo cuando se dispara la búsqueda
     this.trips$ = combineLatest([tripsSource$, this.searchTrigger$]).pipe(
-      map(([trips, _]) => this.filterTrips(trips, this.searchForm.value))
+      map(([trips, _]) => {
+        console.log('Viajes recibidos:', trips);
+        return this.filterTrips(trips, this.searchForm.value);
+      })
     );
 
     // Obtener lista única de destinos
@@ -96,12 +118,8 @@ export class HomeComponent {
     return (control: AbstractControl): ValidationErrors | null => {
       const fromVal = control.get('from')?.value;
       const toVal = control.get('to')?.value;
-      if (fromVal && toVal) {
-        const fromDate = new Date(fromVal);
-        const toDate = new Date(toVal);
-        if (fromDate > toDate) {
-          return { dateRange: true };
-        }
+      if (fromVal && toVal && !validateDateRange(fromVal, toVal)) {
+        return { dateRange: true };
       }
       return null;
     };
