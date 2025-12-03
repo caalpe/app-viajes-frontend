@@ -65,7 +65,7 @@
 <section class="trips container">
 	<h2>Viajes recomendados</h2>
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-		@for (t of (trips$ | async); track t.id) {
+		@for (t of (trips$ | async); track t.id_trip) {
 			<div class="col">
 				<article class="card" (mouseenter)="t._hover = true" (mouseleave)="t._hover = false"
 					[class.shadow]="t._hover" [class.shadow-sm]="!t._hover">

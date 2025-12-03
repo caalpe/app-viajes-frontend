@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { ITrip } from '../../../interfaces/ITrip';
 import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
-import { IParticipant } from '../../../interfaces/participant';
+import { IParticipant } from '../../../interfaces/IParticipant';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './trip-list.component.css',
   templateUrl: './trip-list.component.html',
 })
-export class TripListComponent 
+export class TripListComponent
 {
     cardType = cardType;
 
@@ -35,14 +35,14 @@ export class TripListComponent
 
     async loadAllTrips(): Promise<void>
     {
-        try 
+        try
         {
             this.allTrips = await this.tripService.getAllTripsWithAuth();
             console.log('📋 Todos los viajes (con autenticación):');
             console.log(JSON.stringify(this.allTrips, null, 2));
             console.table(this.allTrips);
-        } 
-        catch (error) 
+        }
+        catch (error)
         {
             console.error('Error cargando todos los viajes:', error);
         }
@@ -51,36 +51,36 @@ export class TripListComponent
     async loadUserTrips()
     {
         //Load user created trips
-        try 
+        try
         {
             this.userTrips = await this.tripService.getCreatedTrip();
-        } 
-        catch (error) 
+        }
+        catch (error)
         {
             console.log("Error loading user created trips: " + error);
         }
 
-        //Load user participation 
-        try 
+        //Load user participation
+        try
         {
             this.userPetitionsTrips = await this.tripService.getParticipationsTrip();
-        } 
-        catch (error) 
+        }
+        catch (error)
         {
             console.log("Error loading trips where user send participation: " + error);
         }
 
         //Get user petitions to know the status of them
-        try 
+        try
         {
             this.userPetitions = await this.participationService.getUserParticipationRequests();
         }
-        catch (error) 
+        catch (error)
         {
             console.log("Error loading trips where user send participation: " + error);
         }
     }
-    
+
     getTripPetitionType(tripId? : number) : cardType
     {
         let tripPetition = this.userPetitions.find(({ id_trip }) => id_trip === tripId);
