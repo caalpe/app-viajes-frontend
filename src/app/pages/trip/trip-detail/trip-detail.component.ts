@@ -35,10 +35,16 @@ export class TripDetailComponent
 	userRequestIsAccepted	: boolean = false; //To dispplay the button for more information in participants
   requestingPetition  	: boolean = false; //To start the animation when the user sends the request
   showForm      				: boolean = false; //To show de form when the user hits the "send request" button
+  showMessageBox        : boolean = false;
 
   pageLoaded          	: boolean = false; //To load the page when all the promises comes 
 
   animationTimeOut : number = 500;//ms
+
+  petitionForm = new FormGroup
+	({
+  	text: new FormControl<string>('')   // este será el textarea
+  });
 
   ngOnInit()
   {
@@ -145,6 +151,7 @@ export class TripDetailComponent
 
     setTimeout(() =>
     {
+      this.showForm = true;  
       this.showMessageBox = true;
     }, this.animationTimeOut);
   }
