@@ -48,7 +48,7 @@ export class ParticipationApiService
   * AL AÑADIR UN TOKEN DEVUELVE MAS INFORMACION
   * GET /api/participants/trip-info/:trip_id/
   */
-  getTripParticipantInformation(tripId : number)
+  getTripParticipantInformation(tripId : number): Promise<IParticipantInfo[]> 
   {
     return firstValueFrom(this.http.get<IParticipantInfo[]>(`${this.baseUrl}/trip-info/${tripId}`, { headers: this.getAuthHeaders() }));
   }
@@ -112,7 +112,7 @@ export class ParticipationApiService
   */
   createParticipationRequest(tripId : number, message : string): Promise<IParticipant>
   {
-    return firstValueFrom(this.http.post<IParticipant>(`${this.baseUrl}/${tripId}`, message, { headers: this.getAuthHeaders() }));
+    return firstValueFrom(this.http.post<IParticipant>(`${this.baseUrl}/${tripId}`, { message: userMessage }, { headers: this.getAuthHeaders() }));
   }
 
   /**
@@ -122,6 +122,6 @@ export class ParticipationApiService
   */
   updateParticipationStatus(participationId : number, status : participationStatus): Promise<IParticipant>
   {
-    return firstValueFrom(this.http.patch<IParticipant>(`${this.baseUrl}/${participationId}`, status, { headers: this.getAuthHeaders() }));
+    return firstValueFrom(this.http.patch<IParticipant>(`${this.baseUrl}/${participationId}`, { status: userStatus }, { headers: this.getAuthHeaders() }));
   }
 }

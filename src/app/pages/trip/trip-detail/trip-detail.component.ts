@@ -8,10 +8,11 @@ import { IParticipant, IParticipantInfo, participationStatus } from '../../../in
 import { convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
 import { AuthService } from '../../../services/auth.service';
 import { SpinnerComponent } from "../../../shared/components/spinner/spinner.component";
+import { FormControl, FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-trip-detail',
-  imports: [CommonModule, RouterLink, SpinnerComponent],
+  imports: [CommonModule, RouterLink, SpinnerComponent, ɵInternalFormsSharedModule, ReactiveFormsModule],
   styleUrl: './trip-detail.component.css',
   templateUrl: './trip-detail.component.html',
 })
@@ -29,11 +30,13 @@ export class TripDetailComponent
   userTripParticipation? : IParticipant;
   image : string = "https://www.mercurynews.com/wp-content/uploads/2021/04/SJM-L-ROADTRIP-0502-01.jpg?w=1024";
 
-  userIsOwner         : boolean = false;
-  userHasSendRequest  : boolean = false
-  pageLoaded          : boolean = false;
-  requestingPetition  : boolean = false;
-  showMessageBox      : boolean = false;
+  userIsOwner         	: boolean = false; //To display if its the owner
+  userHasSendRequest  	: boolean = false; //To know when the user has "Send" a new request to the trip he is seeing 
+	userRequestIsAccepted	: boolean = false; //To dispplay the button for more information in participants
+  requestingPetition  	: boolean = false; //To start the animation when the user sends the request
+  showForm      				: boolean = false; //To show de form when the user hits the "send request" button
+
+  pageLoaded          	: boolean = false; //To load the page when all the promises comes 
 
   animationTimeOut : number = 500;//ms
 
@@ -99,6 +102,11 @@ export class TripDetailComponent
         if(this.userTripParticipation)
         {
           this.userHasSendRequest = true;
+					//Check if the request is accepted
+					if(this.userTripParticipation.status == participationStatus.accepted)
+					{
+						this.userRequestIsAccepted = true;
+					}
         }
       }
     }
@@ -141,15 +149,35 @@ export class TripDetailComponent
     }, this.animationTimeOut);
   }
 
-  sendPetitionButtonPressed()
+  async sendPetitionButtonPressed()
   {
+		console.log(this.petitionForm.value);
+		try 
+		{
+			console.log(this.tripId);
+			this.userTripParticipation = await this.participationService.createParticipationRequest(this.tripId, this.petitionForm.get("text")?.value ?? "");	
+		} 
+		catch (error) 
+		{
+			console.log("Couldn't send the participation petition:", error);
+			//TODO:modal to warm the user that something whent wrong he will need to retry
+		}
 
+		if(this.userTripParticipation)
+		{
+			//TODO MODAL PARA AVISAR DE QUE LA PETICION HA SIDO ENVIADA
+			
+			//refres the card info
+			this.userHasSendRequest = true;
+		}
+		this.cancelPetitionButtonPressed();
   }
 
   cancelPetitionButtonPressed()
   {
-    this.showMessageBox = false;
+    this.showForm = false;
     this.requestingPetition = false;
+		this.petitionForm.reset();
   }
 
   get participationClass(): string

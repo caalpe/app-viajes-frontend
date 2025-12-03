@@ -77,23 +77,23 @@
                     }
                     @else 
                     {
-                        @if (showMessageBox) 
+                        @if (showForm) 
                         {
-                            <div class="test">
-                                <textarea class="form-control enter-form"></textarea>
+                            <form [formGroup]="petitionForm">
+                                <textarea class="form-control enter-form" formControlName="text"></textarea>
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <button class="btn btn-danger enter-buttons" 
+                                    <button class="btn btn-danger enter-buttons" type="button" 
                                     (click)="cancelPetitionButtonPressed()">Cancelar</button>
                                     
-                                    <button class="btn btn-success enter-buttons" 
+                                    <button class="btn btn-success enter-buttons" type="button" 
                                     (click)="sendPetitionButtonPressed()">Enviar</button>
                                 </div>
-                            </div>
+                            </form>
                         }
                         @else 
                         {
-                            <button class="btn btn-primary simple-animation" [class.button-hide]="requestingPetition" [disabled]="userIsOwner" [attr.aria-disabled]="userIsOwner" 
-                            (click)="petitionButtonPressed()">Mandar peticion</button>
+                            <button class="btn btn-primary simple-animation" [class.button-hide]="requestingPetition" [disabled]="userIsOwner" 
+                            [attr.aria-disabled]="userIsOwner" (click)="petitionButtonPressed()">Mandar peticion</button>
                         }
                     }
                 </div>
@@ -103,9 +103,32 @@
                 <h4>Participantes</h4>
                 @for (participants of tripParticipantsInfo; track participants.id_user)
                 {
-                    <div class="d-flex align-items-center">
-                        <img [src]=participants.photo_url alt="" class="img-fluid rounded-circle creator-img">
-                        <p class="m-0 ps-2 fw-medium">{{participants.name}}</p>
+                    <div class="d-flex align-items-center  justify-content-between">
+                        <div class="d-flex align-items-center  justify-content-start">
+                            <img [src]=participants.photo_url alt="" class="img-fluid rounded-circle creator-img">
+                            <p class="m-0 ps-2 fw-medium">{{participants.name}}</p>
+                        </div>
+                        @if(userRequestIsAccepted) 
+                        {
+                            <button class="btn btn-warning" [routerLink]="['/user/profile', participants.id_user]">Ver Perfil</button>
+                        }
+                    </div>
+                }
+            </section>
+
+             <section class="card p-3 rounded-4 shadow-sm gap-3">
+                <h4>Valora a tus compañeros</h4>
+                @for (participants of tripParticipantsInfo; track participants.id_user)
+                {
+                    <div class="d-flex align-items-center  justify-content-between">
+                        <div class="d-flex align-items-center  justify-content-start">
+                            <img [src]=participants.photo_url alt="" class="img-fluid rounded-circle creator-img">
+                            <p class="m-0 ps-2 fw-medium">{{participants.name}}</p>
+                        </div>
+                        @if(userRequestIsAccepted) 
+                        {
+                            <button class="btn btn-warning" [routerLink]="['/user/profile', participants.id_user]">Ver Perfil</button>
+                        }
                     </div>
                 }
             </section>
