@@ -110,7 +110,7 @@ export class ParticipationApiService
   * CREAR UNA SOLICITUD DE PARTICIPACIÓN  PARA UN VIAJE
   * POST /api/participants/:trip_id
   */
-  createParticipationRequest(tripId : number, message : string): Promise<IParticipant>
+  createParticipationRequest(tripId : number, userMessage : string): Promise<IParticipant>
   {
     return firstValueFrom(this.http.post<IParticipant>(`${this.baseUrl}/${tripId}`, { message: userMessage }, { headers: this.getAuthHeaders() }));
   }
@@ -120,7 +120,7 @@ export class ParticipationApiService
   * PATCH /api/participants/:participation_id
   * {pending, accepted, rejected, left}
   */
-  updateParticipationStatus(participationId : number, status : participationStatus): Promise<IParticipant>
+  updateParticipationStatus(participationId : number, userStatus : participationStatus): Promise<IParticipant>
   {
     return firstValueFrom(this.http.patch<IParticipant>(`${this.baseUrl}/${participationId}`, { status: userStatus }, { headers: this.getAuthHeaders() }));
   }
