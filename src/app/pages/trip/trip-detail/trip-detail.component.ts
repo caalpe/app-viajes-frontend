@@ -4,7 +4,7 @@ import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { ITrip } from '../../../interfaces/ITrip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
-import { IParticipant, IParticipantInfo, participationStatus } from '../../../interfaces/participant';
+import { IParticipant, IParticipantInfo, participationStatus } from '../../../interfaces/IParticipant';
 import { convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
 import { AuthService } from '../../../services/auth.service';
 import { SpinnerComponent } from "../../../shared/components/spinner/spinner.component";
@@ -16,7 +16,7 @@ import { FormControl, FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModul
   styleUrl: './trip-detail.component.css',
   templateUrl: './trip-detail.component.html',
 })
-export class TripDetailComponent 
+export class TripDetailComponent
 {
 	activatedRoute        = inject(ActivatedRoute);
   tripService           = inject(TripApiService);
@@ -40,15 +40,10 @@ export class TripDetailComponent
 
   animationTimeOut : number = 500;//ms
 
-	petitionForm = new FormGroup
-	({
-  	text: new FormControl<string>('')   // este será el textarea
-  });
-  
   ngOnInit()
   {
 		//Get the tripId
-		this.activatedRoute.params.subscribe(params => 
+		this.activatedRoute.params.subscribe(params =>
 		{
  			this.tripId = params['id'];
  		});
@@ -59,32 +54,32 @@ export class TripDetailComponent
   async loadTrip()
   {
     //Load trip information
-    try 
-    {  
+    try
+    {
       this.tripInfo = await this.tripService.getTrip(this.tripId);
-      
+
       console.log(this.tripInfo);
-    } 
-    catch (error) 
+    }
+    catch (error)
     {
       console.log('Couldn`t get the trip info:' + error);
     }
     //Load participation information
-    try 
+    try
     {
       this.tripParticipantsInfo = await this.participationService.getTripParticipantInformation(this.tripId);
-    } 
-    catch (error) 
+    }
+    catch (error)
     {
       console.log('Couldn`t get the trip participants:' + error);
     }
 
     //Get user petitions to check if he already sended one
-    try 
+    try
     {
       this.userParticipationRequests = await this.participationService.getUserParticipationRequests();
-    } 
-    catch (error) 
+    }
+    catch (error)
     {
       console.log('Couldn`t get the trip participants:' + error);
     }
@@ -115,7 +110,7 @@ export class TripDetailComponent
         }
       }
     }
-    //Page loaded, we can show it 
+    //Page loaded, we can show it
     this.pageLoaded = true;
   }
 
@@ -147,10 +142,10 @@ export class TripDetailComponent
   petitionButtonPressed()
   {
     this.requestingPetition = true;
-    
-    setTimeout(() => 
+
+    setTimeout(() =>
     {
-      this.showForm = true;  
+      this.showMessageBox = true;
     }, this.animationTimeOut);
   }
 
@@ -185,13 +180,13 @@ export class TripDetailComponent
 		this.petitionForm.reset();
   }
 
-  get participationClass(): string 
+  get participationClass(): string
   {
     const status = this.userTripParticipation?.status ?? participationStatus.pending;
     return this.participationStatusMap[status];
   }
 
-  participationStatusMap: Record<participationStatus, string> = 
+  participationStatusMap: Record<participationStatus, string> =
   {
       [participationStatus.pending]: "text-bg-info",
       [participationStatus.accepted]: "text-bg-success",
