@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ParticipationApiService } from '../../services/api-rest/participation-rest.service';
 import { TripApiService } from '../../services/api-rest/trip-rest.service';
 import { UserApiService } from '../../services/api-rest/user-rest.service';
-import { IParticipant, participationStatus } from '../../interfaces/participant';
+import { IParticipant, participationStatus } from '../../interfaces/IParticipant';
 import { ITrip } from '../../interfaces/ITrip';
 import { IUser } from '../../interfaces/IUser';
 import { UserProfileModalComponent } from '../../shared/components/user-profile-modal/user-profile-modal.component';

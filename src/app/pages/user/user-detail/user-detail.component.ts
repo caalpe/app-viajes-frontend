@@ -51,10 +51,10 @@ export class UserDetailComponent implements OnInit {
     try {
       // Obtener el ID del usuario de la ruta (si existe)
       const idFromRoute = await getIdFromRoute(this.activatedRoute, 'idUser');
-      
+
       // Si hay ID en la ruta, mostrar ese usuario; si no, mostrar perfil propio
       const userId = idFromRoute || this.authService.getUserId();
-      
+
       if (!userId) {
         throw new Error('No se pudo obtener el ID del usuario');
       }
