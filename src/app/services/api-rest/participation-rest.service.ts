@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { IParticipant, IParticipantInfo, participationStatus } from '../../interfaces/IParticipant';
+import { IRating, IRatingSubmit } from '../../interfaces/IRating';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth.service';
 
@@ -123,5 +124,16 @@ export class ParticipationApiService
   updateParticipationStatus(participationId : number, userStatus : participationStatus): Promise<IParticipant>
   {
     return firstValueFrom(this.http.patch<IParticipant>(`${this.baseUrl}/${participationId}`, { status: userStatus }, { headers: this.getAuthHeaders() }));
+  }
+
+  /**
+  * ENVIAR VALORACIÓN A UN PARTICIPANTE
+  * POST /api/participants/:participation_id/rating
+  */
+  submitRating(participationId: number, ratingData: IRatingSubmit): Promise<IRating> 
+  {
+    return firstValueFrom(
+      this.http.post<IRating>(`${this.baseUrl}/${participationId}/rating`, ratingData, { headers: this.getAuthHeaders() })
+    );
   }
 }

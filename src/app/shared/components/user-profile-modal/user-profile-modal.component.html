@@ -1,0 +1,62 @@
+@if (user) {
+  <div class="modal-overlay" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h5 class="modal-title">Perfil de Usuario</h5>
+        <button type="button" class="btn-close" (click)="closeModal()" aria-label="Cerrar"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <img [src]="user.photo_url || getDefaultAvatar()" 
+               class="rounded-circle mb-3" 
+               width="120" 
+               height="120" 
+               [alt]="user.name">
+          <h4 class="mb-2">{{ user.name }}</h4>
+          @if (user.average_rating && user.average_rating > 0) {
+            <div class="rating-display mb-2">
+              <i class="bi bi-star-fill text-warning"></i>
+              <span class="ms-1">{{ user.average_rating.toFixed(1) }}</span>
+              <span class="text-muted ms-1">({{ user.rating_count }} valoraciones)</span>
+            </div>
+          }
+        </div>
+
+        <div class="user-details">
+          @if (user.bio) {
+            <div class="detail-section mb-3">
+              <h6 class="text-muted mb-2"><i class="bi bi-person-circle me-2"></i>Biografía</h6>
+              <p class="mb-0">{{ user.bio }}</p>
+            </div>
+          }
+
+          @if (user.interests) {
+            <div class="detail-section mb-3">
+              <h6 class="text-muted mb-2"><i class="bi bi-heart me-2"></i>Intereses</h6>
+              <p class="mb-0">{{ user.interests }}</p>
+            </div>
+          }
+
+          <div class="detail-section mb-3">
+            <h6 class="text-muted mb-2"><i class="bi bi-envelope me-2"></i>Email</h6>
+            <p class="mb-0">{{ user.email }}</p>
+          </div>
+
+          @if (user.phone) {
+            <div class="detail-section mb-3">
+              <h6 class="text-muted mb-2"><i class="bi bi-telephone me-2"></i>Teléfono</h6>
+              <p class="mb-0">{{ user.phone }}</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+}
