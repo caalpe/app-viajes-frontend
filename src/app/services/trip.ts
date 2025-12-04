@@ -30,11 +30,14 @@ export class TripService {
   }
 
   /** Nuevo: Obtener viajes con paginación del backend */
-  getTripsPaged(status?: string, page: number = 1, pageSize: number = 10): Observable<{ data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } } | { data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>
+  getTripsPaged(status?: string, page: number = 1, pageSize: number = 10, maxCost?: number): Observable<{ data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } } | { data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>
   {
     let params = new HttpParams().set('page', page).set('pageSize', pageSize);
     if (status) {
       params = params.set('status', status);
+    }
+    if (typeof maxCost === 'number') {
+      params = params.set('maxCost', String(maxCost));
     }
     return this.http.get<{ data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>(this.apiUrl, { params }).pipe(
       catchError(error => {
@@ -43,8 +46,19 @@ export class TripService {
         const mock = this.getMockData();
         const start = (page - 1) * pageSize;
         const end = start + pageSize;
-        const slice = mock.slice(start, end);
-        const total = mock.length;
+        // Si hay maxCost, filtramos también el mock
+        const filtered = (typeof maxCost === 'number')
+          ? mock.filter(t => {
+              const cost =
+                typeof t.cost === 'number' ? t.cost :
+                typeof t.cost_per_person === 'number' ? t.cost_per_person :
+                typeof t.priceNumber === 'number' ? t.priceNumber :
+                (t.price ? Number(String(t.price).replace(/[^0-9.-]+/g, '')) : NaN);
+              return isFinite(cost) && cost <= maxCost;
+            })
+          : mock;
+        const slice = filtered.slice(start, end);
+        const total = filtered.length;
         const totalPages = Math.max(1, Math.ceil(total / pageSize));
         return of({ data: slice, pagination: { total, page, pageSize, totalPages } });
       })

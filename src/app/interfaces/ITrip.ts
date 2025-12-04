@@ -25,4 +25,5 @@ export interface ITrip {
   priceNumber?: number;
   availableFrom?: string;
   availableTo?: string;
+  cost?: number | null;
 }
