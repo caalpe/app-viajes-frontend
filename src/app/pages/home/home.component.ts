@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, combineLatest, from, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { validateDateRange, validateDateNotPast } from '../../shared/utils/data.utils';
 // Use a flexible model for the UI's mocked trips; backend uses `ITrip`.
 type TripModel = any;
 import { TripService } from '../../services/trip';
+import { TripApiService } from '../../services/api-rest/trip-rest.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -31,7 +32,7 @@ export class HomeComponent implements OnInit {
   minEndDate: string = '';
   private searchTrigger$ = new BehaviorSubject<any>({});
 
-  constructor(private tripService: TripService, private fb: FormBuilder) {
+  constructor(private tripService: TripService, private tripApi: TripApiService, private fb: FormBuilder) {
     this.searchForm = fb.group({
       destination: [''],
       from: [''],
@@ -55,18 +56,36 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    const tripsSource$ = this.tripService.getTrips('open');
+    const initialTrips$ = this.tripService.getTrips('open');
 
-    // Filtrar solo cuando se dispara la búsqueda
-    this.trips$ = combineLatest([tripsSource$, this.searchTrigger$]).pipe(
-      map(([trips, _]) => {
+    // Origen de datos según el estado del formulario cuando se pulsa buscar
+    const queriedTrips$ = this.searchTrigger$.pipe(
+      switchMap(() => {
+        const fromDate: string | undefined = this.searchForm.get('from')?.value || undefined;
+        const toDate: string | undefined = this.searchForm.get('to')?.value || undefined;
+
+        if (fromDate || toDate) {
+          const dateToQuery = toDate || fromDate!;
+          return from(this.tripApi.getTripsByDate(dateToQuery)).pipe(
+            // En caso de error, volver al listado inicial
+            switchMap(apiTrips => of(apiTrips)),
+          );
+        }
+        // Sin fechas: usar listado inicial
+        return initialTrips$;
+      })
+    );
+
+    // Filtrar resultados según el formulario
+    this.trips$ = queriedTrips$.pipe(
+      map((trips: TripModel[]) => {
         console.log('Viajes recibidos:', trips);
         return this.filterTrips(trips, this.searchForm.value);
       })
     );
 
-    // Obtener lista única de destinos
-    tripsSource$.subscribe(trips => {
+    // Obtener lista única de destinos (desde el listado inicial)
+    initialTrips$.subscribe(trips => {
       const uniqueDestinations = new Set<string>();
       trips.forEach(trip => {
         if (trip.destination) uniqueDestinations.add(trip.destination);
