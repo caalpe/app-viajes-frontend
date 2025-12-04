@@ -32,16 +32,16 @@ import { RequestsComponent } from './pages/requests/requests.component';
         component: UserFormComponent
       },
       {
+        path: 'profile/edit',
+        component: UserFormComponent
+      },
+      {
         path: 'profile',
         component: UserDetailComponent
       },
       {
         path: 'profile/:idUser',
         component: UserDetailComponent
-      },
-      {
-        path: 'profile/edit',
-        component: UserFormComponent
       },
       {
         path: 'change-password',
