@@ -8,8 +8,9 @@ import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { AuthService } from '../../../services/auth.service';
 import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
 import { getIdFromRoute } from '../../../shared/utils/route.utils';
-import { validateDateNotPast, validateDateRange, convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
+import { validateDateNotPast, validateDateRange, convertIsoToDateInputFormat, validateMaxGreaterThanMin } from '../../../shared/utils/data.utils';
 import { extractErrorMessage, extractSuccessMessage } from '../../../shared/utils/http-error.utils';
+import { VALIDATION_MESSAGES } from '../../../shared/constants/validation-messages.constants';
 
 @Component({
   selector: 'app-trip-form',
@@ -41,6 +42,7 @@ export class TripFormComponent implements OnInit {
 
   // Propiedades para mostrar errores de validación custom
   validationErrors: { [key: string]: string } = {};
+  VALIDATION_MESSAGES = VALIDATION_MESSAGES;
 
   ngOnInit(): void {
     // El FormGroup viene del state service
@@ -303,16 +305,28 @@ export class TripFormComponent implements OnInit {
     // Validar rango de fechas
     if (!this.validateDateRange(payload.start_date, payload.end_date)) {
       if (!validateDateNotPast(payload.start_date)) {
-        this.validationErrors['start_date'] = 'La fecha de inicio no puede ser en el pasado';
+        this.validationErrors['start_date'] = VALIDATION_MESSAGES.start_date.past;
       } else {
-        this.validationErrors['start_date'] = 'La fecha de inicio debe ser anterior a la fecha de fin';
+        this.validationErrors['start_date'] = VALIDATION_MESSAGES.start_date.range;
       }
       return false;
     }
 
     // Validar costo por persona
     if (!this.validateCost(payload.cost_per_person)) {
-      this.validationErrors['cost_per_person'] = 'El costo debe ser un número positivo';
+      this.validationErrors['cost_per_person'] = VALIDATION_MESSAGES.cost_per_person.numeric;
+      return false;
+    }
+
+    // Validar máximo de participantes
+    if (payload.max_participants == null || payload.max_participants === '' || isNaN(Number(payload.max_participants))) {
+      this.validationErrors['max_participants'] = VALIDATION_MESSAGES.max_participants.numeric;
+      return false;
+    }
+
+    // Validar que el máximo sea mayor que el mínimo
+    if (!validateMaxGreaterThanMin(Number(payload.min_participants), Number(payload.max_participants))) {
+      this.validationErrors['max_participants'] = VALIDATION_MESSAGES.max_participants.greaterThanMin;
       return false;
     }
 
