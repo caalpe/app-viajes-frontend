@@ -29,6 +29,28 @@ export class TripService {
     );
   }
 
+  /** Nuevo: Obtener viajes con paginación del backend */
+  getTripsPaged(status?: string, page: number = 1, pageSize: number = 10): Observable<{ data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } } | { data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>
+  {
+    let params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    if (status) {
+      params = params.set('status', status);
+    }
+    return this.http.get<{ data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>(this.apiUrl, { params }).pipe(
+      catchError(error => {
+        console.error('❌ Error al obtener viajes paginados del backend:', error);
+        console.warn('⚠️ Usando datos mock como fallback con paginación simulada');
+        const mock = this.getMockData();
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        const slice = mock.slice(start, end);
+        const total = mock.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        return of({ data: slice, pagination: { total, page, pageSize, totalPages } });
+      })
+    );
+  }
+
   /** Datos mock de respaldo por si falla el backend */
   private getMockData(): TripModel[] {
     return [

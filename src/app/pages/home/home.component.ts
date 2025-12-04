@@ -27,6 +27,10 @@ export class HomeComponent implements OnInit {
 
   searchForm: FormGroup;
   trips$!: Observable<TripModel[]>;
+  totalPages = 1;
+  totalItems = 0;
+  pageSize = 10;
+  currentPage$ = new BehaviorSubject<number>(1);
   destinations: string[] = [];
   minDate: string = '';
   minEndDate: string = '';
@@ -56,36 +60,31 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    const initialTrips$ = this.tripService.getTrips('open');
-
-    // Origen de datos según el estado del formulario cuando se pulsa buscar
-    const queriedTrips$ = this.searchTrigger$.pipe(
-      switchMap(() => {
-        const fromDate: string | undefined = this.searchForm.get('from')?.value || undefined;
-        const toDate: string | undefined = this.searchForm.get('to')?.value || undefined;
-
-        if (fromDate || toDate) {
-          const dateToQuery = toDate || fromDate!;
-          return from(this.tripApi.getTripsByDate(dateToQuery)).pipe(
-            // En caso de error, volver al listado inicial
-            switchMap(apiTrips => of(apiTrips)),
-          );
-        }
-        // Sin fechas: usar listado inicial
-        return initialTrips$;
-      })
+    // Fuente: cuando se busca o cambia la página, pedir al backend paginado
+    const pagedSource$ = combineLatest([this.searchTrigger$, this.currentPage$]).pipe(
+      switchMap(([_, page]) =>
+        this.tripService.getTripsPaged('open', page, this.pageSize)
+      )
     );
 
-    // Filtrar resultados según el formulario
-    this.trips$ = queriedTrips$.pipe(
-      map((trips: TripModel[]) => {
-        console.log('Viajes recibidos:', trips);
+    // Aplicar filtros locales sobre el data paginado y exponer info de paginación
+    this.trips$ = pagedSource$.pipe(
+      map((resp: any) => {
+        const trips = resp?.data || resp || [];
+        const pagination = resp?.pagination;
+        if (pagination) {
+          this.totalPages = pagination.totalPages;
+          this.totalItems = pagination.total;
+          this.pageSize = pagination.pageSize;
+        }
+        console.log('Viajes paginados recibidos:', trips, 'pagination:', pagination);
         return this.filterTrips(trips, this.searchForm.value);
       })
     );
 
-    // Obtener lista única de destinos (desde el listado inicial)
-    initialTrips$.subscribe(trips => {
+    // Obtener lista única de destinos (desde la primera página)
+    this.tripService.getTripsPaged('open', 1, this.pageSize).subscribe(resp => {
+      const trips = resp?.data || [];
       const uniqueDestinations = new Set<string>();
       trips.forEach(trip => {
         if (trip.destination) uniqueDestinations.add(trip.destination);
@@ -97,8 +96,22 @@ export class HomeComponent implements OnInit {
 
   onSearch(): void {
     if (this.searchForm.valid) {
+      this.currentPage$.next(1); // Reset a la primera página
       this.searchTrigger$.next(this.searchForm.value);
     }
+  }
+
+  // Navegación de páginas
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage$.next(page);
+  }
+
+  // Limpiar filtros y volver a primera página
+  clearFilters(): void {
+    this.searchForm.reset({ destination: '', from: '', to: '', budget: '' });
+    this.currentPage$.next(1);
+    this.searchTrigger$.next(this.searchForm.value);
   }
 
   private filterTrips(trips: TripModel[], form: any): TripModel[] {
