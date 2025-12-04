@@ -132,8 +132,9 @@ export class UserFormComponent implements OnInit {
 
       if (this.isEditMode && this.userId) {
         // Modo edición: actualizar usuario existente
-        // Enviamos la password tal como llega del backend (sin cambios)
-        const userActualizado = await this.userApi.updateUserPut(this.userId, payload);
+        // No enviar la password al backend en edición usando el operador spread
+        const { password, ...payloadWithoutPassword } = payload;
+        const userActualizado = await this.userApi.updateUserPut(this.userId, payloadWithoutPassword);
         console.log('Usuario actualizado', userActualizado);
         successMessage = extractSuccessMessage(userActualizado, 'Usuario actualizado correctamente');
       } else {

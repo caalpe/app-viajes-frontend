@@ -36,7 +36,7 @@ export class HomeComponent implements OnInit {
   destinations: string[] = [];
   minDate: string = '';
   minEndDate: string = '';
-  private searchTrigger$ = new BehaviorSubject<any>({});
+  private query$ = new BehaviorSubject<{ page: number; filters: any }>({ page: 1, filters: {} });
 
   userName: string | null = null;
 
@@ -82,9 +82,9 @@ export class HomeComponent implements OnInit {
     });
 
     // Fuente: cuando se busca o cambia la página, pedir al backend paginado
-    const pagedSource$ = combineLatest([this.searchTrigger$, this.currentPage$]).pipe(
-      switchMap(([formValue, page]) => {
-        const cost = formValue?.budget ? Number(formValue.budget) : undefined;
+    const pagedSource$ = this.query$.pipe(
+      switchMap(({ page, filters }) => {
+        const cost = filters?.budget ? Number(filters.budget) : undefined;
         return this.tripService.getTripsPaged('open', page, this.pageSize, cost);
       })
     );
@@ -118,8 +118,8 @@ export class HomeComponent implements OnInit {
 
   onSearch(): void {
     if (this.searchForm.valid) {
-      this.currentPage$.next(1); // Reset a la primera página
-      this.searchTrigger$.next(this.searchForm.value);
+      this.currentPage$.next(1);
+      this.query$.next({ page: 1, filters: this.searchForm.value });
     }
   }
 
@@ -129,7 +129,7 @@ export class HomeComponent implements OnInit {
     if (!isNaN(parsed) && parsed > 0) {
       this.pageSize = parsed;
       this.currentPage$.next(1);
-      this.searchTrigger$.next(this.searchForm.value);
+      this.query$.next({ page: 1, filters: this.searchForm.value });
     }
   }
 
@@ -137,13 +137,14 @@ export class HomeComponent implements OnInit {
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages) return;
     this.currentPage$.next(page);
+    this.query$.next({ page, filters: this.searchForm.value });
   }
 
   // Limpiar filtros y volver a primera página
   clearFilters(): void {
     this.searchForm.reset({ destination: '', from: '', to: '', budget: '' });
     this.currentPage$.next(1);
-    this.searchTrigger$.next(this.searchForm.value);
+    this.query$.next({ page: 1, filters: this.searchForm.value });
   }
 
   private filterTrips(trips: TripModel[], form: any): TripModel[] {
