@@ -1,3 +1,34 @@
+.pagination {
+	margin-top: 1.5rem;
+}
+
+.pagination button {
+	min-width: 120px;
+}
+
+.search-form .action-bottom {
+	margin-top: 1rem;
+}
+
+.search-form .btn.primary {
+	background-color: #0d6efd;
+	color: #fff;
+	border: 1px solid #0d6efd;
+}
+
+.search-form .btn.primary:hover {
+	filter: brightness(0.95);
+}
+
+.search-form .btn.btn-secondary {
+	background-color: #6c757d;
+	border-color: #6c757d;
+	color: #fff;
+}
+
+.search-form .btn.btn-secondary:hover {
+	filter: brightness(0.95);
+}
 :host {
 	display: block;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;

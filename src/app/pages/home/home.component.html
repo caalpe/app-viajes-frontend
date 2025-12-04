@@ -44,9 +44,11 @@
 			<div class="form-error-full">
 				El presupuesto debe ser un número mayor o igual a 0.
 			</div>
-		}			<div class="field action-bottom">
-				<button class="btn primary" type="submit">Buscar</button>
-			</div>
+		}
+		<div class="field action-bottom d-flex gap-2">
+			<button class="btn primary" type="submit">Buscar</button>
+			<button class="btn btn-secondary" type="button" (click)="clearFilters()">Limpiar filtros</button>
+		</div>
 		</form>
 	</div>
 </section>
@@ -67,8 +69,7 @@
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 		@for (t of (trips$ | async); track t.id_trip) {
 			<div class="col">
-				<article class="card" (mouseenter)="t._hover = true" (mouseleave)="t._hover = false"
-					[class.shadow]="t._hover" [class.shadow-sm]="!t._hover">
+				<article class="card shadow-sm">
 					<div class="pt-4">
 						<img [src]="t.image_url" alt="" class="img-fluid card-image">
 					</div>
@@ -98,6 +99,16 @@
 				</article>
 			</div>
 		}
+	</div>
+
+	<!-- Pagination controls -->
+	<div class="pagination mt-4 d-flex align-items-center justify-content-center gap-2">
+		@let cp = (currentPage$ | async);
+		<button class="btn btn-outline-primary" (click)="goToPage(1)" [disabled]="cp === 1">« Primero</button>
+		<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) - 1)" [disabled]="cp === 1">‹ Anterior</button>
+		<span>Página {{ cp }} de {{ totalPages }}</span>
+		<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) + 1)" [disabled]="cp === totalPages">Siguiente ›</button>
+		<button class="btn btn-outline-primary" (click)="goToPage(totalPages)" [disabled]="cp === totalPages">Último »</button>
 	</div>
 </section>
 
