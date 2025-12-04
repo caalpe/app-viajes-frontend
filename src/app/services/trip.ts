@@ -29,6 +29,42 @@ export class TripService {
     );
   }
 
+  /** Nuevo: Obtener viajes con paginación del backend */
+  getTripsPaged(status?: string, page: number = 1, pageSize: number = 10, cost?: number): Observable<{ data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } } | { data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>
+  {
+    let params = new HttpParams().set('page', page).set('pageSize', pageSize);
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (typeof cost === 'number') {
+      params = params.set('cost', String(cost));
+    }
+    return this.http.get<{ data: TripModel[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>(this.apiUrl, { params }).pipe(
+      catchError(error => {
+        console.error('❌ Error al obtener viajes paginados del backend:', error);
+        console.warn('⚠️ Usando datos mock como fallback con paginación simulada');
+        const mock = this.getMockData();
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        // Si hay maxCost, filtramos también el mock
+        const filtered = (typeof cost === 'number')
+          ? mock.filter(t => {
+              const cost =
+                typeof t.cost === 'number' ? t.cost :
+                typeof t.cost_per_person === 'number' ? t.cost_per_person :
+                typeof t.priceNumber === 'number' ? t.priceNumber :
+                (t.price ? Number(String(t.price).replace(/[^0-9.-]+/g, '')) : NaN);
+              return isFinite(cost) && cost <= cost;
+            })
+          : mock;
+        const slice = filtered.slice(start, end);
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        return of({ data: slice, pagination: { total, page, pageSize, totalPages } });
+      })
+    );
+  }
+
   /** Datos mock de respaldo por si falla el backend */
   private getMockData(): TripModel[] {
     return [

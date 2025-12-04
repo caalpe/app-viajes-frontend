@@ -10,6 +10,7 @@ import { ModalAlertComponent } from '../../../shared/components/modal-alert/moda
 import { AuthService } from '../../../services/auth.service';
 import { validateEmail, validatePhone, validateUrl, containsNumbers, onlyCharacters } from '../../../shared/utils/data.utils';
 import { extractErrorMessage, extractSuccessMessage } from '../../../shared/utils/http-error.utils';
+import { VALIDATION_MESSAGES } from '../../../shared/constants/validation-messages.constants';
 
 @Component({
   selector: 'app-user-form',
@@ -131,8 +132,9 @@ export class UserFormComponent implements OnInit {
 
       if (this.isEditMode && this.userId) {
         // Modo edición: actualizar usuario existente
-        // Enviamos la password tal como llega del backend (sin cambios)
-        const userActualizado = await this.userApi.updateUserPut(this.userId, payload);
+        // No enviar la password al backend en edición usando el operador spread
+        const { password, ...payloadWithoutPassword } = payload;
+        const userActualizado = await this.userApi.updateUserPut(this.userId, payloadWithoutPassword);
         console.log('Usuario actualizado', userActualizado);
         successMessage = extractSuccessMessage(userActualizado, 'Usuario actualizado correctamente');
       } else {
@@ -213,20 +215,20 @@ export class UserFormComponent implements OnInit {
     // Validar nombre: no puede contener números y debe ser solo caracteres
     if (payload.name && !this.nameValidator(payload.name)) {
       console.log('Nombre inválido:', payload.name);
-      this.validationErrors['name'] = 'El nombre solo puede contener letras (sin números)';
+      this.validationErrors['name'] = VALIDATION_MESSAGES.name.invalid;
       return false;
     }
 
     // Validar email: formato válido
     if (payload.email && !validateEmail(payload.email)) {
-      this.validationErrors['email'] = 'El correo electrónico no es válido';
+      this.validationErrors['email'] = VALIDATION_MESSAGES.email.invalid;
       return false;
     }
 
     // Validar teléfono: opcional, pero si está presente validar formato
     if (payload.phone && payload.phone.trim() !== '') {
       if (!validatePhone(payload.phone)) {
-        this.validationErrors['phone'] = 'El teléfono no es válido';
+        this.validationErrors['phone'] = VALIDATION_MESSAGES.phone.invalid;
         return false;
       }
     }
@@ -234,7 +236,7 @@ export class UserFormComponent implements OnInit {
     // Validar photo_url: opcional, pero si está presente validar formato
     if (payload.photo_url && payload.photo_url.trim() !== '') {
       if (!validateUrl(payload.photo_url)) {
-        this.validationErrors['photo_url'] = 'La URL de la foto no es válida';
+        this.validationErrors['photo_url'] = VALIDATION_MESSAGES.photo_url.invalid;
         return false;
       }
     }
