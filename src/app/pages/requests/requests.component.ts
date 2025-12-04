@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ParticipationApiService } from '../../services/api-rest/participation-rest.service';
 import { TripApiService } from '../../services/api-rest/trip-rest.service';
 import { UserApiService } from '../../services/api-rest/user-rest.service';
-import { IParticipant, participationStatus } from '../../interfaces/IParticipant';
+import { IParticipant, IParticipantInfo, participationStatus } from '../../interfaces/IParticipant';
 import { ITrip } from '../../interfaces/ITrip';
 import { IUser } from '../../interfaces/IUser';
 import { UserProfileModalComponent } from '../../shared/components/user-profile-modal/user-profile-modal.component';
@@ -38,6 +38,9 @@ export class RequestsComponent implements OnInit {
 
   // Cache de perfiles de usuarios
   userProfiles: Record<number, IUser> = {};
+  
+  // Cache de información de participantes por viaje
+  tripParticipants: Record<number, IParticipantInfo[]> = {};
 
   participationStatus = participationStatus;
 
@@ -48,6 +51,7 @@ export class RequestsComponent implements OnInit {
   async ngOnInit() {
     await this.loadMyTripsAndRequests();
     await this.loadUserProfiles();
+    await this.loadTripParticipants();
   }
 
   async loadMyTripsAndRequests() {
@@ -254,7 +258,39 @@ export class RequestsComponent implements OnInit {
     });
 
     await Promise.all(profilePromises);
-    console.log('📚 Todos los perfiles cargados:', this.userProfiles);
+    console.log('✅ Todos los perfiles cargados:', this.userProfiles);
+  }
+
+  async loadTripParticipants() {
+    // Cargar información completa de participantes para cada viaje
+    const participantsPromises = this.myTrips.map(async (trip) => {
+      if (!trip.id_trip) return;
+      
+      try {
+        const participants = await this.participationService.getTripParticipantInformation(trip.id_trip);
+        this.tripParticipants[trip.id_trip] = participants;
+        console.log(`✅ Participantes cargados para viaje ${trip.id_trip}:`, participants);
+      } catch (error) {
+        console.error(`❌ Error loading participants for trip ${trip.id_trip}:`, error);
+      }
+    });
+
+    await Promise.all(participantsPromises);
+    console.log('✅ Todos los participantes cargados:', this.tripParticipants);
+  }
+
+  getTripParticipantsInfo(tripId: number): IParticipantInfo[] {
+    return this.tripParticipants[tripId] || [];
+  }
+
+  getParticipationIdForUser(tripId: number, userId: number): number {
+    // Buscar el id_participation para un usuario específico en un viaje
+    const request = this.allRequests.find(req => 
+      req.id_trip === tripId && 
+      req.id_user === userId && 
+      req.status === participationStatus.accepted
+    );
+    return request?.id_participation || 0;
   }
 
   getUserName(userId: number): string {

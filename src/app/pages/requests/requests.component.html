@@ -169,21 +169,28 @@
                         </div>
                       </div>
 
-                      @if (getAcceptedRequests(trip.id_trip!).length > 0) {
+                      @if (getTripParticipantsInfo(trip.id_trip!).length > 0) {
                         <div class="mb-3">
                           <h6 class="text-success mb-2">
-                            <i class="bi bi-check-circle me-1"></i>Participantes Aceptados
+                            <i class="bi bi-check-circle me-1"></i>Participantes Aceptados ({{ getTripParticipantsInfo(trip.id_trip!).length }})
                           </h6>
-                          @for (req of getAcceptedRequests(trip.id_trip!); track req.id_participation) {
-                            <div class="d-flex align-items-center gap-2 p-2 bg-success bg-opacity-10 rounded mb-2"
-                                 style="cursor: pointer;" (click)="showUserProfile(req.id_user)">
-                              <img [src]="getUserAvatar(req.id_user)" 
+                          @for (participant of getTripParticipantsInfo(trip.id_trip!); track participant.id_user) {
+                            <div class="d-flex align-items-center gap-3 p-2 bg-success bg-opacity-10 rounded mb-2"
+                                 style="cursor: pointer;" (click)="showUserProfile(participant.id_user)">
+                              <img [src]="participant.photo_url || 'https://ui-avatars.com/api/?name=' + participant.name.replace(' ', '+') + '&size=32'" 
                                    class="rounded-circle" 
                                    width="32" 
                                    height="32" 
-                                   [alt]="getUserName(req.id_user)">
-                              <span class="small">{{ getUserName(req.id_user) }}</span>
-                              <span class="badge bg-success ms-auto">Aceptado</span>
+                                   [alt]="participant.name">
+                              <div class="flex-grow-1">
+                                <span class="small fw-semibold d-block">{{ participant.name }}</span>
+                                @if (participant.average_rating > 0) {
+                                  <span class="text-muted small">
+                                    <i class="bi bi-star-fill text-warning"></i> {{ participant.average_rating.toFixed(1) }}
+                                  </span>
+                                }
+                              </div>
+                              <span class="badge bg-success">Aceptado</span>
                             </div>
                           }
                         </div>
@@ -262,19 +269,26 @@
 
                       <h6 class="text-success mb-2">
                         <i class="bi bi-check-circle me-1"></i>
-                        Participantes ({{ getAcceptedRequests(trip.id_trip!).length }})
+                        Participantes ({{ getTripParticipantsInfo(trip.id_trip!).length }})
                       </h6>
                       <div class="row g-2">
-                        @for (req of getAcceptedRequests(trip.id_trip!); track req.id_participation) {
+                        @for (participant of getTripParticipantsInfo(trip.id_trip!); track participant.id_user) {
                           <div class="col-6">
                             <div class="d-flex align-items-center gap-2 p-2 bg-success bg-opacity-10 rounded"
-                                 style="cursor: pointer;" (click)="showUserProfile(req.id_user)">
-                              <img [src]="getUserAvatar(req.id_user)" 
+                                 style="cursor: pointer;" (click)="showUserProfile(participant.id_user)">
+                              <img [src]="participant.photo_url || 'https://ui-avatars.com/api/?name=' + participant.name.replace(' ', '+') + '&size=24'" 
                                    class="rounded-circle" 
                                    width="24" 
                                    height="24" 
-                                   [alt]="getUserName(req.id_user)">
-                              <span class="small">{{ getUserName(req.id_user) }}</span>
+                                   [alt]="participant.name">
+                              <div class="flex-grow-1">
+                                <span class="small">{{ participant.name }}</span>
+                                @if (participant.average_rating > 0) {
+                                  <span class="text-warning small ms-1">
+                                    <i class="bi bi-star-fill" style="font-size: 0.7rem;"></i>{{ participant.average_rating.toFixed(1) }}
+                                  </span>
+                                }
+                              </div>
                             </div>
                           </div>
                         }
@@ -315,56 +329,63 @@
 
                       <h6 class="mb-3">
                         <i class="bi bi-people text-primary me-1"></i>
-                        Participantes ({{ getAcceptedRequests(trip.id_trip!).length }})
+                        Participantes ({{ getTripParticipantsInfo(trip.id_trip!).length }})
                       </h6>
                       
-                      @for (req of getAcceptedRequests(trip.id_trip!); track req.id_participation) {
+                      @for (participant of getTripParticipantsInfo(trip.id_trip!); track participant.id_user) {
                         <div class="border rounded p-3 mb-3">
                           <div class="d-flex justify-content-between align-items-center mb-2">
                             <div class="d-flex align-items-center gap-2" 
-                                 style="cursor: pointer;" (click)="showUserProfile(req.id_user)">
-                              <img [src]="getUserAvatar(req.id_user)" 
+                                 style="cursor: pointer;" (click)="showUserProfile(participant.id_user)">
+                              <img [src]="participant.photo_url || 'https://ui-avatars.com/api/?name=' + participant.name.replace(' ', '+') + '&size=40'" 
                                    class="rounded-circle" 
                                    width="40" 
                                    height="40" 
-                                   [alt]="getUserName(req.id_user)">
+                                   [alt]="participant.name">
                               <div>
-                                <p class="mb-0 fw-semibold">{{ getUserName(req.id_user) }}</p>
-                                <p class="mb-0 small text-muted">Viajó contigo</p>
+                                <p class="mb-0 fw-semibold">{{ participant.name }}</p>
+                                <p class="mb-0 small text-muted">
+                                  Viajó contigo
+                                  @if (participant.average_rating > 0) {
+                                    <span class="text-warning ms-2">
+                                      <i class="bi bi-star-fill"></i> {{ participant.average_rating.toFixed(1) }}
+                                    </span>
+                                  }
+                                </p>
                               </div>
                             </div>
-                            <button (click)="toggleRatingForm(req.id_participation)" class="btn btn-sm btn-outline-primary">
+                            <button (click)="toggleRatingForm(getParticipationIdForUser(trip.id_trip!, participant.id_user))" class="btn btn-sm btn-outline-primary">
                               <i class="bi bi-star me-1"></i>
-                              {{ expandedRatings[req.id_participation] ? 'Cancelar' : 'Valorar' }}
+                              {{ expandedRatings[getParticipationIdForUser(trip.id_trip!, participant.id_user)] ? 'Cancelar' : 'Valorar' }}
                             </button>
                           </div>
 
-                          @if (expandedRatings[req.id_participation]) {
+                          @if (expandedRatings[getParticipationIdForUser(trip.id_trip!, participant.id_user)]) {
                             <div class="bg-light rounded p-3">
                               <label class="form-label small fw-semibold">Tu Valoración</label>
                               <div class="d-flex gap-2 mb-3">
                                 @for (star of [1,2,3,4,5]; track star) {
-                                  <button (click)="setRating(req.id_participation, star)" class="btn btn-link p-0">
+                                  <button (click)="setRating(getParticipationIdForUser(trip.id_trip!, participant.id_user), star)" class="btn btn-link p-0">
                                     <i class="bi fs-4" 
-                                       [class.bi-star-fill]="getRatingValue(req.id_participation) >= star"
-                                       [class.bi-star]="getRatingValue(req.id_participation) < star"
-                                       [class.text-warning]="getRatingValue(req.id_participation) >= star"
-                                       [class.text-muted]="getRatingValue(req.id_participation) < star"></i>
+                                       [class.bi-star-fill]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) >= star"
+                                       [class.bi-star]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) < star"
+                                       [class.text-warning]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) >= star"
+                                       [class.text-muted]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) < star"></i>
                                   </button>
                                 }
                               </div>
 
                               <label class="form-label small fw-semibold">Comentario (Opcional)</label>
                               <textarea
-                                [value]="getCommentValue(req.id_participation)"
-                                (input)="setComment(req.id_participation, $any($event.target).value)"
+                                [value]="getCommentValue(getParticipationIdForUser(trip.id_trip!, participant.id_user))"
+                                (input)="setComment(getParticipationIdForUser(trip.id_trip!, participant.id_user), $any($event.target).value)"
                                 class="form-control mb-3"
                                 rows="3"
                                 placeholder="Comparte tu experiencia..."></textarea>
 
                               <button
-                                (click)="submitRating(req.id_participation)"
-                                [disabled]="getRatingValue(req.id_participation) === 0"
+                                (click)="submitRating(getParticipationIdForUser(trip.id_trip!, participant.id_user))"
+                                [disabled]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) === 0"
                                 class="btn btn-primary w-100">
                                 Enviar Valoración
                               </button>

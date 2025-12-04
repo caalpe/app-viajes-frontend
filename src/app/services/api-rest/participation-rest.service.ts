@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { IParticipant, IParticipantInfo, participationStatus } from '../../interfaces/IParticipant';
-import { IRating, IRatingSubmit } from '../../interfaces/rating';
+import { IRating, IRatingSubmit } from '../../interfaces/IRating';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth.service';
 
