@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { ITrip as TripModel } from '../interfaces/ITrip';
 
 @Injectable({
@@ -19,7 +19,8 @@ export class TripService {
     if (status) {
       params = params.set('status', status);
     }
-    return this.http.get<TripModel[]>(this.apiUrl, { params }).pipe(
+    return this.http.get<{ data: TripModel[], pagination: any }>(this.apiUrl, { params }).pipe(
+      map(response => response.data), // Extraer el array de viajes de la respuesta paginada
       catchError(error => {
         console.error('❌ Error al obtener viajes del backend:', error);
         console.warn('⚠️ Usando datos mock como fallback');

@@ -9,15 +9,18 @@ import { validateDateRange, validateDateNotPast } from '../../shared/utils/data.
 type TripModel = any;
 import { TripService } from '../../services/trip';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { TripCardComponent, cardType } from '../../shared/components/trip-card/trip-card.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TripCardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  cardType = cardType;
+  
   features = [
     { title: 'Explora destinos', desc: 'Encuentra viajes hechos a tu medida.' },
     { title: 'Reservas seguras', desc: 'Transacciones protegidas y confirmaciones instantáneas.' },
@@ -55,7 +58,7 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    const tripsSource$ = this.tripService.getTrips('open');
+    const tripsSource$ = this.tripService.getTrips();
 
     // Filtrar solo cuando se dispara la búsqueda
     this.trips$ = combineLatest([tripsSource$, this.searchTrigger$]).pipe(
@@ -74,6 +77,9 @@ export class HomeComponent implements OnInit {
       });
       this.destinations = Array.from(uniqueDestinations).sort();
     });
+
+    // Cargar viajes automáticamente al inicio
+    this.searchTrigger$.next({});
   }
 
   onSearch(): void {
@@ -83,12 +89,15 @@ export class HomeComponent implements OnInit {
   }
 
   private filterTrips(trips: TripModel[], form: any): TripModel[] {
+    console.log('🔍 Filtrando viajes. Total recibidos:', trips.length);
+    console.log('🔍 Filtros aplicados:', form);
+    
     const dest = (form.destination || '').toString().trim().toLowerCase();
     const from = form.from ? new Date(form.from) : null;
     const to = form.to ? new Date(form.to) : null;
     const budget = form.budget ? Number(form.budget) : null;
 
-    return trips.filter(t => {
+    const filtered = trips.filter(t => {
       // Destination filter (title or description)
       if (dest) {
         const hay = (t.title + ' ' + (t.description || '')).toLowerCase();
@@ -112,6 +121,9 @@ export class HomeComponent implements OnInit {
 
       return true;
     });
+    
+    console.log('✅ Viajes después de filtrar:', filtered.length);
+    return filtered;
   }
 
   private dateRangeValidator(): ValidatorFn {

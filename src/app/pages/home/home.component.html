@@ -64,41 +64,28 @@
 
 <section class="trips container">
 	<h2>Viajes recomendados</h2>
-	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-		@for (t of (trips$ | async); track t.id_trip) {
-			<div class="col">
-				<article class="card" (mouseenter)="t._hover = true" (mouseleave)="t._hover = false"
-					[class.shadow]="t._hover" [class.shadow-sm]="!t._hover">
-					<div class="pt-4">
-						<img [src]="t.image_url" alt="" class="img-fluid card-image">
+	@if (trips$ | async; as trips) {
+		@if (trips.length > 0) {
+			<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+				@for (trip of trips; track trip.id_trip) {
+					<div class="col">
+						<app-trip-card [tripInfo]="trip" [type]="cardType.none"></app-trip-card>
 					</div>
-					<div class="card-body">
-						<h3 class="card-title">{{ t.title }}</h3>
-						<div>
-							<i class="bi bi-geo-alt pe-2"></i>
-							<span class="card-text">{{ t.departure || 'Sin especificar' }}</span>
-							<i class="bi bi-arrow-right pe-2"></i>
-							<span class="card-text">{{ t.destination || t.description }}</span>
-						</div>
-						<div>
-							<i class="bi bi-calendar pe-2"></i>
-							<span class="card-text">{{ t.start_date || t.availableFrom || 'Disponible' }}</span>
-						</div>
-						<div>
-							<i class="bi bi-people pe-2"></i>
-							<span class="card-text">{{ t.min_participants || 'Varios' }} personas</span>
-						</div>
-						<div>
-							<i class="bi bi-cash pe-2"></i>
-							<span class="card-text">{{ t.cost_per_person || t.priceNumber || t.price }} €</span>
-						</div>
-					</div>
-
-					<a [routerLink]="['/trips', t.id_trip || t.id]" class="stretched-link"></a>
-				</article>
+				}
+			</div>
+		} @else {
+			<div class="alert alert-info text-center">
+				<i class="bi bi-info-circle me-2"></i>
+				No se encontraron viajes. Intenta ajustar los filtros de búsqueda.
 			</div>
 		}
-	</div>
+	} @else {
+		<div class="text-center py-5">
+			<div class="spinner-border text-primary" role="status">
+				<span class="visually-hidden">Cargando viajes...</span>
+			</div>
+		</div>
+	}
 </section>
 
 <section class="cta">
