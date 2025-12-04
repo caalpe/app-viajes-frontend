@@ -1,7 +1,12 @@
 <section class="hero">
 	<div class="hero-inner container">
-		<h1>Viaja. Descubre. Vive.</h1>
-		<p class="lead">Encuentra las mejores ofertas y experiencias únicas para tu próxima aventura.</p>
+		@if (userName) {
+			<h1 class="display-4 fw-bold">Bienvenido <span class="d-block">{{ userName }}</span></h1>
+			<p class="lead">Explora y encuentra tu próxima aventura a medida.</p>
+		} @else {
+			<h1>Viaja. Descubre. Vive.</h1>
+			<p class="lead">Encuentra las mejores ofertas y experiencias únicas para tu próxima aventura.</p>
+		}
 
 		<form class="search-form" [formGroup]="searchForm" (ngSubmit)="onSearch()">
 			<div class="field">
@@ -33,6 +38,8 @@
 					<span class="addon">€</span>
 				</div>
 			</div>
+
+
 
 		@if (searchForm.errors?.['dateRange']) {
 			<div class="form-error-full">
@@ -102,13 +109,22 @@
 	</div>
 
 	<!-- Pagination controls -->
-	<div class="pagination mt-4 d-flex align-items-center justify-content-center gap-2">
+	<div class="pagination mt-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
 		@let cp = (currentPage$ | async);
 		<button class="btn btn-outline-primary" (click)="goToPage(1)" [disabled]="cp === 1">« Primero</button>
 		<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) - 1)" [disabled]="cp === 1">‹ Anterior</button>
 		<span>Página {{ cp }} de {{ totalPages }}</span>
 		<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) + 1)" [disabled]="cp === totalPages">Siguiente ›</button>
 		<button class="btn btn-outline-primary" (click)="goToPage(totalPages)" [disabled]="cp === totalPages">Último »</button>
+
+		<!-- Page size selector moved here -->
+		<label class="ms-3">Por página
+			<select class="form-select d-inline-block w-auto ms-2" [value]="pageSize" (change)="setPageSize($any($event.target).value)">
+				<option [value]="6">6</option>
+				<option [value]="9">9</option>
+				<option [value]="12">12</option>
+			</select>
+		</label>
 	</div>
 </section>
 
