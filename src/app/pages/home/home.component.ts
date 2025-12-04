@@ -84,8 +84,8 @@ export class HomeComponent implements OnInit {
     // Fuente: cuando se busca o cambia la página, pedir al backend paginado
     const pagedSource$ = combineLatest([this.searchTrigger$, this.currentPage$]).pipe(
       switchMap(([formValue, page]) => {
-        const maxCost = formValue?.budget ? Number(formValue.budget) : undefined;
-        return this.tripService.getTripsPaged('open', page, this.pageSize, maxCost);
+        const cost = formValue?.budget ? Number(formValue.budget) : undefined;
+        return this.tripService.getTripsPaged('open', page, this.pageSize, cost);
       })
     );
 
