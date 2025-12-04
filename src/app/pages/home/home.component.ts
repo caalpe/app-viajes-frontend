@@ -158,10 +158,14 @@ export class HomeComponent implements OnInit {
         if (!hay.includes(dest)) return false;
       }
 
-      // Budget filter (use numeric price if available)
+      // Budget filter: compare against cost (primary), then fallbacks
       if (budget != null && !isNaN(budget)) {
-        const price = typeof t.priceNumber === 'number' ? t.priceNumber : (t.price ? Number(t.price.replace(/[^0-9.-]+/g, '')) : NaN);
-        if (!isFinite(price) || price > budget) return false;
+        const cost =
+          typeof t.cost === 'number' ? t.cost :
+          typeof t.cost_per_person === 'number' ? t.cost_per_person :
+          typeof t.priceNumber === 'number' ? t.priceNumber :
+          (t.price ? Number(String(t.price).replace(/[^0-9.-]+/g, '')) : NaN);
+        if (!isFinite(cost) || cost > budget) return false;
       }
 
       // Date overlap: trip availableFrom..availableTo must overlap with requested from..to

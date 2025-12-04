@@ -32,9 +32,9 @@
 			</div>
 
 			<div class="field">
-				<label class="label-accent label-budget">Presupuesto</label>
+				<label class="label-accent label-budget">Presupuesto máximo</label>
 				<div class="input-with-addon">
-					<input type="number" formControlName="budget" min="0" placeholder="0" />
+					<input type="number" formControlName="budget" min="0" placeholder="Máx. €" />
 					<span class="addon">€</span>
 				</div>
 			</div>
@@ -125,6 +125,10 @@
 				<option [value]="12">12</option>
 			</select>
 		</label>
+	</div>
+
+	<div class="mt-2 text-center">
+		<span>Mostrando {{ (trips$ | async)?.length || 0 }} de {{ totalItems }} resultados</span>
 	</div>
 </section>
 
