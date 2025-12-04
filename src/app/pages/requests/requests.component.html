@@ -354,23 +354,25 @@
                                 </p>
                               </div>
                             </div>
-                            <button (click)="toggleRatingForm(getParticipationIdForUser(trip.id_trip!, participant.id_user))" class="btn btn-sm btn-outline-primary">
-                              <i class="bi bi-star me-1"></i>
-                              {{ expandedRatings[getParticipationIdForUser(trip.id_trip!, participant.id_user)] ? 'Cancelar' : 'Valorar' }}
-                            </button>
+                            @if (!isCurrentUser(participant.id_user)) {
+                              <button (click)="toggleRatingForm(getParticipationIdForUser(trip.id_trip!, participant.id_user), trip.id_trip, participant.id_user)" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-star me-1"></i>
+                                {{ expandedRatings[getParticipationIdForUser(trip.id_trip!, participant.id_user)] ? 'Cancelar' : 'Valorar' }}
+                              </button>
+                            }
                           </div>
 
                           @if (expandedRatings[getParticipationIdForUser(trip.id_trip!, participant.id_user)]) {
                             <div class="bg-light rounded p-3">
-                              <label class="form-label small fw-semibold">Tu Valoración</label>
-                              <div class="d-flex gap-2 mb-3">
-                                @for (star of [1,2,3,4,5]; track star) {
-                                  <button (click)="setRating(getParticipationIdForUser(trip.id_trip!, participant.id_user), star)" class="btn btn-link p-0">
+                              <label class="form-label small fw-semibold">Tu Valoración (1-10)</label>
+                              <div class="d-flex gap-2 mb-3 flex-wrap">
+                                @for (score of [1,2,3,4,5,6,7,8,9,10]; track score) {
+                                  <button (click)="setRating(getParticipationIdForUser(trip.id_trip!, participant.id_user), score, trip.id_trip, participant.id_user)" class="btn btn-link p-0">
                                     <i class="bi fs-4" 
-                                       [class.bi-star-fill]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) >= star"
-                                       [class.bi-star]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) < star"
-                                       [class.text-warning]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) >= star"
-                                       [class.text-muted]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) < star"></i>
+                                       [class.bi-star-fill]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) >= score"
+                                       [class.bi-star]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) < score"
+                                       [class.text-warning]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) >= score"
+                                       [class.text-muted]="getRatingValue(getParticipationIdForUser(trip.id_trip!, participant.id_user)) < score"></i>
                                   </button>
                                 }
                               </div>
@@ -378,7 +380,7 @@
                               <label class="form-label small fw-semibold">Comentario (Opcional)</label>
                               <textarea
                                 [value]="getCommentValue(getParticipationIdForUser(trip.id_trip!, participant.id_user))"
-                                (input)="setComment(getParticipationIdForUser(trip.id_trip!, participant.id_user), $any($event.target).value)"
+                                (input)="setComment(getParticipationIdForUser(trip.id_trip!, participant.id_user), $any($event.target).value, trip.id_trip, participant.id_user)"
                                 class="form-control mb-3"
                                 rows="3"
                                 placeholder="Comparte tu experiencia..."></textarea>

@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { ParticipationApiService } from '../../services/api-rest/participation-rest.service';
 import { TripApiService } from '../../services/api-rest/trip-rest.service';
 import { UserApiService } from '../../services/api-rest/user-rest.service';
+import { RatingApiService } from '../../services/api-rest/rating-rest.service';
+import { AuthService } from '../../services/auth.service';
 import { IParticipant, IParticipantInfo, participationStatus } from '../../interfaces/IParticipant';
 import { ITrip } from '../../interfaces/ITrip';
 import { IUser } from '../../interfaces/IUser';
@@ -27,6 +29,8 @@ export class RequestsComponent implements OnInit {
   private participationService = inject(ParticipationApiService);
   private tripService = inject(TripApiService);
   private userService = inject(UserApiService);
+  private ratingService = inject(RatingApiService);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   myTrips: ITrip[] = [];
@@ -44,8 +48,8 @@ export class RequestsComponent implements OnInit {
 
   participationStatus = participationStatus;
 
-  // Rating states for past trips
-  userRatings: Record<number, { rating: number; comment: string }> = {};
+  // Rating states for past trips (participationId -> rating data)
+  userRatings: Record<number, { score: number; comment: string; tripId: number; userId: number }> = {};
   expandedRatings: Record<number, boolean> = {};
 
   async ngOnInit() {
@@ -204,32 +208,37 @@ export class RequestsComponent implements OnInit {
   }
 
   // Rating functionality for past trips
-  toggleRatingForm(participationId: number) {
+  toggleRatingForm(participationId: number, tripId?: number, userId?: number) {
     this.expandedRatings[participationId] = !this.expandedRatings[participationId];
-  }
-
-  setRating(participationId: number, rating: number) {
-    if (!this.userRatings[participationId]) {
-      this.userRatings[participationId] = { rating: 0, comment: '' };
+    if (!this.userRatings[participationId] && tripId && userId) {
+      this.userRatings[participationId] = { score: 0, comment: '', tripId, userId };
     }
-    this.userRatings[participationId].rating = rating;
   }
 
-  setComment(participationId: number, comment: string) {
-    if (!this.userRatings[participationId]) {
-      this.userRatings[participationId] = { rating: 0, comment: '' };
+  setRating(participationId: number, score: number, tripId?: number, userId?: number) {
+    if (!this.userRatings[participationId] && tripId && userId) {
+      this.userRatings[participationId] = { score: 0, comment: '', tripId, userId };
+    }
+    this.userRatings[participationId].score = score;
+  }
+
+  setComment(participationId: number, comment: string, tripId?: number, userId?: number) {
+    if (!this.userRatings[participationId] && tripId && userId) {
+      this.userRatings[participationId] = { score: 0, comment: '', tripId, userId };
     }
     this.userRatings[participationId].comment = comment;
   }
 
   async submitRating(participationId: number) {
-    const rating = this.userRatings[participationId];
-    if (!rating || !rating.rating) return;
+    const ratingData = this.userRatings[participationId];
+    if (!ratingData || !ratingData.score) return;
 
     try {
-      await this.participationService.submitRating(participationId, {
-        rating: rating.rating,
-        comment: rating.comment
+      await this.ratingService.submitRating({
+        id_trip: ratingData.tripId,
+        id_reviewed: ratingData.userId,
+        score: ratingData.score,
+        comment: ratingData.comment
       });
       
       alert('Valoración enviada correctamente');
@@ -334,10 +343,15 @@ export class RequestsComponent implements OnInit {
   }
 
   getRatingValue(participationId: number): number {
-    return this.userRatings[participationId]?.rating || 0;
+    return this.userRatings[participationId]?.score || 0;
   }
 
   getCommentValue(participationId: number): string {
     return this.userRatings[participationId]?.comment || '';
+  }
+
+  isCurrentUser(userId: number): boolean {
+    const currentUserId = this.authService.getUserId();
+    return currentUserId === userId;
   }
 }
