@@ -96,7 +96,7 @@
 .label-error{ color:#b91c1c !important }
 
 .search-form .field input.input-error{ background: #fff6f6 }
-.btn { 
+.btn {
 	background: transparent;
 	border: 1px solid rgba(17,24,39,0.08);
 	padding:8px 12px;
