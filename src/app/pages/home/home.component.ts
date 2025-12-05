@@ -54,17 +54,24 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Suscribirse a cambios en el estado de autenticación
+    this.authService.authStatus$.subscribe((isLoggedIn) => {
+      if (isLoggedIn) {
         // Si está logado, obtener el nombre del usuario para el saludo
-        if (this.authService.isLoggedIn()) {
-          const uid = this.authService.getUserId();
-          if (uid) {
-            this.userApi.getUser(uid).then(u => {
-              this.userName = u?.name || null;
-            }).catch(() => {
-              this.userName = null;
-            });
-          }
+        const uid = this.authService.getUserId();
+        if (uid) {
+          this.userApi.getUser(uid).then(u => {
+            this.userName = u?.name || null;
+          }).catch(() => {
+            this.userName = null;
+          });
         }
+      } else {
+        // Si no está logado, limpiar el nombre
+        this.userName = null;
+      }
+    });
+
     // Establecer la fecha mínima como hoy en formato YYYY-MM-DD
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
