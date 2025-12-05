@@ -164,6 +164,7 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_ID_KEY);
     this.setAuthStatus(false);
+    console.log('🚪 Sesión cerrada - Token y userId eliminados');
   }
 
   setAuthStatus(status: boolean): void {
