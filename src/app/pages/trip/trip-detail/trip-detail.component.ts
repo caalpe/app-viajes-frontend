@@ -28,6 +28,7 @@ export class TripDetailComponent
   tripParticipantsInfo : IParticipantInfo[] = [];
   userParticipationRequests : IParticipant[] = [];
   userTripParticipation? : IParticipant;
+  ownerTripInfo? : IParticipantInfo;
   image : string = "https://www.mercurynews.com/wp-content/uploads/2021/04/SJM-L-ROADTRIP-0502-01.jpg?w=1024";
 
   userIsOwner         	: boolean = false; //To display if its the owner
@@ -43,7 +44,7 @@ export class TripDetailComponent
 
   petitionForm = new FormGroup
 	({
-  	text: new FormControl<string>('')   // este será el textarea
+  	text: new FormControl<string>('Me gustaría unirme a este viaje 🙂')
   });
 
   ngOnInit()
@@ -104,18 +105,24 @@ export class TripDetailComponent
         this.userTripParticipation = this.userParticipationRequests.find((value) =>
         {
           return value.id_trip == this.tripId;
-        })
+        });
         if(this.userTripParticipation)
         {
           this.userHasSendRequest = true;
-					//Check if the request is accepted
-					if(this.userTripParticipation.status == participationStatus.accepted)
-					{
-						this.userRequestIsAccepted = true;
-					}
+		      //Check if the request is accepted
+		      if(this.userTripParticipation.status == participationStatus.accepted)
+		      {
+		      	this.userRequestIsAccepted = true;
+		      }
         }
       }
     }
+    //Get the owner information
+    this.ownerTripInfo = this.tripParticipantsInfo.find((value) =>
+        {
+          return value.id_user == this.tripInfo.id_creator;
+        });
+
     //Page loaded, we can show it
     this.pageLoaded = true;
   }
@@ -127,6 +134,15 @@ export class TripDetailComponent
       return "";
     }
     return convertIsoToDateInputFormat(dateString);
+  }
+
+  checkIfUserCanCancel() : boolean
+  {
+    if(this.userTripParticipation?.status == participationStatus.pending || this.userTripParticipation?.status == participationStatus.accepted)
+    {
+      return true;
+    }
+    return false;
   }
 
   changePetitionText() : string
@@ -144,7 +160,29 @@ export class TripDetailComponent
     }
     return "";
   }
+    get participationClass(): string
+  {
+    const status = this.userTripParticipation?.status ?? participationStatus.pending;
+    return this.participationStatusMap[status];
+  }
 
+  participationStatusMap: Record<participationStatus, string> =
+  {
+      [participationStatus.pending]: "text-bg-info",
+      [participationStatus.accepted]: "text-bg-success",
+      [participationStatus.rejected]: "text-bg-danger",
+      [participationStatus.left]: "text-bg-secondary",
+  };
+
+  //Here we will only have two status: pending or acepted
+  changeCancelPetitionText() : string
+  {
+    if(this.userTripParticipation?.status == participationStatus.pending)
+    {
+      return "Cancelar solicitud";
+    }
+    return "Abandonar viaje"
+  }
   petitionButtonPressed()
   {
     this.requestingPetition = true;
@@ -154,6 +192,33 @@ export class TripDetailComponent
       this.showForm = true;  
       this.showMessageBox = true;
     }, this.animationTimeOut);
+  }
+
+  async cancelPetitionButtonClicked()
+  {
+    if(this.userTripParticipation?.status == participationStatus.pending)
+    {
+      
+    }
+    else//The button is acepted and the user wants to leave the trip
+    {
+      let result;
+      try 
+      {
+        let participationId = this.userTripParticipation?.id_participation ?? -1;
+        if(participationId == -1)
+        {
+          console.log("No se pudo abandonar el viaje por que no se obtubo la informacion de la solicitud");
+        }
+        result = await this.participationService.updateParticipationStatus(participationId, participationStatus.left);
+      }
+      catch (error) 
+      {
+        console.log("No se pudo abandonar el viaje por un error inesperado :", error);
+      }
+      //despues de abandonar el viaje recargamos la informacion de la pagina
+      this.loadTrip();
+    }
   }
 
   async sendPetitionButtonPressed()
@@ -186,18 +251,4 @@ export class TripDetailComponent
     this.requestingPetition = false;
 		this.petitionForm.reset();
   }
-
-  get participationClass(): string
-  {
-    const status = this.userTripParticipation?.status ?? participationStatus.pending;
-    return this.participationStatusMap[status];
-  }
-
-  participationStatusMap: Record<participationStatus, string> =
-  {
-      [participationStatus.pending]: "text-bg-info",
-      [participationStatus.accepted]: "text-bg-success",
-      [participationStatus.rejected]: "text-bg-danger",
-      [participationStatus.left]: "text-bg-secondary",
-  };
 }
