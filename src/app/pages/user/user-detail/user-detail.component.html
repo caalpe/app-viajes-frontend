@@ -114,53 +114,6 @@
               </button>
             }
           </div>
-
-          <!-- Test Form (Development only) -->
-          <div class="test-form-section">
-            <div class="test-form-separator"></div>
-            <h3 class="test-form-title">🧪 Formulario de Prueba</h3>
-            <p class="test-form-description">Prueba la navegación entre perfiles</p>
-            <div class="test-form-container">
-              <div class="test-form-options">
-                <label class="test-form-radio">
-                  <input
-                    type="radio"
-                    name="profileType"
-                    value="own"
-                    [(ngModel)]="testProfileType"
-                  />
-                  Ver mi perfil (sin ID)
-                </label>
-                <label class="test-form-radio">
-                  <input
-                    type="radio"
-                    name="profileType"
-                    value="other"
-                    [(ngModel)]="testProfileType"
-                  />
-                  Ver perfil de otro usuario
-                </label>
-              </div>
-
-              @if (testProfileType === 'other') {
-                <input
-                  type="number"
-                  class="form-control"
-                  [(ngModel)]="testUserId"
-                  placeholder="Ingresa el ID del usuario"
-                  min="1"
-                />
-              }
-
-              <button
-                type="button"
-                class="btn btn-primary"
-                (click)="onNavigateToUserProfile()"
-              >
-                Ver Perfil
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     }
