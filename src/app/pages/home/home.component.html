@@ -31,15 +31,13 @@
 					[class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
 			</div>
 
-			<div class="field">
-				<label class="label-accent label-budget">Presupuesto máximo</label>
-				<div class="input-with-addon">
-					<input type="number" formControlName="budget" min="0" placeholder="Máx. €" />
-					<span class="addon">€</span>
-				</div>
+		<div class="field">
+			<label class="label-accent label-budget">Coste máximo</label>
+			<div class="input-with-addon">
+				<input type="number" formControlName="budget" min="0" placeholder="Máx. €" />
+				<span class="addon">€</span>
 			</div>
-
-
+		</div>
 
 		@if (searchForm.errors?.['dateRange']) {
 			<div class="form-error-full">
