@@ -207,6 +207,38 @@
             }
           </div>
 
+          <!-- Max participants -->
+          <div class="mb-4">
+            <label class="form-label" for="max_participants">Máximo de Participantes *</label>
+            <input
+              id="max_participants"
+              type="number"
+              class="form-control"
+              formControlName="max_participants"
+              min="1"
+              placeholder="10"
+            />
+            <small class="text-muted d-block mt-2">Indica el número máximo de personas que pueden participar en el viaje (incluyéndote). Debe ser mayor que el mínimo.</small>
+            @if (tripForm.get('max_participants')?.touched && tripForm.get('max_participants')?.invalid) {
+              <div class="invalid-feedback d-block mt-2">
+                @if (tripForm.get('max_participants')?.errors?.['required']) {
+                  El máximo de participantes es obligatorio.
+                }
+                @if (tripForm.get('max_participants')?.errors?.['min']) {
+                  El máximo debe ser al menos 1.
+                }
+                @if (tripForm.get('max_participants')?.errors?.['greaterThanMin']) {
+                  {{ VALIDATION_MESSAGES.max_participants.greaterThanMin }}
+                }
+              </div>
+            }
+            @if (validationErrors['max_participants']) {
+              <div class="invalid-feedback d-block mt-2">
+                {{ validationErrors['max_participants'] }}
+              </div>
+            }
+          </div>
+
           <!-- Description -->
           <div class="mb-4">
             <label class="form-label" for="description-textarea">Descripción *</label>

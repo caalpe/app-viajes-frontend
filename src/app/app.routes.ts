@@ -8,6 +8,7 @@ import { ChangePasswordComponent } from './pages/user/change-password/change-pas
 import { TripDetailComponent } from './pages/trip/trip-detail/trip-detail.component';
 import { TripFormComponent } from './pages/trip/trip-form/trip-form.component';
 import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
+import { RequestsComponent } from './pages/requests/requests.component';
 
  export const routes: Routes = [
   {
@@ -31,16 +32,16 @@ import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
         component: UserFormComponent
       },
       {
+        path: 'profile/edit',
+        component: UserFormComponent
+      },
+      {
         path: 'profile',
         component: UserDetailComponent
       },
       {
         path: 'profile/:idUser',
         component: UserDetailComponent
-      },
-      {
-        path: 'profile/edit',
-        component: UserFormComponent
       },
       {
         path: 'change-password',
@@ -70,6 +71,12 @@ import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
         component: TripFormComponent
       }
     ]
+  },
+
+  // Ruta de Solicitudes
+  {
+    path: 'requests',
+    component: RequestsComponent
   },
 
   // Ruta wildcard (debe ser la última)

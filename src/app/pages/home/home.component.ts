@@ -1,13 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, combineLatest, from, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { validateDateRange, validateDateNotPast } from '../../shared/utils/data.utils';
 // Use a flexible model for the UI's mocked trips; backend uses `ITrip`.
 type TripModel = any;
 import { TripService } from '../../services/trip';
+import { TripApiService } from '../../services/api-rest/trip-rest.service';
+import { AuthService } from '../../services/auth.service';
+import { UserApiService } from '../../services/api-rest/user-rest.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -26,12 +29,24 @@ export class HomeComponent implements OnInit {
 
   searchForm: FormGroup;
   trips$!: Observable<TripModel[]>;
+  totalPages = 1;
+  totalItems = 0;
+  pageSize = 9;
+  currentPage$ = new BehaviorSubject<number>(1);
   destinations: string[] = [];
   minDate: string = '';
   minEndDate: string = '';
-  private searchTrigger$ = new BehaviorSubject<any>({});
+  private query$ = new BehaviorSubject<{ page: number; filters: any }>({ page: 1, filters: {} });
 
-  constructor(private tripService: TripService, private fb: FormBuilder) {
+  userName: string | null = null;
+
+  constructor(
+    private tripService: TripService,
+    private tripApi: TripApiService,
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private userApi: UserApiService,
+  ) {
     this.searchForm = fb.group({
       destination: [''],
       from: [''],
@@ -41,6 +56,17 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+        // Si está logado, obtener el nombre del usuario para el saludo
+        if (this.authService.isLoggedIn()) {
+          const uid = this.authService.getUserId();
+          if (uid) {
+            this.userApi.getUser(uid).then(u => {
+              this.userName = u?.name || null;
+            }).catch(() => {
+              this.userName = null;
+            });
+          }
+        }
     // Establecer la fecha mínima como hoy en formato YYYY-MM-DD
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
@@ -55,18 +81,32 @@ export class HomeComponent implements OnInit {
       }
     });
 
-    const tripsSource$ = this.tripService.getTrips('open');
+    // Fuente: cuando se busca o cambia la página, pedir al backend paginado
+    const pagedSource$ = this.query$.pipe(
+      switchMap(({ page, filters }) => {
+        const cost = filters?.budget ? Number(filters.budget) : undefined;
+        return this.tripService.getTripsPaged('open', page, this.pageSize, cost);
+      })
+    );
 
-    // Filtrar solo cuando se dispara la búsqueda
-    this.trips$ = combineLatest([tripsSource$, this.searchTrigger$]).pipe(
-      map(([trips, _]) => {
-        console.log('Viajes recibidos:', trips);
+    // Aplicar filtros locales sobre el data paginado y exponer info de paginación
+    this.trips$ = pagedSource$.pipe(
+      map((resp: any) => {
+        const trips = resp?.data || resp || [];
+        const pagination = resp?.pagination;
+        if (pagination) {
+          this.totalPages = pagination.totalPages;
+          this.totalItems = pagination.total;
+          this.pageSize = pagination.pageSize;
+        }
+        console.log('Viajes paginados recibidos:', trips, 'pagination:', pagination);
         return this.filterTrips(trips, this.searchForm.value);
       })
     );
 
-    // Obtener lista única de destinos
-    tripsSource$.subscribe(trips => {
+    // Obtener lista única de destinos (desde la primera página)
+    this.tripService.getTripsPaged('open', 1, this.pageSize).subscribe(resp => {
+      const trips = resp?.data || [];
       const uniqueDestinations = new Set<string>();
       trips.forEach(trip => {
         if (trip.destination) uniqueDestinations.add(trip.destination);
@@ -78,8 +118,33 @@ export class HomeComponent implements OnInit {
 
   onSearch(): void {
     if (this.searchForm.valid) {
-      this.searchTrigger$.next(this.searchForm.value);
+      this.currentPage$.next(1);
+      this.query$.next({ page: 1, filters: this.searchForm.value });
     }
+  }
+
+  // Cambiar tamaño de página y reiniciar a la primera
+  setPageSize(size: number): void {
+    const parsed = Number(size);
+    if (!isNaN(parsed) && parsed > 0) {
+      this.pageSize = parsed;
+      this.currentPage$.next(1);
+      this.query$.next({ page: 1, filters: this.searchForm.value });
+    }
+  }
+
+  // Navegación de páginas
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage$.next(page);
+    this.query$.next({ page, filters: this.searchForm.value });
+  }
+
+  // Limpiar filtros y volver a primera página
+  clearFilters(): void {
+    this.searchForm.reset({ destination: '', from: '', to: '', budget: '' });
+    this.currentPage$.next(1);
+    this.query$.next({ page: 1, filters: this.searchForm.value });
   }
 
   private filterTrips(trips: TripModel[], form: any): TripModel[] {
@@ -95,10 +160,14 @@ export class HomeComponent implements OnInit {
         if (!hay.includes(dest)) return false;
       }
 
-      // Budget filter (use numeric price if available)
+      // Budget filter: compare against cost (primary), then fallbacks
       if (budget != null && !isNaN(budget)) {
-        const price = typeof t.priceNumber === 'number' ? t.priceNumber : (t.price ? Number(t.price.replace(/[^0-9.-]+/g, '')) : NaN);
-        if (!isFinite(price) || price > budget) return false;
+        const cost =
+          typeof t.cost === 'number' ? t.cost :
+          typeof t.cost_per_person === 'number' ? t.cost_per_person :
+          typeof t.priceNumber === 'number' ? t.priceNumber :
+          (t.price ? Number(String(t.price).replace(/[^0-9.-]+/g, '')) : NaN);
+        if (!isFinite(cost) || cost > budget) return false;
       }
 
       // Date overlap: trip availableFrom..availableTo must overlap with requested from..to
