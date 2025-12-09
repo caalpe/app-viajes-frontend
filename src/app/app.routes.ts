@@ -24,16 +24,17 @@ import { authGuard } from './guards/auth.guard';
     component: LoginComponent
   },
 
-  // Rutas de Usuario
+  // Ruta de Registro (sin autenticación requerida)
+  {
+    path: 'user/new',
+    component: UserFormComponent
+  },
+
+  // Rutas de Usuario (protegidas)
   {
     path: 'user',
     canActivate: [authGuard],
     children: [
-      {
-        path: 'new',
-        component: UserFormComponent,
-        canActivate: [] // Permitir registro sin autenticación
-      },
       {
         path: 'profile/edit',
         component: UserFormComponent

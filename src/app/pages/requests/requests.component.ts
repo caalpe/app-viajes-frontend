@@ -108,12 +108,10 @@ export class RequestsComponent implements OnInit {
       const isFull = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
       const isUpcoming = startDate > today;
       console.log(`🔍 Viaje ${trip.title}: startDate=${startDate.toISOString()}, today=${today.toISOString()}, isUpcoming=${isUpcoming}, isFull=${isFull}, accepted=${trip.accepted_participants}, min=${trip.min_participants}`);
-      return isUpcoming && !isFull;
+      return isUpcoming && isFull;
     });
-    console.log('🟡 Viajes Incompletos:', filtered.length);
     return filtered;
   }
-
   get completedTrips(): ITrip[] {
     const today = new Date();
     const filtered = this.myTrips.filter(trip => {
@@ -121,7 +119,6 @@ export class RequestsComponent implements OnInit {
       const isFull = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
       return startDate > today && isFull;
     });
-    console.log('🟢 Viajes Completados:', filtered.length);
     return filtered;
   }
 
@@ -130,10 +127,8 @@ export class RequestsComponent implements OnInit {
     const filtered = this.myTrips.filter(trip => {
       const endDate = new Date(trip.end_date!);
       const isPast = endDate < today;
-      console.log(`🕐 Viaje ${trip.title}: endDate=${endDate.toISOString()}, today=${today.toISOString()}, isPast=${isPast}`);
       return isPast;
     });
-    console.log('⏰ Viajes Pasados:', filtered.length);
     return filtered;
   }
 

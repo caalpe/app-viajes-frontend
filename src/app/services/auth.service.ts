@@ -29,7 +29,6 @@ export class AuthService {
       this.token = storedToken;
       this.userId = storedUserId ? Number(storedUserId) : null;
       this.setAuthStatus(true);
-      console.log('🔄 Sesión restaurada desde localStorage. User ID:', this.userId);
     }
   }
 
@@ -84,11 +83,8 @@ export class AuthService {
     const userId = decoded.id || decoded.userId || decoded.sub;
 
     if (userId) {
-      console.log('🆔 ID extraído del JWT:', userId);
       return Number(userId);
     }
-
-    console.warn('⚠️ No se encontró ID en el JWT');
     return null;
   }
 
@@ -113,9 +109,6 @@ export class AuthService {
 
     if (userId) {
       this.userId = userId;
-      console.log('🔐 AuthService - Token guardado. User ID:', userId);
-    } else {
-      console.log('🔐 AuthService - Token guardado (sin userId)');
     }
 
     // Guardar en localStorage para persistencia
@@ -123,12 +116,6 @@ export class AuthService {
     if (this.userId) {
       localStorage.setItem(this.USER_ID_KEY, String(this.userId));
     }
-
-    // Mostrar las propiedades internas después de descifrar el token
-    console.log('=== AuthService - Propiedades internas tras descifrar token ===');
-    console.log('Token:', this.token);
-    console.log('User ID:', this.userId);
-    console.log('=== Fin de propiedades internas ===');
 
     this.setAuthStatus(true);
   }
@@ -164,7 +151,6 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_ID_KEY);
     this.setAuthStatus(false);
-    console.log('🚪 Sesión cerrada - Token y userId eliminados');
   }
 
   setAuthStatus(status: boolean): void {

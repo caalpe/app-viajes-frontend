@@ -22,7 +22,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     // Suscribirse a los cambios de estado de autenticación
     this.subscription = this.authService.authStatus$.subscribe((status) => {
       this.isUserLoggedIn = status;
-      console.log('📊 Navbar - Estado de autenticación actualizado:', status);
       this.cdr.detectChanges();
     });
   }
@@ -32,7 +31,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    console.log('🚪 Navbar - Iniciando logout');
     this.authService.logout();
     this.isUserLoggedIn = false;
     this.cdr.detectChanges();
