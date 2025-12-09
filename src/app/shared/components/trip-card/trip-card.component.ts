@@ -69,7 +69,7 @@ export class TripCardComponent {
         [cardType.accepted]: "text-bg-success",
         [cardType.pending]: "text-bg-warning",
         [cardType.rejected]: "text-bg-danger",
-        [cardType.left]: "text-bg-info",
+        [cardType.left]: "text-bg-secondary",
     };
 
     changeDate(dateString : string | undefined) : string

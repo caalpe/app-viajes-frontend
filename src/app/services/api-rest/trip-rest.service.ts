@@ -18,7 +18,6 @@ export class TripApiService {
    */
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
-    console.log('🛫 TripApiService - Token obtenido de AuthService:', token);
     return new HttpHeaders({
       'Authorization': `${token}`,
       'Content-Type': 'application/json'
