@@ -40,25 +40,37 @@ export class TripApiService {
 
   /**
    * Recuperar viajes con paginación
-   * GET /api/trips?page=1&pageSize=10&status=open&cost=500
+   * GET /api/trips?page=1&pageSize=10&status=open&cost=500&destination=Barcelona&start_date=2025-01-01&end_date=2025-12-31
    */
   getTripsPaged(
     status?: string,
     page: number = 1,
     pageSize: number = 10,
-    cost?: number
+    cost?: number,
+    destination?: string,
+    startDate?: string,
+    endDate?: string
   ): Promise<{ data: ITrip[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('pageSize', pageSize.toString());
-    
+
     if (status) {
       params = params.set('status', status);
     }
     if (typeof cost === 'number') {
       params = params.set('cost', cost.toString());
     }
-    
+    if (destination && destination.trim() !== '') {
+      params = params.set('destination', destination.trim());
+    }
+    if (startDate && startDate.trim() !== '') {
+      params = params.set('start_date', startDate.trim());
+    }
+    if (endDate && endDate.trim() !== '') {
+      params = params.set('end_date', endDate.trim());
+    }
+
     return firstValueFrom(
       this.http.get<{ data: ITrip[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>(
         this.baseUrl,
