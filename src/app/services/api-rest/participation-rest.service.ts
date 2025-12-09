@@ -135,4 +135,18 @@ export class ParticipationApiService
       this.http.post<IRating>(`${this.baseUrl}/${participationId}/rating`, ratingData, { headers: this.getAuthHeaders() })
     );
   }
+
+  /**
+  * DELETE /api/participants/:participationId
+  * 
+  * Reglas:
+  * - Solo se puede borrar si la participación está en estado pending <-- comentado por el momento
+  * - Solo puede borrar el usuario que creó la participación (id_user)
+  */
+  deleteParticipation(participationId: number) : Promise<void>
+  {
+    return firstValueFrom(
+      this.http.delete<void>(`${this.baseUrl}/${participationId}`, { headers: this.getAuthHeaders() })
+    );
+  }
 }
