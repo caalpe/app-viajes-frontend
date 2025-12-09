@@ -18,7 +18,6 @@ export class TripApiService {
    */
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
-    console.log('🛫 TripApiService - Token obtenido de AuthService:', token);
     return new HttpHeaders({
       'Authorization': `${token}`,
       'Content-Type': 'application/json'
@@ -29,9 +28,42 @@ export class TripApiService {
    * Recuperar todos los viajes
    * GET /api/trips
    */
-  getTrips(): Promise<ITrip[]> {
+  getTrips(status?: string): Promise<ITrip[]> {
+    let params = new HttpParams();
+    if (status) {
+      params = params.set('status', status);
+    }
     return firstValueFrom(
-      this.http.get<ITrip[]>(this.baseUrl)
+      this.http.get<ITrip[]>(this.baseUrl, { params })
+    );
+  }
+
+  /**
+   * Recuperar viajes con paginación
+   * GET /api/trips?page=1&pageSize=10&status=open&cost=500
+   */
+  getTripsPaged(
+    status?: string,
+    page: number = 1,
+    pageSize: number = 10,
+    cost?: number
+  ): Promise<{ data: ITrip[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+    
+    if (status) {
+      params = params.set('status', status);
+    }
+    if (typeof cost === 'number') {
+      params = params.set('cost', cost.toString());
+    }
+    
+    return firstValueFrom(
+      this.http.get<{ data: ITrip[]; pagination: { total: number; page: number; pageSize: number; totalPages: number } }>(
+        this.baseUrl,
+        { params }
+      )
     );
   }
 

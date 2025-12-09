@@ -1,7 +1,12 @@
 <section class="hero">
 	<div class="hero-inner container">
-		<h1>Viaja. Descubre. Vive.</h1>
-		<p class="lead">Encuentra las mejores ofertas y experiencias únicas para tu próxima aventura.</p>
+		@if (userName) {
+			<h1 class="display-4 fw-bold">Bienvenido <span class="d-block">{{ userName }}</span></h1>
+			<p class="lead">Explora y encuentra tu próxima aventura a medida.</p>
+		} @else {
+			<h1>Viaja. Descubre. Vive.</h1>
+			<p class="lead">Encuentra las mejores ofertas y experiencias únicas para tu próxima aventura.</p>
+		}
 
 		<form class="search-form" [formGroup]="searchForm" (ngSubmit)="onSearch()">
 			<div class="field">
@@ -26,13 +31,13 @@
 					[class.input-error]="searchForm.errors?.['dateRange'] && (fromControl?.touched || toControl?.touched)" />
 			</div>
 
-			<div class="field">
-				<label class="label-accent label-budget">Presupuesto</label>
-				<div class="input-with-addon">
-					<input type="number" formControlName="budget" min="0" placeholder="0" />
-					<span class="addon">€</span>
-				</div>
+		<div class="field">
+			<label class="label-accent label-budget">Coste máximo</label>
+			<div class="input-with-addon">
+				<input type="number" formControlName="budget" min="0" placeholder="Máx. €" />
+				<span class="addon">€</span>
 			</div>
+		</div>
 
 		@if (searchForm.errors?.['dateRange']) {
 			<div class="form-error-full">
@@ -44,9 +49,11 @@
 			<div class="form-error-full">
 				El presupuesto debe ser un número mayor o igual a 0.
 			</div>
-		}			<div class="field action-bottom">
-				<button class="btn primary" type="submit">Buscar</button>
-			</div>
+		}
+		<div class="field action-bottom d-flex gap-2">
+			<button class="btn primary" type="submit">Buscar</button>
+			<button class="btn btn-secondary" type="button" (click)="clearFilters()">Limpiar filtros</button>
+		</div>
 		</form>
 	</div>
 </section>
@@ -64,28 +71,43 @@
 
 <section class="trips container">
 	<h2>Viajes recomendados</h2>
-	@if (trips$ | async; as trips) {
-		@if (trips.length > 0) {
-			<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-				@for (trip of trips; track trip.id_trip) {
-					<div class="col">
-						<app-trip-card [tripInfo]="trip" [type]="cardType.none"></app-trip-card>
-					</div>
-				}
-			</div>
-		} @else {
-			<div class="alert alert-info text-center">
-				<i class="bi bi-info-circle me-2"></i>
-				No se encontraron viajes. Intenta ajustar los filtros de búsqueda.
+	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+		@for (t of (trips$ | async); track t.id_trip) {
+			<div class="col">
+				<app-trip-card [tripInfo]="t" [type]="cardType.none"></app-trip-card>
 			</div>
 		}
-	} @else {
-		<div class="text-center py-5">
-			<div class="spinner-border text-primary" role="status">
-				<span class="visually-hidden">Cargando viajes...</span>
-			</div>
+	</div>
+
+	@if ((trips$ | async)?.length === 0) {
+		<div class="alert alert-info text-center mt-3">
+			<i class="bi bi-info-circle me-2"></i>
+			No se encontraron viajes. Intenta ajustar los filtros de búsqueda.
 		</div>
 	}
+
+	<!-- Pagination controls -->
+	<div class="pagination mt-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
+		@let cp = (currentPage$ | async);
+		<button class="btn btn-outline-primary" (click)="goToPage(1)" [disabled]="cp === 1">« Primero</button>
+		<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) - 1)" [disabled]="cp === 1">‹ Anterior</button>
+		<span>Página {{ cp }} de {{ totalPages }}</span>
+		<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) + 1)" [disabled]="cp === totalPages">Siguiente ›</button>
+		<button class="btn btn-outline-primary" (click)="goToPage(totalPages)" [disabled]="cp === totalPages">Último »</button>
+
+		<!-- Page size selector -->
+		<label class="ms-3">Por página
+			<select class="form-select d-inline-block w-auto ms-2" [value]="pageSize" (change)="setPageSize($any($event.target).value)">
+				<option [value]="6">6</option>
+				<option [value]="9">9</option>
+				<option [value]="12">12</option>
+			</select>
+		</label>
+	</div>
+
+	<div class="mt-2 text-center">
+		<span>Mostrando {{ (trips$ | async)?.length || 0 }} de {{ totalItems }} resultados</span>
+	</div>
 </section>
 
 <section class="cta">
