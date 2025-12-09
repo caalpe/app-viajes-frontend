@@ -7,7 +7,6 @@ import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@ang
 import { validateDateRange, validateDateNotPast } from '../../shared/utils/data.utils';
 // Use a flexible model for the UI's mocked trips; backend uses `ITrip`.
 type TripModel = any;
-import { TripService } from '../../services/trip';
 import { TripApiService } from '../../services/api-rest/trip-rest.service';
 import { AuthService } from '../../services/auth.service';
 import { UserApiService } from '../../services/api-rest/user-rest.service';
@@ -41,7 +40,6 @@ export class HomeComponent implements OnInit {
   userName: string | null = null;
 
   constructor(
-    private tripService: TripService,
     private tripApi: TripApiService,
     private fb: FormBuilder,
     private authService: AuthService,
@@ -56,17 +54,24 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Suscribirse a cambios en el estado de autenticación
+    this.authService.authStatus$.subscribe((isLoggedIn) => {
+      if (isLoggedIn) {
         // Si está logado, obtener el nombre del usuario para el saludo
-        if (this.authService.isLoggedIn()) {
-          const uid = this.authService.getUserId();
-          if (uid) {
-            this.userApi.getUser(uid).then(u => {
-              this.userName = u?.name || null;
-            }).catch(() => {
-              this.userName = null;
-            });
-          }
+        const uid = this.authService.getUserId();
+        if (uid) {
+          this.userApi.getUser(uid).then(u => {
+            this.userName = u?.name || null;
+          }).catch(() => {
+            this.userName = null;
+          });
         }
+      } else {
+        // Si no está logado, limpiar el nombre
+        this.userName = null;
+      }
+    });
+
     // Establecer la fecha mínima como hoy en formato YYYY-MM-DD
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
@@ -85,7 +90,7 @@ export class HomeComponent implements OnInit {
     const pagedSource$ = this.query$.pipe(
       switchMap(({ page, filters }) => {
         const cost = filters?.budget ? Number(filters.budget) : undefined;
-        return this.tripService.getTripsPaged('open', page, this.pageSize, cost);
+        return from(this.tripApi.getTripsPaged('open', page, this.pageSize, cost));
       })
     );
 
@@ -105,7 +110,7 @@ export class HomeComponent implements OnInit {
     );
 
     // Obtener lista única de destinos (desde la primera página)
-    this.tripService.getTripsPaged('open', 1, this.pageSize).subscribe(resp => {
+    this.tripApi.getTripsPaged('open', 1, this.pageSize).then(resp => {
       const trips = resp?.data || [];
       const uniqueDestinations = new Set<string>();
       trips.forEach(trip => {
@@ -113,6 +118,8 @@ export class HomeComponent implements OnInit {
         if (trip.title) uniqueDestinations.add(trip.title);
       });
       this.destinations = Array.from(uniqueDestinations).sort();
+    }).catch(err => {
+      console.error('Error cargando destinos:', err);
     });
   }
 

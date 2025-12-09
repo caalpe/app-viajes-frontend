@@ -9,6 +9,7 @@ import { TripDetailComponent } from './pages/trip/trip-detail/trip-detail.compon
 import { TripFormComponent } from './pages/trip/trip-form/trip-form.component';
 import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
 import { RequestsComponent } from './pages/requests/requests.component';
+import { authGuard } from './guards/auth.guard';
 
  export const routes: Routes = [
   {
@@ -26,10 +27,12 @@ import { RequestsComponent } from './pages/requests/requests.component';
   // Rutas de Usuario
   {
     path: 'user',
+    canActivate: [authGuard],
     children: [
       {
         path: 'new',
-        component: UserFormComponent
+        component: UserFormComponent,
+        canActivate: [] // Permitir registro sin autenticación
       },
       {
         path: 'profile/edit',
@@ -53,6 +56,7 @@ import { RequestsComponent } from './pages/requests/requests.component';
   // Rutas de Viaje
   {
     path: 'trips',
+    canActivate: [authGuard],
     children: [
       {
         path: '',
@@ -76,7 +80,8 @@ import { RequestsComponent } from './pages/requests/requests.component';
   // Ruta de Solicitudes
   {
     path: 'requests',
-    component: RequestsComponent
+    component: RequestsComponent,
+    canActivate: [authGuard]
   },
 
   // Ruta wildcard (debe ser la última)

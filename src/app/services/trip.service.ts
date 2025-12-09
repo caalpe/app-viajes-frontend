@@ -14,7 +14,6 @@ import {
   TRIP_ACCOMMODATION_INFO_MAX_LENGTH,
   TRIP_ITINERARY_MAX_LENGTH,
   TRIP_MIN_PARTICIPANTS_MAX,
-  TRIP_COST_PER_PERSON_MAX,
 } from '../shared/constants/field-lengths.constants';
 
 @Injectable({
