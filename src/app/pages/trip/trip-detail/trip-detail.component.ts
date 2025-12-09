@@ -9,6 +9,7 @@ import { convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
 import { AuthService } from '../../../services/auth.service';
 import { SpinnerComponent } from "../../../shared/components/spinner/spinner.component";
 import { FormControl, FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-trip-detail',
@@ -64,8 +65,6 @@ export class TripDetailComponent
     try
     {
       this.tripInfo = await this.tripService.getTrip(this.tripId);
-
-      console.log(this.tripInfo);
     }
     catch (error)
     {
@@ -117,6 +116,7 @@ export class TripDetailComponent
         }
       }
     }
+    
     //Get the owner information
     this.ownerTripInfo = this.tripParticipantsInfo.find((value) =>
         {
@@ -196,9 +196,25 @@ export class TripDetailComponent
 
   async cancelPetitionButtonClicked()
   {
+    //The user wants to delete de petition for entering the trip
     if(this.userTripParticipation?.status == participationStatus.pending)
     {
-      
+      let result;
+      try 
+      {
+        let participationId = this.userTripParticipation?.id_participation ?? -1;
+        if(participationId == -1)
+        {
+          console.log("No se pudo cancelar la peticion del viaje por que no se obtubo la informacion de la solicitud");
+        }
+        result = await this.participationService.deleteParticipation(participationId);
+      }
+      catch (error) 
+      {
+        console.log("No se pudo cancelar la peticion del viaje por un error inesperado :", error);
+      }
+      this.userHasSendRequest = false;
+      this.cancelPetitionButtonPressed();
     }
     else//The button is acepted and the user wants to leave the trip
     {
@@ -216,17 +232,15 @@ export class TripDetailComponent
       {
         console.log("No se pudo abandonar el viaje por un error inesperado :", error);
       }
-      //despues de abandonar el viaje recargamos la informacion de la pagina
-      this.loadTrip();
     }
+    //despues de abandonar el viaje recargamos la informacion de la pagina
+    this.loadTrip();
   }
 
   async sendPetitionButtonPressed()
   {
-		console.log(this.petitionForm.value);
 		try 
 		{
-			console.log(this.tripId);
 			this.userTripParticipation = await this.participationService.createParticipationRequest(this.tripId, this.petitionForm.get("text")?.value ?? "");	
 		} 
 		catch (error) 
