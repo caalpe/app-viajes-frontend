@@ -53,10 +53,6 @@ export class UserFormComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-
-    // TODO: Remover - Solo para pruebas
-    console.log('URL actual:', this.router.url);
-    console.log('Token en AuthService:', this.authService.getToken());
   }
 
   async loadEditModeData(): Promise<void> {
@@ -75,7 +71,6 @@ export class UserFormComponent implements OnInit {
   async loadUserData(userId: number): Promise<void> {
     try {
       const user = await this.userApi.getUser(userId);
-      console.log('Usuario cargado:', user);
       // En modo edición, llenamos el formulario con todos los datos incluyendo password
       this.userState.patchForm(user);
     } catch (error) {
@@ -89,24 +84,9 @@ export class UserFormComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    console.log('onSubmit llamado');
-    console.log('userForm.invalid:', this.userForm.invalid);
-    console.log('userForm.valid:', this.userForm.valid);
-    console.log('userForm.value:', this.userForm.value);
-
-    // Validar solo los campos obligatorios del FormGroup
-    const nameControl = this.userForm.get('name');
-    const emailControl = this.userForm.get('email');
-    const passwordControl = this.userForm.get('password');
-
-    console.log('nameControl.invalid:', nameControl?.invalid);
-    console.log('emailControl.invalid:', emailControl?.invalid);
-    console.log('passwordControl.invalid:', passwordControl?.invalid);
-
     const payload = this.userForm.value;
 
     // Validar datos del formulario con validaciones personalizadas
-    console.log('Llamando a validateFormData');
     const customValidationsPassed = this.validateFormData(payload);
 
     // Validar que el formulario sea válido según Angular
@@ -114,13 +94,11 @@ export class UserFormComponent implements OnInit {
 
     // Si no pasa las validaciones de Angular, marcar como touched para mostrar errores
     if (!angularValidationsPassed) {
-      console.log('Formulario inválido según Angular, marcando como touched');
       this.userForm.markAllAsTouched();
     }
 
     // Retornar si falla cualquiera de las validaciones
     if (!customValidationsPassed || !angularValidationsPassed) {
-      console.log('Validaciones fallidas - Custom:', customValidationsPassed, 'Angular:', angularValidationsPassed);
       return;
     }
 
@@ -135,12 +113,10 @@ export class UserFormComponent implements OnInit {
         // No enviar la password al backend en edición usando el operador spread
         const { password, ...payloadWithoutPassword } = payload;
         const userActualizado = await this.userApi.updateUserPut(this.userId, payloadWithoutPassword);
-        console.log('Usuario actualizado', userActualizado);
         successMessage = extractSuccessMessage(userActualizado, 'Usuario actualizado correctamente');
       } else {
         // Modo alta: crear nuevo usuario usando register del auth-rest
         const response = await this.authRest.register(payload);
-        console.log('Usuario registrado', response);
         // Guardar el token en el AuthService (decodifica JWT automáticamente)
         this.authService.setToken(response.token);
         successMessage = extractSuccessMessage(response, 'Usuario registrado correctamente');
@@ -210,11 +186,9 @@ export class UserFormComponent implements OnInit {
   private validateFormData(payload: any): boolean {
     // Limpiar errores previos
     this.validationErrors = {};
-    console.log('Validando payload:', payload);
 
     // Validar nombre: no puede contener números y debe ser solo caracteres
     if (payload.name && !this.nameValidator(payload.name)) {
-      console.log('Nombre inválido:', payload.name);
       this.validationErrors['name'] = VALIDATION_MESSAGES.name.invalid;
       return false;
     }

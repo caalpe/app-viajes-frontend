@@ -74,10 +74,6 @@ export class TripFormComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-
-    // TODO: Remover - Solo para pruebas
-    console.log('URL actual:', this.router.url);
-    console.log('Token en AuthService:', this.authService.getToken());
   }
 
   /**
@@ -116,7 +112,6 @@ export class TripFormComponent implements OnInit {
   async loadTripData(tripId: number): Promise<void> {
     try {
       const trip = await this.tripApi.getTrip(tripId);
-      console.log('Trip cargado:', trip);
 
       // Convertir las fechas de ISO a formato YYYY-MM-DD para los inputs date
       if (trip.start_date) {
@@ -135,15 +130,9 @@ export class TripFormComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    console.log('onSubmit llamado');
-    console.log('tripForm.invalid:', this.tripForm.invalid);
-    console.log('tripForm.valid:', this.tripForm.valid);
-    console.log('tripForm.value:', this.tripForm.value);
-
     const payload = this.tripForm.value;
 
     // Validar datos del formulario con validaciones personalizadas
-    console.log('Llamando a validateFormData');
     const customValidationsPassed = this.validateFormData(payload);
 
     // Validar que el formulario sea válido según Angular
@@ -151,13 +140,11 @@ export class TripFormComponent implements OnInit {
 
     // Si no pasa las validaciones de Angular, marcar como touched para mostrar errores
     if (!angularValidationsPassed) {
-      console.log('Formulario inválido según Angular, marcando como touched');
       this.tripForm.markAllAsTouched();
     }
 
     // Retornar si falla cualquiera de las validaciones
     if (!customValidationsPassed || !angularValidationsPassed) {
-      console.log('Validaciones fallidas - Custom:', customValidationsPassed, 'Angular:', angularValidationsPassed);
       return;
     }
 
@@ -167,14 +154,12 @@ export class TripFormComponent implements OnInit {
       let successMessage = '';
 
       if (this.isEditMode && this.tripId) {
-        // Modo edición: actualizar viaje existente
+        // Modo edición: actualizar trip existente
         const tripActualizado = await this.tripApi.updateTrip(this.tripId, payload);
-        console.log('Viaje actualizado', tripActualizado);
         successMessage = extractSuccessMessage(tripActualizado, 'Viaje actualizado correctamente');
       } else {
-        // Modo alta: crear nuevo viaje
+        // Modo alta: crear nuevo trip
         const tripCreado = await this.tripApi.createTrip(payload);
-        console.log('Viaje creado', tripCreado);
         successMessage = extractSuccessMessage(tripCreado, 'Viaje creado correctamente');
       }
 
@@ -300,7 +285,6 @@ export class TripFormComponent implements OnInit {
   private validateFormData(payload: any): boolean {
     // Limpiar errores previos
     this.validationErrors = {};
-    console.log('Validando payload:', payload);
 
     // Validar rango de fechas
     if (!this.validateDateRange(payload.start_date, payload.end_date)) {
