@@ -7,16 +7,18 @@ import { ITrip } from '../../../interfaces/ITrip';
 import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
 import { IParticipant } from '../../../interfaces/IParticipant';
 import { FormsModule } from '@angular/forms';
+import { SpinnerComponent } from "../../../shared/components/spinner/spinner.component";
 
 @Component({
   selector: 'app-trip-list',
-  imports: [CommonModule, TripCardComponent, RouterLink, FormsModule],
+  imports: [CommonModule, TripCardComponent, RouterLink, FormsModule, SpinnerComponent],
   styleUrl: './trip-list.component.css',
   templateUrl: './trip-list.component.html',
 })
 export class TripListComponent
 {
     cardType = cardType;
+    pageLoaded : boolean = false;
 
     tripService = inject(TripApiService);
     participationService = inject(ParticipationApiService);
@@ -29,7 +31,6 @@ export class TripListComponent
 
     ngOnInit()
     {
-        this.loadUserTrips();
         this.loadAllTrips();
     }
 
@@ -46,6 +47,8 @@ export class TripListComponent
         {
             console.error('Error cargando todos los viajes:', error);
         }
+        this.loadUserTrips();
+        this.pageLoaded = true;
     }
 
     async loadUserTrips()

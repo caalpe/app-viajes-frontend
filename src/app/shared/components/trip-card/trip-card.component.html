@@ -2,7 +2,14 @@
          [class.shadow]="hover" [class.shadow-sm]="!hover">
     <div class="image-wrapper">
         <img [src]="tripInfo.image_url ?? image" alt="" class="img-fluid card-image">
-        <span class="badge rounded-pill position-absolute owner-display {{badgeClassMap[type]}}">{{selectCardType()}}</span>
+        @if (tripInfo.status == "open") 
+        {
+            <span class="badge rounded-pill position-absolute owner-display {{badgeClassMap[type]}}">{{selectCardType()}}</span>
+        }
+        @else 
+        {
+            <span class="badge rounded-pill position-absolute owner-display text-bg-danger">{{informTripStatus()}}</span>
+        }
     </div>
     <div class="card-body">
         <h3 class="card-title">{{tripInfo.title}}</h3>

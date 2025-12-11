@@ -65,6 +65,7 @@ export class TripDetailComponent
     try
     {
       this.tripInfo = await this.tripService.getTrip(this.tripId);
+      console.log(this.tripInfo);
     }
     catch (error)
     {
@@ -160,7 +161,8 @@ export class TripDetailComponent
     }
     return "";
   }
-    get participationClass(): string
+  
+  get participationClass(): string
   {
     const status = this.userTripParticipation?.status ?? participationStatus.pending;
     return this.participationStatusMap[status];
