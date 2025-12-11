@@ -11,15 +11,18 @@ import { TripApiService } from '../../services/api-rest/trip-rest.service';
 import { AuthService } from '../../services/auth.service';
 import { UserApiService } from '../../services/api-rest/user-rest.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { TripCardComponent, cardType } from '../../shared/components/trip-card/trip-card.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TripCardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  cardType = cardType;
+  
   features = [
     { title: 'Explora destinos', desc: 'Encuentra viajes hechos a tu medida.' },
     { title: 'Reservas seguras', desc: 'Transacciones protegidas y confirmaciones instantáneas.' },
@@ -124,6 +127,9 @@ export class HomeComponent implements OnInit {
     }).catch(err => {
       console.error('Error cargando destinos:', err);
     });
+
+    // Cargar viajes automáticamente al inicio
+    this.query$.next({ page: 1, filters: this.searchForm.value });
   }
 
   onSearch(): void {
