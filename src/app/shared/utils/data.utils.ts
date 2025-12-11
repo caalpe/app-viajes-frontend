@@ -174,3 +174,21 @@ export function formatDateToSpanish(date: string | Date | undefined | null): str
 
   return dateObj.toLocaleDateString('es-ES', options);
 }
+
+/**
+ * Convertir fecha de formato americano (YYYY-MM-DD) a formato español (DD-MM-YYYY)
+ * @param date - Fecha en formato YYYY-MM-DD o ISO
+ * @returns Fecha en formato DD-MM-YYYY (ej: "28-11-2025")
+ */
+export function formatDateDDMMYYYY(date: string | Date | undefined | null): string {
+  if (!date) {
+    return '';
+  }
+
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const day = dateObj.getUTCDate().toString().padStart(2, '0');
+  const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
+  const year = dateObj.getUTCFullYear();
+
+  return `${day}-${month}-${year}`;
+}
