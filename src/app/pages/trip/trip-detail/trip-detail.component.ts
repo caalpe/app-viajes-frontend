@@ -5,7 +5,7 @@ import { ITrip } from '../../../interfaces/ITrip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
 import { IParticipant, IParticipantInfo, participationStatus } from '../../../interfaces/IParticipant';
-import { convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
+import { convertIsoToDateInputFormat, formatDateDDMMYYYY } from '../../../shared/utils/data.utils';
 import { AuthService } from '../../../services/auth.service';
 import { SpinnerComponent } from "../../../shared/components/spinner/spinner.component";
 import { FormControl, FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
@@ -134,7 +134,7 @@ export class TripDetailComponent
     {
       return "";
     }
-    return convertIsoToDateInputFormat(dateString);
+    return formatDateDDMMYYYY(dateString);
   }
 
   checkIfUserCanCancel() : boolean
