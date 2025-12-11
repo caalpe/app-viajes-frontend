@@ -11,15 +11,18 @@ import { TripApiService } from '../../services/api-rest/trip-rest.service';
 import { AuthService } from '../../services/auth.service';
 import { UserApiService } from '../../services/api-rest/user-rest.service';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { TripCardComponent, cardType } from '../../shared/components/trip-card/trip-card.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TripCardComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  cardType = cardType;
+  
   features = [
     { title: 'Explora destinos', desc: 'Encuentra viajes hechos a tu medida.' },
     { title: 'Reservas seguras', desc: 'Transacciones protegidas y confirmaciones instantáneas.' },
@@ -90,11 +93,15 @@ export class HomeComponent implements OnInit {
     const pagedSource$ = this.query$.pipe(
       switchMap(({ page, filters }) => {
         const cost = filters?.budget ? Number(filters.budget) : undefined;
-        return from(this.tripApi.getTripsPaged('open', page, this.pageSize, cost));
+        const destination = filters?.destination || undefined;
+        const startDate = filters?.from || undefined;
+        const endDate = filters?.to || undefined;
+        return from(this.tripApi.getTripsPaged('open', page, this.pageSize, cost, destination, startDate, endDate));
       })
     );
 
-    // Aplicar filtros locales sobre el data paginado y exponer info de paginación
+
+    // Exponer data paginado e info de paginación (backend ya aplica todos los filtros)
     this.trips$ = pagedSource$.pipe(
       map((resp: any) => {
         const trips = resp?.data || resp || [];
@@ -104,8 +111,7 @@ export class HomeComponent implements OnInit {
           this.totalItems = pagination.total;
           this.pageSize = pagination.pageSize;
         }
-        console.log('Viajes paginados recibidos:', trips, 'pagination:', pagination);
-        return this.filterTrips(trips, this.searchForm.value);
+        return trips;
       })
     );
 
@@ -121,6 +127,9 @@ export class HomeComponent implements OnInit {
     }).catch(err => {
       console.error('Error cargando destinos:', err);
     });
+
+    // Cargar viajes automáticamente al inicio
+    this.query$.next({ page: 1, filters: this.searchForm.value });
   }
 
   onSearch(): void {
@@ -152,42 +161,6 @@ export class HomeComponent implements OnInit {
     this.searchForm.reset({ destination: '', from: '', to: '', budget: '' });
     this.currentPage$.next(1);
     this.query$.next({ page: 1, filters: this.searchForm.value });
-  }
-
-  private filterTrips(trips: TripModel[], form: any): TripModel[] {
-    const dest = (form.destination || '').toString().trim().toLowerCase();
-    const from = form.from ? new Date(form.from) : null;
-    const to = form.to ? new Date(form.to) : null;
-    const budget = form.budget ? Number(form.budget) : null;
-
-    return trips.filter(t => {
-      // Destination filter (title or description)
-      if (dest) {
-        const hay = (t.title + ' ' + (t.description || '')).toLowerCase();
-        if (!hay.includes(dest)) return false;
-      }
-
-      // Budget filter: compare against cost (primary), then fallbacks
-      if (budget != null && !isNaN(budget)) {
-        const cost =
-          typeof t.cost === 'number' ? t.cost :
-          typeof t.cost_per_person === 'number' ? t.cost_per_person :
-          typeof t.priceNumber === 'number' ? t.priceNumber :
-          (t.price ? Number(String(t.price).replace(/[^0-9.-]+/g, '')) : NaN);
-        if (!isFinite(cost) || cost > budget) return false;
-      }
-
-      // Date overlap: trip availableFrom..availableTo must overlap with requested from..to
-      if (from || to) {
-        const tripFrom = t.availableFrom ? new Date(t.availableFrom) : null;
-        const tripTo = t.availableTo ? new Date(t.availableTo) : null;
-
-        if (from && tripTo && tripTo < from) return false; // trip ends before requested start
-        if (to && tripFrom && tripFrom > to) return false; // trip starts after requested end
-      }
-
-      return true;
-    });
   }
 
   private dateRangeValidator(): ValidatorFn {
