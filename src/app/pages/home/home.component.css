@@ -126,7 +126,7 @@
 .feature { background:#fff; padding:18px; border-radius:8px; box-shadow:0 4px 14px rgba(2,6,23,0.08); }
 .feature h3 { margin:0 0 8px 0; }
 
-.trips { padding: 0 0 40px 0; }
+.trips { padding: 40px 0 40px 0; }
 .trips h2 { margin: 8px 0 18px 0; }
 
 /* Trip cards - using Gaizka's Bootstrap card style */
