@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ITrip } from '../../../interfaces/ITrip';
 import { RouterLink } from '@angular/router';
-import { convertIsoToDateInputFormat } from '../../utils/data.utils';
+import { formatDateDDMMYYYY } from '../../utils/data.utils';
 
 export enum cardType
 {
@@ -27,16 +27,16 @@ export class TripCardComponent {
     cardType = cardType;
     @Input() type : cardType = cardType.none;
     @Input({required : true}) tripInfo! : ITrip;
-    
+
     ngOnInit()
     {
     }
 
-    ngAfterViewInit() 
+    ngAfterViewInit()
     {
-        const observer = new ResizeObserver(entries => 
+        const observer = new ResizeObserver(entries =>
         {
-            for (const entry of entries) 
+            for (const entry of entries)
             {
               entry.target.parentElement!.style.height = entry.contentRect.height + "px";
             }
@@ -62,7 +62,7 @@ export class TripCardComponent {
                 return "Abandonado";
         }
     }
-    badgeClassMap: Record<cardType, string> = 
+    badgeClassMap: Record<cardType, string> =
     {
         [cardType.none]: "text-bg-secondary",
         [cardType.owner]: "text-bg-primary",
@@ -78,6 +78,6 @@ export class TripCardComponent {
         {
         return "";
         }
-        return convertIsoToDateInputFormat(dateString);
+        return formatDateDDMMYYYY(dateString);
     }
 }

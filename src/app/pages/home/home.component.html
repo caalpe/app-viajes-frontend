@@ -58,82 +58,67 @@
 	</div>
 </section>
 
-<section class="features container">
-	<div class="features-grid">
-		@for (f of features; track f.title) {
-			<div class="feature">
-				<h3>{{ f.title }}</h3>
-				<p>{{ f.desc }}</p>
-			</div>
-		}
-	</div>
-</section>
+@if (!hasSearched) {
+	<section class="features container">
+		<div class="features-grid">
+			@for (f of features; track f.title) {
+				<div class="feature">
+					<h3>{{ f.title }}</h3>
+					<p>{{ f.desc }}</p>
+				</div>
+			}
+		</div>
+	</section>
+}
 
-<section class="trips container">
-	<h2>Viajes recomendados</h2>
+<section class="trips features container">
+	<h2>{{ hasSearched ? 'Resultados de tu búsqueda' : 'Viajes recomendados' }}</h2>
+	@let tripsList = (trips$ | async);
 	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-		@for (t of (trips$ | async); track t.id_trip) {
+		@for (t of tripsList; track t.id_trip) {
 			<div class="col">
-				<article class="card shadow-sm">
-					<div class="pt-4">
-						<img [src]="t.image_url" alt="" class="img-fluid card-image">
-					</div>
-					<div class="card-body">
-						<h3 class="card-title">{{ t.title }}</h3>
-						<div>
-							<i class="bi bi-geo-alt pe-2"></i>
-							<span class="card-text">{{ t.departure || 'Sin especificar' }}</span>
-							<i class="bi bi-arrow-right pe-2"></i>
-							<span class="card-text">{{ t.destination || t.description }}</span>
-						</div>
-						<div>
-							<i class="bi bi-calendar pe-2"></i>
-							<span class="card-text">{{ t.start_date || t.availableFrom || 'Disponible' }}</span>
-						</div>
-						<div>
-							<i class="bi bi-people pe-2"></i>
-							<span class="card-text">{{ t.min_participants || 'Varios' }} personas</span>
-						</div>
-						<div>
-							<i class="bi bi-cash pe-2"></i>
-							<span class="card-text">{{ t.cost_per_person || t.priceNumber || t.price }} €</span>
-						</div>
-					</div>
-
-					<a [routerLink]="['/trips', t.id_trip || t.id]" class="stretched-link"></a>
-				</article>
+				<app-trip-card [tripInfo]="t" [type]="cardType.none"></app-trip-card>
 			</div>
 		}
 	</div>
+
+	@if (totalItems === 0) {
+		<div class="alert alert-info text-center mt-3">
+			<i class="bi bi-info-circle me-2"></i>
+			No se encontraron viajes. Intenta ajustar los filtros de búsqueda.
+		</div>
+	}
 
 	<!-- Pagination controls -->
-	<div class="pagination mt-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
-		@let cp = (currentPage$ | async);
-		<button class="btn btn-outline-primary" (click)="goToPage(1)" [disabled]="cp === 1">« Primero</button>
-		<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) - 1)" [disabled]="cp === 1">‹ Anterior</button>
-		<span>Página {{ cp }} de {{ totalPages }}</span>
-		<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) + 1)" [disabled]="cp === totalPages">Siguiente ›</button>
-		<button class="btn btn-outline-primary" (click)="goToPage(totalPages)" [disabled]="cp === totalPages">Último »</button>
+	@if (hasSearched && totalPages > 1) {
+		<div class="pagination mt-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
+			@let cp = (currentPage$ | async);
+			<button class="btn btn-outline-primary" (click)="goToPage(1)" [disabled]="cp === 1">« Primero</button>
+			<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) - 1)" [disabled]="cp === 1">‹ Anterior</button>
+			<span>Página {{ cp }} de {{ totalPages }}</span>
+			<button class="btn btn-outline-primary" (click)="goToPage((cp || 1) + 1)" [disabled]="cp === totalPages">Siguiente ›</button>
+			<button class="btn btn-outline-primary" (click)="goToPage(totalPages)" [disabled]="cp === totalPages">Último »</button>
 
-		<!-- Page size selector moved here -->
-		<label class="ms-3">Por página
-			<select class="form-select d-inline-block w-auto ms-2" [value]="pageSize" (change)="setPageSize($any($event.target).value)">
-				<option [value]="6">6</option>
-				<option [value]="9">9</option>
-				<option [value]="12">12</option>
-			</select>
-		</label>
-	</div>
+			<!-- Page size selector -->
+			<label class="ms-3">Por página
+				<select class="form-select d-inline-block w-auto ms-2" [value]="pageSize" (change)="setPageSize($any($event.target).value)">
+					<option [value]="6">6</option>
+					<option [value]="9">9</option>
+					<option [value]="12">12</option>
+				</select>
+			</label>
+		</div>
 
-	<div class="mt-2 text-center">
-		<span>Mostrando {{ (trips$ | async)?.length || 0 }} de {{ totalItems }} resultados</span>
-	</div>
+		<div class="mt-2 text-center">
+			<span>Mostrando {{ tripsList?.length || 0 }} de {{ totalItems }} resultados</span>
+		</div>
+	}
 </section>
 
 <section class="cta">
 	<div class="container cta-inner">
 		<h2>Listo para tu próxima aventura?</h2>
 		<p>Reserva ahora y obtén descuentos exclusivos en destinos seleccionados.</p>
-		<a routerLink="/trips" class="btn primary large">Empieza ahora</a>
+		<a [routerLink]="userName ? '/trips' : '/login'" class="btn primary large">Empieza ahora</a>
 	</div>
 </section>
