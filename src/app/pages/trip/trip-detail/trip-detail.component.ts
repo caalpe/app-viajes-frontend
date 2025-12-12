@@ -5,7 +5,7 @@ import { ITrip } from '../../../interfaces/ITrip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
 import { IParticipant, IParticipantInfo, participationStatus } from '../../../interfaces/IParticipant';
-import { convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
+import { convertIsoToDateInputFormat, formatDateDDMMYYYY } from '../../../shared/utils/data.utils';
 import { AuthService } from '../../../services/auth.service';
 import { SpinnerComponent } from "../../../shared/components/spinner/spinner.component";
 import { FormControl, FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
@@ -65,6 +65,7 @@ export class TripDetailComponent
     try
     {
       this.tripInfo = await this.tripService.getTrip(this.tripId);
+      console.log(this.tripInfo);
     }
     catch (error)
     {
@@ -133,7 +134,7 @@ export class TripDetailComponent
     {
       return "";
     }
-    return convertIsoToDateInputFormat(dateString);
+    return formatDateDDMMYYYY(dateString);
   }
 
   checkIfUserCanCancel() : boolean
@@ -160,7 +161,8 @@ export class TripDetailComponent
     }
     return "";
   }
-    get participationClass(): string
+  
+  get participationClass(): string
   {
     const status = this.userTripParticipation?.status ?? participationStatus.pending;
     return this.participationStatusMap[status];

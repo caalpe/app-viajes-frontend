@@ -80,4 +80,13 @@ export class TripCardComponent {
         }
         return formatDateDDMMYYYY(dateString);
     }
+
+    informTripStatus() : string
+    {
+        if(this.tripInfo.status == "closed")
+            return "Cerrado";
+        else
+            return "Completo"
+            
+    }
 }
