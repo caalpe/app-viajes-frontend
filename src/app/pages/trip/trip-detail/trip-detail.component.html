@@ -3,7 +3,7 @@
 <div class="container">
     <article class="row justify-content-around m-0 py-4 gap-4">
         <!-- Left Section -->
-        <div class="col-12 col-md-7 d-flex flex-column gap-4">
+        <div class="col-12 col-lg-7 d-flex flex-column gap-4">
             <section class="card rounded-4 shadow-sm">
                 <img [src]="tripInfo.image_url ?? image" alt="" class="img-fluid card-image mt-4 mb-4">
                 <span class="fs-5 badge text-bg-success rounded-pill position-absolute cost-display">{{tripInfo.cost_per_person}}€</span>
@@ -73,8 +73,8 @@
         </div>
 
         <!-- Right Section  -->
-        <div class="col-12 col-md-4 d-flex flex-column gap-4">
-            @if (userIsOwner)
+        <div class="col-12 col-lg-4 d-flex flex-column gap-4">
+            @if (userIsOwner) 
             {
                 <button class="btn btn-primary" [routerLink]="['/trips', tripInfo.id_trip, 'edit']">Editar Viaje</button>
             }
@@ -113,10 +113,18 @@
                                 </div>
                             </form>
                         }
-                        @else
+                        @else 
                         {
-                            <button class="btn btn-primary simple-animation" [class.button-hide]="requestingPetition" [disabled]="userIsOwner"
-                            [attr.aria-disabled]="userIsOwner" (click)="petitionButtonPressed()">Mandar peticion</button>
+                            @if (tripInfo.status == "open") 
+                            {
+                                <button class="btn btn-primary simple-animation" [class.button-hide]="requestingPetition" [disabled]="userIsOwner" 
+                                [attr.aria-disabled]="userIsOwner" (click)="petitionButtonPressed()">Mandar peticion</button>
+                            }
+                            <!-- Status of the trip is either close or complete -->
+                            @else
+                            {
+                                <button class="btn btn-danger simple-animation disabled aria-disabled">Peticiones cerradas</button>
+                            }
                         }
                     }
                 </div>
