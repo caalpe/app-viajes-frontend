@@ -90,7 +90,7 @@
 	}
 
 	<!-- Pagination controls -->
-	@if (hasSearched && totalPages > 1) {
+	@if (totalPages > 1) {
 		<div class="pagination mt-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
 			@let cp = (currentPage$ | async);
 			<button class="btn btn-outline-primary" (click)="goToPage(1)" [disabled]="cp === 1">« Primero</button>
