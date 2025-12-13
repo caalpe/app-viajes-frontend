@@ -8,6 +8,7 @@ import { ChangePasswordComponent } from './pages/user/change-password/change-pas
 import { TripDetailComponent } from './pages/trip/trip-detail/trip-detail.component';
 import { TripFormComponent } from './pages/trip/trip-form/trip-form.component';
 import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
+import { TripChatComponent } from './pages/trip/trip-chat/trip-chat.component';
 import { RequestsComponent } from './pages/requests/requests.component';
 import { authGuard } from './guards/auth.guard';
 
@@ -74,6 +75,10 @@ import { authGuard } from './guards/auth.guard';
       {
         path: ':id/edit',
         component: TripFormComponent
+      },
+      {
+        path: ':id/chat',
+        component: TripChatComponent
       }
     ]
   },

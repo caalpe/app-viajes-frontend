@@ -1,0 +1,75 @@
+<div class="survey-container" [class.survey-closed]="survey.is_closed">
+  <div class="survey-header">
+    <div class="survey-info">
+      <i class="bi bi-bar-chart-fill me-2"></i>
+      <span class="survey-creator">{{ survey.creator_name }}</span>
+      <span class="survey-status" [class.status-open]="!survey.is_closed" [class.status-closed]="survey.is_closed">
+        {{ survey.is_closed ? 'Cerrada' : 'Abierta' }}
+      </span>
+    </div>
+    @if (canClose && !survey.is_closed) {
+      <button class="btn-close-survey" (click)="requestCloseSurvey()" title="Cerrar encuesta">
+        <i class="bi bi-lock-fill"></i> Cerrar
+      </button>
+    }
+  </div>
+
+  <h4 class="survey-question">{{ survey.question }}</h4>
+
+  <div class="survey-options">
+    @for (option of survey.options; track option.id_option) {
+      <div
+        class="survey-option"
+        [class.option-voted]="isUserVote(option.id_option)"
+        [class.option-clickable]="!survey.is_closed && !hasUserVoted()"
+        (click)="onVote(option.id_option)"
+      >
+        <div class="option-content">
+          <div class="option-text">
+            <span>{{ option.option_text }}</span>
+            @if (isUserVote(option.id_option)) {
+              <i class="bi bi-check-circle-fill ms-2 text-success"></i>
+            }
+          </div>
+
+          @if (hasUserVoted() || survey.is_closed) {
+            <div class="option-stats">
+              <span class="vote-count">{{ option.vote_count }} {{ option.vote_count === 1 ? 'voto' : 'votos' }}</span>
+              <span class="vote-percentage">{{ getPercentage(option.vote_count) }}%</span>
+            </div>
+          }
+        </div>
+
+        @if (hasUserVoted() || survey.is_closed) {
+          <div class="option-bar">
+            <div class="option-bar-fill" [style.width.%]="getPercentage(option.vote_count)"></div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="survey-footer">
+    @if (hasUserVoted() || survey.is_closed) {
+      <span class="total-votes">
+        <i class="bi bi-people-fill me-1"></i>
+        {{ getTotalVotes() }} {{ getTotalVotes() === 1 ? 'persona ha votado' : 'personas han votado' }}
+      </span>
+    } @else {
+      <span class="vote-prompt">
+        <i class="bi bi-hand-index me-1"></i>
+        Haz clic en una opción para votar
+      </span>
+    }
+  </div>
+</div>
+
+<!-- Modal de confirmación -->
+<app-modal-alert
+  [isVisible]="showConfirmModal"
+  [title]="confirmModalTitle"
+  [message]="confirmModalMessage"
+  [type]="'confirmation'"
+  (onClose)="closeModal()"
+  (onConfirm)="confirmCloseSurvey()"
+></app-modal-alert>
