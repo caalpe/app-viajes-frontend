@@ -76,7 +76,9 @@
         <div class="col-12 col-lg-4 d-flex flex-column gap-4">
             @if (userIsOwner)
             {
-                <button class="btn btn-primary" [routerLink]="['/trips', tripInfo.id_trip, 'edit']">Editar Viaje</button>
+                <button class="btn btn-create" [routerLink]="['/trips', tripInfo.id_trip, 'edit']">
+                    <i class="bi bi-pencil-square me-2"></i>Editar Viaje
+                </button>
             }
 
             @if (userRequestIsAccepted || userIsOwner)

@@ -206,7 +206,13 @@ export class TripFormComponent implements OnInit {
 
   onBack(): void {
     this.tripState.resetForm();
-    this.router.navigate(['/trips']);
+    // Si estamos en modo edición, volver al detalle del viaje
+    if (this.isEditMode && this.tripId) {
+      this.router.navigate(['/trips', this.tripId]);
+    } else {
+      // Si es creación, volver al listado
+      this.router.navigate(['/trips']);
+    }
   }
 
   async onDeleteTrip(): Promise<void> {
