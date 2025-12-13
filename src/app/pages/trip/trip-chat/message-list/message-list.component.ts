@@ -73,7 +73,7 @@ export class MessageListComponent {
   }
 
   getSortedReplies(replies: IMessage[]): IMessage[] {
-    return [...replies].sort((a, b) => 
+    return [...replies].sort((a, b) =>
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     );
   }

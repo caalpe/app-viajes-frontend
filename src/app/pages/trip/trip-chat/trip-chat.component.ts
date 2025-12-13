@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { IMessage } from '../../../interfaces/IMessage';
 import { ISurvey } from '../../../interfaces/ISurvey';
 import { ChatApiService } from '../../../services/api-rest/chat-rest.service';
+import { SurveyRestService } from '../../../services/api-rest/survey-rest.service';
+import { MessageStateService } from '../../../services/message.service';
 import { AuthService } from '../../../services/auth.service';
 import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { TripApiService } from '../../../services/api-rest/trip-rest.service';
@@ -35,15 +37,14 @@ export class TripChatComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private fb: FormBuilder,
+    private messageService: MessageStateService,
     private chatApi: ChatApiService,
+    private surveyApi: SurveyRestService,
     private authService: AuthService,
     private userApi: UserApiService,
     private tripApi: TripApiService
   ) {
-    this.messageForm = this.fb.group({
-      message: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(500)]]
-    });
+    this.messageForm = this.messageService.getForm();
   }
 
   async ngOnInit(): Promise<void> {
@@ -107,11 +108,11 @@ export class TripChatComponent implements OnInit {
 
     this.sending = true;
     try {
-      const messageText = this.messageForm.value.message.trim();
-      
+      const messageText = this.messageService.getValue();
+
       // Si estamos respondiendo, usar el ID del mensaje al que respondemos
       const parentMessageId = this.replyingTo?.id_message;
-      
+
       const newMessage = await this.chatApi.sendMessage(
         this.tripId,
         this.currentUserId,
@@ -133,7 +134,7 @@ export class TripChatComponent implements OnInit {
       }
 
       // Limpiar formulario y estado de respuesta
-      this.messageForm.reset();
+      this.messageService.resetForm();
       this.cancelReply();
 
       // Scroll al final
@@ -223,7 +224,7 @@ export class TripChatComponent implements OnInit {
 
     this.loadingSurveys = true;
     try {
-      this.surveys = await this.chatApi.getSurveysByTrip(this.tripId, this.currentUserId);
+      this.surveys = await this.surveyApi.getSurveysByTrip(this.tripId, this.currentUserId);
     } catch (error) {
       console.error('Error al cargar encuestas:', error);
     } finally {

@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ISurvey } from '../../../interfaces/ISurvey';
-import { ChatApiService } from '../../../services/api-rest/chat-rest.service';
+import { SurveyRestService } from '../../../services/api-rest/survey-rest.service';
 import { ModalAlertComponent } from '../modal-alert/modal-alert.component';
 
 @Component({
@@ -24,7 +24,7 @@ export class SurveyComponent {
   confirmModalTitle = '';
   confirmModalMessage = '';
 
-  constructor(private chatApi: ChatApiService) {}
+  constructor(private surveyApi: SurveyRestService) {}
 
   async onVote(optionId: number): Promise<void> {
     if (this.survey.is_closed || this.survey.user_voted_option !== null && this.survey.user_voted_option !== undefined) {
@@ -37,7 +37,7 @@ export class SurveyComponent {
     }
 
     try {
-      const updatedSurvey = await this.chatApi.voteSurvey(this.survey.id_survey, this.currentUserId, optionId);
+      const updatedSurvey = await this.surveyApi.voteSurvey(this.survey.id_survey, this.currentUserId, optionId);
       this.surveyUpdated.emit(updatedSurvey);
     } catch (err) {
       console.error('Error al votar:', err);
@@ -63,8 +63,13 @@ export class SurveyComponent {
   async confirmCloseSurvey(): Promise<void> {
     this.showConfirmModal = false;
 
+    if (!this.currentUserId) {
+      this.error.emit('No se pudo identificar al usuario');
+      return;
+    }
+
     try {
-      await this.chatApi.closeSurvey(this.survey.id_survey, this.currentUserId!);
+      await this.surveyApi.closeSurvey(this.survey.id_survey, this.currentUserId);
       this.survey.is_closed = true;
       this.surveyUpdated.emit(this.survey);
     } catch (err) {

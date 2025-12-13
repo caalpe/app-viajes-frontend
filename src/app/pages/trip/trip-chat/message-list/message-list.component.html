@@ -43,7 +43,7 @@
                     (reply)="onReply($event)"
                     (delete)="onDelete($event)"
                   ></app-message-item>
-                  
+
                   <!-- Respuestas anidadas (recursivas) -->
                   @if (reply.replies && reply.replies.length > 0) {
                     <div class="nested-replies-container">

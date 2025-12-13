@@ -1,8 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormArray } from '@angular/forms';
 import { ISurvey } from '../../../interfaces/ISurvey';
-import { ChatApiService } from '../../../services/api-rest/chat-rest.service';
+import { SurveyRestService } from '../../../services/api-rest/survey-rest.service';
+import { SurveyStateService } from '../../../services/survey.service';
 
 @Component({
   selector: 'app-survey-modal',
@@ -24,38 +25,30 @@ export class SurveyModalComponent {
   @Output() error = new EventEmitter<string>();
 
   constructor(
-    private fb: FormBuilder,
-    private chatApi: ChatApiService
+    private surveyService: SurveyStateService,
+    private surveyApi: SurveyRestService
   ) {
-    this.surveyForm = this.fb.group({
-      question: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(200)]],
-      options: this.fb.array([
-        this.createOption(),
-        this.createOption()
-      ])
-    });
+    this.surveyForm = this.surveyService.getForm();
   }
 
   get options(): FormArray {
-    return this.surveyForm.get('options') as FormArray;
-  }
-
-  createOption(): FormGroup {
-    return this.fb.group({
-      text: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(100)]]
-    });
+    return this.surveyService.getOptions();
   }
 
   addOption(): void {
-    if (this.options.length < 10) {
-      this.options.push(this.createOption());
-    }
+    this.surveyService.addOption();
   }
 
   removeOption(index: number): void {
-    if (this.options.length > 2) {
-      this.options.removeAt(index);
-    }
+    this.surveyService.removeOption(index);
+  }
+
+  canAddOption(): boolean {
+    return this.surveyService.canAddOption();
+  }
+
+  canRemoveOption(): boolean {
+    return this.surveyService.canRemoveOption();
   }
 
   async onSubmit(): Promise<void> {
@@ -70,10 +63,8 @@ export class SurveyModalComponent {
       return;
     }
 
-    const question = this.surveyForm.value.question.trim();
-    const options = this.surveyForm.value.options
-      .map((opt: any) => opt.text.trim())
-      .filter((text: string) => text.length > 0);
+    const question = this.surveyService.getQuestion();
+    const options = this.surveyService.getOptionTexts();
 
     if (options.length < 2) {
       this.error.emit('Debes proporcionar al menos 2 opciones');
@@ -83,7 +74,7 @@ export class SurveyModalComponent {
     this.isSubmitting = true;
     try {
       console.log('Creando encuesta con datos:', { tripId: this.tripId, userId: this.userId, userName: this.userName, question, options });
-      const newSurvey = await this.chatApi.createSurvey(
+      const newSurvey = await this.surveyApi.createSurvey(
         this.tripId,
         this.userId,
         this.userName,
@@ -93,7 +84,7 @@ export class SurveyModalComponent {
       console.log('Encuesta creada en modal:', newSurvey);
       console.log('Emitiendo surveyCreated...');
       this.surveyCreated.emit(newSurvey);
-      this.surveyForm.reset();
+      this.surveyService.resetForm();
       this.onClose();
     } catch (err) {
       console.error('Error al crear encuesta:', err);

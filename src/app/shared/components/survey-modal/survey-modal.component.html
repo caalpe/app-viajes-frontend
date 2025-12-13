@@ -44,7 +44,7 @@
             type="button"
             class="btn-add-option"
             (click)="addOption()"
-            [disabled]="options.length >= 10"
+            [disabled]="!canAddOption()"
           >
             <i class="bi bi-plus-circle me-1"></i>
             Añadir opción
@@ -61,7 +61,7 @@
                 placeholder="Escribe una opción..."
                 [class.is-invalid]="option.get('text')?.invalid && option.get('text')?.touched"
               />
-              @if (options.length > 2) {
+              @if (canRemoveOption()) {
                 <button
                   type="button"
                   class="btn-remove-option"
