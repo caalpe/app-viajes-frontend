@@ -74,6 +74,15 @@
 
         <div class="form-actions">
           <button
+            type="button"
+            class="btn-secondary"
+            (click)="clearMessage()"
+            [disabled]="!messageControl?.value || sending"
+          >
+            <i class="bi bi-x-circle me-2"></i>
+            Limpiar
+          </button>
+          <button
             type="submit"
             class="btn-create"
             [disabled]="messageForm.invalid || sending"
@@ -115,3 +124,13 @@
     (error)="onSurveyError($event)"
   ></app-survey-modal>
 }
+
+<!-- Modal de alertas -->
+<app-modal-alert
+  [isVisible]="showModal"
+  [type]="modalType"
+  [title]="modalTitle"
+  [message]="modalMessage"
+  (onClose)="closeModal()"
+  (onConfirm)="onModalConfirm()"
+></app-modal-alert>

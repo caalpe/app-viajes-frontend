@@ -12,11 +12,12 @@ import { UserApiService } from '../../../services/api-rest/user-rest.service';
 import { TripApiService } from '../../../services/api-rest/trip-rest.service';
 import { SurveyModalComponent } from '../../../shared/components/survey-modal/survey-modal.component';
 import { MessageListComponent } from './message-list/message-list.component';
+import { ModalAlertComponent } from '../../../shared/components/modal-alert/modal-alert.component';
 
 @Component({
   selector: 'app-trip-chat',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SurveyModalComponent, MessageListComponent],
+  imports: [CommonModule, ReactiveFormsModule, SurveyModalComponent, MessageListComponent, ModalAlertComponent],
   templateUrl: './trip-chat.component.html',
   styleUrls: ['./trip-chat.component.css']
 })
@@ -33,6 +34,13 @@ export class TripChatComponent implements OnInit {
   isOrganizer = false;
   showSurveyModal = false;
   replyingTo: IMessage | null = null; // Mensaje al que se está respondiendo
+  
+  // Modal de alertas
+  showModal = false;
+  modalTitle = '';
+  modalMessage = '';
+  modalType: 'success' | 'error' | 'confirmation' = 'success';
+  modalCallback: (() => void | Promise<void>) | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -141,7 +149,7 @@ export class TripChatComponent implements OnInit {
       setTimeout(() => this.scrollToBottom(), 100);
     } catch (error) {
       console.error('Error al enviar mensaje:', error);
-      alert('Error al enviar el mensaje. Por favor, intenta de nuevo.');
+      this.showErrorModal('Error al enviar el mensaje. Por favor, intenta de nuevo.');
     } finally {
       this.sending = false;
     }
@@ -161,18 +169,70 @@ export class TripChatComponent implements OnInit {
     return null;
   }
 
-  async deleteMessage(messageId: number): Promise<void> {
-    if (!confirm('¿Estás seguro de que quieres eliminar este mensaje?')) {
+  deleteMessage(messageId: number): void {
+    console.log('deleteMessage llamado con ID:', messageId);
+    console.log('Mensajes actuales:', JSON.stringify(this.messages, null, 2));
+    
+    // Buscar el mensaje en el árbol
+    const message = this.findMessageById(this.messages, messageId);
+    console.log('Mensaje encontrado:', message);
+    
+    if (!message) {
+      console.error('Mensaje no encontrado');
+      this.showErrorModal('No se pudo encontrar el mensaje.');
       return;
     }
-
-    try {
-      await this.chatApi.deleteMessage(messageId);
-      this.messages = this.messages.filter(msg => msg.id_message !== messageId);
-    } catch (error) {
-      console.error('Error al eliminar mensaje:', error);
-      alert('Error al eliminar el mensaje. Por favor, intenta de nuevo.');
+    
+    // Verificar si el mensaje tiene respuestas
+    console.log('Verificando replies. message.replies:', message.replies);
+    console.log('Tiene replies:', message.replies && message.replies.length > 0);
+    
+    if (message.replies && message.replies.length > 0) {
+      console.log('Mensaje tiene respuestas, mostrando modal de error');
+      this.showErrorModal('No puedes eliminar un mensaje que tiene respuestas. Elimina primero las respuestas.');
+      return;
     }
+    
+    console.log('Mensaje válido para eliminar, mostrando confirmación');
+    this.showConfirmationModal(
+      'Eliminar mensaje',
+      '¿Estás seguro de que quieres eliminar este mensaje?',
+      async () => {
+        try {
+          console.log('Confirmación aceptada, eliminando mensaje:', messageId);
+          await this.chatApi.deleteMessage(messageId);
+          console.log('Mensaje eliminado del servicio');
+          
+          // Recargar todos los mensajes desde el servicio
+          await this.loadMessages();
+          console.log('Mensajes recargados');
+        } catch (error) {
+          console.error('Error al eliminar mensaje:', error);
+          this.showErrorModal('Error al eliminar el mensaje. Por favor, intenta de nuevo.');
+        }
+      }
+    );
+  }
+
+  // Eliminar mensaje del árbol de mensajes (recursivo)
+  private removeMessageFromTree(messages: IMessage[], messageId: number): boolean {
+    // Buscar en el nivel actual
+    const index = messages.findIndex(msg => msg.id_message === messageId);
+    if (index !== -1) {
+      messages.splice(index, 1);
+      return true;
+    }
+
+    // Buscar en las respuestas de cada mensaje
+    for (const msg of messages) {
+      if (msg.replies && msg.replies.length > 0) {
+        if (this.removeMessageFromTree(msg.replies, messageId)) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   canDeleteMessage(message: IMessage): boolean {
@@ -207,6 +267,11 @@ export class TripChatComponent implements OnInit {
     this.replyingTo = null;
   }
 
+  // Limpiar el mensaje
+  clearMessage(): void {
+    this.messageService.resetForm();
+  }
+
   // Obtener preview del mensaje (primeros 15 caracteres)
   getMessagePreview(message: string): string {
     if (!message) return '';
@@ -234,7 +299,7 @@ export class TripChatComponent implements OnInit {
 
   openSurveyModal(): void {
     if (!this.currentUserId) {
-      alert('No se pudo identificar al usuario');
+      this.showErrorModal('No se pudo identificar al usuario');
       return;
     }
     console.log('Abriendo modal de encuesta. Usuario:', this.currentUserId, this.currentUserName);
@@ -262,6 +327,44 @@ export class TripChatComponent implements OnInit {
   }
 
   onSurveyError(errorMessage: string): void {
-    alert(errorMessage);
+    this.showErrorModal(errorMessage);
+  }
+
+  // ============ MÉTODOS DEL MODAL ============
+
+  showErrorModal(message: string): void {
+    this.modalTitle = 'Error';
+    this.modalMessage = message;
+    this.modalType = 'error';
+    this.modalCallback = null;
+    this.showModal = true;
+  }
+
+  showInfoModal(title: string, message: string): void {
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.modalType = 'success';
+    this.modalCallback = null;
+    this.showModal = true;
+  }
+
+  showConfirmationModal(title: string, message: string, callback: () => void | Promise<void>): void {
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.modalType = 'confirmation';
+    this.modalCallback = callback;
+    this.showModal = true;
+  }
+
+  async onModalConfirm(): Promise<void> {
+    if (this.modalCallback) {
+      await this.modalCallback();
+    }
+    this.closeModal();
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+    this.modalCallback = null;
   }
 }
