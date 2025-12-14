@@ -93,9 +93,12 @@ export class HomeComponent implements OnInit {
     const pagedSource$ = this.query$.pipe(
       switchMap(({ page, filters }) => {
         const cost = filters?.budget ? Number(filters.budget) : undefined;
-        const destination = filters?.destination || undefined;
+        const destination = filters?.destination?.trim() || undefined;
         const startDate = filters?.from || undefined;
         const endDate = filters?.to || undefined;
+        
+        console.log('🔍 Buscando con filtros:', { cost, destination, startDate, endDate, page, pageSize: this.pageSize });
+        
         return from(this.tripApi.getTripsPaged('open', page, this.pageSize, cost, destination, startDate, endDate));
       })
     );
@@ -115,15 +118,20 @@ export class HomeComponent implements OnInit {
       })
     );
 
-    // Obtener lista única de destinos (desde la primera página)
-    this.tripApi.getTripsPaged('open', 1, this.pageSize).then(resp => {
+    // Obtener lista única de destinos (cargar TODOS los viajes abiertos para tener todos los destinos)
+    this.tripApi.getTripsPaged('open', 1, 1000).then(resp => {
       const trips = resp?.data || [];
+      const pagination = resp?.pagination;
+      
+      console.log('📍 Destinos cargados:', trips.length, 'viajes de', pagination?.total || 'desconocido', 'total');
+      
       const uniqueDestinations = new Set<string>();
       trips.forEach(trip => {
         if (trip.destination) uniqueDestinations.add(trip.destination);
-        if (trip.title) uniqueDestinations.add(trip.title);
       });
       this.destinations = Array.from(uniqueDestinations).sort();
+      
+      console.log('📍 Lista de destinos únicos:', this.destinations);
     }).catch(err => {
       console.error('Error cargando destinos:', err);
     });
