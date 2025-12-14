@@ -156,6 +156,13 @@ export class RequestsComponent implements OnInit {
     );
   }
 
+  get incompleteTrips(): ITrip[] {
+    // NO ha alcanzado el mínimo y no pasado
+    return this.myTrips.filter(
+      (t) => t.status !== 'completed' && !this.reachedMin(t)
+    );
+  }
+
   getTripRequests(tripId: number): RequestWithTrip[] {
     return this.allRequests.filter((req) => req.id_trip === tripId);
   }
@@ -242,6 +249,7 @@ export class RequestsComponent implements OnInit {
   toggleRatingForm(participationId: number, tripId?: number, userId?: number) {
     this.expandedRatings[participationId] =
       !this.expandedRatings[participationId];
+    console.log('🔄 Toggle rating form:', { participationId, tripId, userId, expanded: this.expandedRatings[participationId] });
     if (!this.userRatings[participationId] && tripId && userId) {
       this.userRatings[participationId] = {
         score: 0,
@@ -249,6 +257,7 @@ export class RequestsComponent implements OnInit {
         tripId,
         userId,
       };
+      console.log('✨ Inicializado userRatings para', participationId, this.userRatings[participationId]);
     }
   }
 
@@ -265,8 +274,10 @@ export class RequestsComponent implements OnInit {
         tripId,
         userId,
       };
+      console.log('✨ Inicializado userRatings en setRating para', participationId);
     }
     this.userRatings[participationId].score = score;
+    console.log('⭐ Rating establecido:', { participationId, score, data: this.userRatings[participationId] });
   }
 
   setComment(
@@ -282,27 +293,40 @@ export class RequestsComponent implements OnInit {
         tripId,
         userId,
       };
+      console.log('✨ Inicializado userRatings en setComment para', participationId);
     }
     this.userRatings[participationId].comment = comment;
+    console.log('💬 Comentario establecido:', { participationId, comment, data: this.userRatings[participationId] });
   }
 
   async submitRating(participationId: number) {
     const ratingData = this.userRatings[participationId];
-    if (!ratingData || !ratingData.score) return;
+    console.log('📊 Intentando enviar valoración:', { participationId, ratingData, allRatings: this.userRatings });
+    
+    if (!ratingData || !ratingData.score) {
+      console.warn('⚠️ No hay datos de valoración o puntuación', { ratingData });
+      return;
+    }
 
     try {
-      await this.ratingService.submitRating({
+      const payload = {
         id_trip: ratingData.tripId,
         id_reviewed: ratingData.userId,
         score: ratingData.score,
         comment: ratingData.comment,
-      });
-
+      };
+      
+      console.log('📤 Enviando payload:', payload);
+      
+      const result = await this.ratingService.submitRating(payload);
+      
+      console.log('✅ Valoración enviada correctamente:', result);
+      
       alert('Valoración enviada correctamente');
       this.expandedRatings[participationId] = false;
       delete this.userRatings[participationId];
     } catch (error) {
-      console.error('Error submitting rating:', error);
+      console.error('❌ Error submitting rating:', error);
       alert('Error al enviar la valoración');
     }
   }

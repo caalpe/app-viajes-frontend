@@ -18,6 +18,6 @@ export class UserProfileModalComponent {
   }
 
   getDefaultAvatar(): string {
-    return '/favicon.svg';
+    return 'https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff';
   }
 }
