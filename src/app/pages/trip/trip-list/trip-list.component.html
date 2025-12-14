@@ -10,9 +10,23 @@
 		</div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-       @for(trip of userTrips; track trip.id_trip)
+      @if(pageLoaded)
       {
-        <app-trip-card class="col" [type]="cardType.owner" [tripInfo]="trip"></app-trip-card>
+        @for(trip of userTrips; track trip.id_trip)
+        {
+          <app-trip-card class="col" [type]="cardType.owner" [tripInfo]="trip"></app-trip-card>
+        }
+        @empty 
+        {
+          <div class="alert alert-info text-center mt-3 w-100">
+			      <i class="bi bi-info-circle me-2"></i>
+			      No has creado ningun viaje
+		      </div>
+        }
+      }
+      @else 
+      {
+        <app-spinner message="Obteniendo los viajes..." size="md"></app-spinner>
       }
     </div>
   </section>
@@ -23,9 +37,23 @@
     </h2>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-       @for(trip of userPetitionsTrips; track trip.id_trip)
+      @if(pageLoaded)
       {
-        <app-trip-card class="col" [type]="getTripPetitionType(trip.id_trip)" [tripInfo]="trip"></app-trip-card>
+        @for(trip of userPetitionsTrips; track trip.id_trip)
+        {
+          <app-trip-card class="col" [type]="getTripPetitionType(trip.id_trip)" [tripInfo]="trip"></app-trip-card>
+        }
+        @empty 
+        {
+          <div class="alert alert-info text-center mt-3 w-100">
+            <i class="bi bi-info-circle me-2"></i>
+            No has mandado peticiones a ningun viaje
+          </div>
+        }
+      }
+      @else 
+      {
+        <app-spinner message="Obteniendo los viajes..." size="md"></app-spinner>
       }
     </div>
   </section>

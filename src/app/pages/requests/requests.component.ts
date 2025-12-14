@@ -7,7 +7,11 @@ import { TripApiService } from '../../services/api-rest/trip-rest.service';
 import { UserApiService } from '../../services/api-rest/user-rest.service';
 import { RatingApiService } from '../../services/api-rest/rating-rest.service';
 import { AuthService } from '../../services/auth.service';
-import { IParticipant, IParticipantInfo, participationStatus } from '../../interfaces/IParticipant';
+import {
+  IParticipant,
+  IParticipantInfo,
+  participationStatus,
+} from '../../interfaces/IParticipant';
 import { ITrip } from '../../interfaces/ITrip';
 import { IUser } from '../../interfaces/IUser';
 import { UserProfileModalComponent } from '../../shared/components/user-profile-modal/user-profile-modal.component';
@@ -23,7 +27,7 @@ type TabType = 'all' | 'uncompleted' | 'completed' | 'past';
   standalone: true,
   imports: [CommonModule, FormsModule, UserProfileModalComponent],
   templateUrl: './requests.component.html',
-  styleUrls: ['./requests.component.css']
+  styleUrls: ['./requests.component.css'],
 })
 export class RequestsComponent implements OnInit {
   private participationService = inject(ParticipationApiService);
@@ -42,14 +46,17 @@ export class RequestsComponent implements OnInit {
 
   // Cache de perfiles de usuarios
   userProfiles: Record<number, IUser> = {};
-  
+
   // Cache de información de participantes por viaje
   tripParticipants: Record<number, IParticipantInfo[]> = {};
 
   participationStatus = participationStatus;
 
   // Rating states for past trips (participationId -> rating data)
-  userRatings: Record<number, { score: number; comment: string; tripId: number; userId: number }> = {};
+  userRatings: Record<
+    number,
+    { score: number; comment: string; tripId: number; userId: number }
+  > = {};
   expandedRatings: Record<number, boolean> = {};
 
   async ngOnInit() {
@@ -61,20 +68,26 @@ export class RequestsComponent implements OnInit {
   async loadMyTripsAndRequests() {
     try {
       this.loading = true;
-      
+
       // Cargar todos los viajes que he creado
       this.myTrips = await this.tripService.getCreatedTrip();
       console.log('🚗 Mis viajes creados:', this.myTrips);
       console.log('📊 Total de viajes:', this.myTrips.length);
-      
+
       // Para cada viaje, cargar sus solicitudes
       const requestsPromises = this.myTrips.map(async (trip) => {
         try {
-          const requests = await this.participationService.getTripParticipations(trip.id_trip!);
+          const requests =
+            await this.participationService.getTripParticipations(
+              trip.id_trip!
+            );
           console.log(`📝 Solicitudes del viaje ${trip.title}:`, requests);
-          return requests.map(req => ({ ...req, trip }));
+          return requests.map((req) => ({ ...req, trip }));
         } catch (error) {
-          console.error(`Error loading requests for trip ${trip.id_trip}:`, error);
+          console.error(
+            `Error loading requests for trip ${trip.id_trip}:`,
+            error
+          );
           return [];
         }
       });
@@ -82,7 +95,6 @@ export class RequestsComponent implements OnInit {
       const allRequestsArrays = await Promise.all(requestsPromises);
       this.allRequests = allRequestsArrays.flat();
       console.log('📋 Total de solicitudes:', this.allRequests.length);
-      
     } catch (error) {
       console.error('Error loading trips and requests:', error);
     } finally {
@@ -101,56 +113,81 @@ export class RequestsComponent implements OnInit {
     return [];
   }
 
-  get uncompletedTrips(): ITrip[] {
+  private isPastTrip(trip: ITrip): boolean {
+    if (!trip.end_date) return false;
+
+    const end = new Date(trip.end_date);
+    end.setHours(0, 0, 0, 0);
+
     const today = new Date();
-    const filtered = this.myTrips.filter(trip => {
-      const startDate = new Date(trip.start_date!);
-      const isFull = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
-      const isUpcoming = startDate > today;
-      console.log(`🔍 Viaje ${trip.title}: startDate=${startDate.toISOString()}, today=${today.toISOString()}, isUpcoming=${isUpcoming}, isFull=${isFull}, accepted=${trip.accepted_participants}, min=${trip.min_participants}`);
-      return isUpcoming && isFull;
-    });
-    return filtered;
+    today.setHours(0, 0, 0, 0);
+
+    // cuando llega o supera la fecha end_date
+    return end <= today;
   }
-  get completedTrips(): ITrip[] {
-    const today = new Date();
-    const filtered = this.myTrips.filter(trip => {
-      const startDate = new Date(trip.start_date!);
-      const isFull = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
-      return startDate > today && isFull;
-    });
-    return filtered;
+
+  private acceptedCount(trip: ITrip): number {
+    return Number(trip.accepted_participants ?? 0);
+  }
+
+  private isFull(trip: ITrip): boolean {
+    const max = Number(trip.max_participants ?? 0);
+    const accepted = Number(trip.accepted_participants ?? 0);
+    return max > 0 && accepted >= max;
+  }
+
+  private reachedMin(trip: ITrip): boolean {
+    const min = Number(trip.min_participants ?? 0);
+    const accepted = Number(trip.accepted_participants ?? 0);
+    return min > 0 && accepted >= min;
   }
 
   get pastTrips(): ITrip[] {
-    const today = new Date();
-    const filtered = this.myTrips.filter(trip => {
-      const endDate = new Date(trip.end_date!);
-      const isPast = endDate < today;
-      return isPast;
-    });
-    return filtered;
+    return this.myTrips.filter((t) => t.status === 'completed');
+  }
+
+  get completedTrips(): ITrip[] {
+    // lleno y no pasado
+    return this.myTrips.filter(
+      (t) => t.status !== 'completed' && this.isFull(t)
+    );
+  }
+
+  get uncompletedTrips(): ITrip[] {
+    // mínimo alcanzado, no lleno, y no pasado
+    return this.myTrips.filter(
+      (t) => t.status !== 'completed' && this.reachedMin(t) && !this.isFull(t)
+    );
   }
 
   getTripRequests(tripId: number): RequestWithTrip[] {
-    return this.allRequests.filter(req => req.id_trip === tripId);
+    return this.allRequests.filter((req) => req.id_trip === tripId);
   }
 
   getPendingRequests(tripId: number): RequestWithTrip[] {
-    return this.getTripRequests(tripId).filter(req => req.status === participationStatus.pending);
+    return this.getTripRequests(tripId).filter(
+      (req) => req.status === participationStatus.pending
+    );
   }
 
   getAcceptedRequests(tripId: number): RequestWithTrip[] {
-    return this.getTripRequests(tripId).filter(req => req.status === participationStatus.accepted);
+    return this.getTripRequests(tripId).filter(
+      (req) => req.status === participationStatus.accepted
+    );
   }
 
   getRejectedRequests(tripId: number): RequestWithTrip[] {
-    return this.getTripRequests(tripId).filter(req => req.status === participationStatus.rejected);
+    return this.getTripRequests(tripId).filter(
+      (req) => req.status === participationStatus.rejected
+    );
   }
 
   async acceptRequest(requestId: number) {
     try {
-      await this.participationService.updateParticipationStatus(requestId, participationStatus.accepted);
+      await this.participationService.updateParticipationStatus(
+        requestId,
+        participationStatus.accepted
+      );
       await this.loadMyTripsAndRequests(); // Recargar datos
     } catch (error) {
       console.error('Error accepting request:', error);
@@ -159,7 +196,10 @@ export class RequestsComponent implements OnInit {
 
   async rejectRequest(requestId: number) {
     try {
-      await this.participationService.updateParticipationStatus(requestId, participationStatus.rejected);
+      await this.participationService.updateParticipationStatus(
+        requestId,
+        participationStatus.rejected
+      );
       await this.loadMyTripsAndRequests(); // Recargar datos
     } catch (error) {
       console.error('Error rejecting request:', error);
@@ -171,7 +211,7 @@ export class RequestsComponent implements OnInit {
       [participationStatus.pending]: 'badge-pending',
       [participationStatus.accepted]: 'badge-accepted',
       [participationStatus.rejected]: 'badge-rejected',
-      [participationStatus.left]: 'badge-left'
+      [participationStatus.left]: 'badge-left',
     };
     return statusMap[status];
   }
@@ -181,7 +221,7 @@ export class RequestsComponent implements OnInit {
       [participationStatus.pending]: 'Pendiente',
       [participationStatus.accepted]: 'Aceptado',
       [participationStatus.rejected]: 'Rechazado',
-      [participationStatus.left]: 'Abandonado'
+      [participationStatus.left]: 'Abandonado',
     };
     return statusText[status];
   }
@@ -189,10 +229,10 @@ export class RequestsComponent implements OnInit {
   formatDate(dateString: string | undefined): string {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return date.toLocaleDateString('es-ES', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     });
   }
 
@@ -204,22 +244,48 @@ export class RequestsComponent implements OnInit {
 
   // Rating functionality for past trips
   toggleRatingForm(participationId: number, tripId?: number, userId?: number) {
-    this.expandedRatings[participationId] = !this.expandedRatings[participationId];
+    this.expandedRatings[participationId] =
+      !this.expandedRatings[participationId];
     if (!this.userRatings[participationId] && tripId && userId) {
-      this.userRatings[participationId] = { score: 0, comment: '', tripId, userId };
+      this.userRatings[participationId] = {
+        score: 0,
+        comment: '',
+        tripId,
+        userId,
+      };
     }
   }
 
-  setRating(participationId: number, score: number, tripId?: number, userId?: number) {
+  setRating(
+    participationId: number,
+    score: number,
+    tripId?: number,
+    userId?: number
+  ) {
     if (!this.userRatings[participationId] && tripId && userId) {
-      this.userRatings[participationId] = { score: 0, comment: '', tripId, userId };
+      this.userRatings[participationId] = {
+        score: 0,
+        comment: '',
+        tripId,
+        userId,
+      };
     }
     this.userRatings[participationId].score = score;
   }
 
-  setComment(participationId: number, comment: string, tripId?: number, userId?: number) {
+  setComment(
+    participationId: number,
+    comment: string,
+    tripId?: number,
+    userId?: number
+  ) {
     if (!this.userRatings[participationId] && tripId && userId) {
-      this.userRatings[participationId] = { score: 0, comment: '', tripId, userId };
+      this.userRatings[participationId] = {
+        score: 0,
+        comment: '',
+        tripId,
+        userId,
+      };
     }
     this.userRatings[participationId].comment = comment;
   }
@@ -233,9 +299,9 @@ export class RequestsComponent implements OnInit {
         id_trip: ratingData.tripId,
         id_reviewed: ratingData.userId,
         score: ratingData.score,
-        comment: ratingData.comment
+        comment: ratingData.comment,
       });
-      
+
       alert('Valoración enviada correctamente');
       this.expandedRatings[participationId] = false;
       delete this.userRatings[participationId];
@@ -247,9 +313,9 @@ export class RequestsComponent implements OnInit {
 
   async loadUserProfiles() {
     // Obtener IDs únicos de usuarios de todas las solicitudes
-    const userIds = [...new Set(this.allRequests.map(req => req.id_user))];
+    const userIds = [...new Set(this.allRequests.map((req) => req.id_user))];
     console.log('👥 IDs de usuarios a cargar:', userIds);
-    
+
     // Cargar perfiles en paralelo
     const profilePromises = userIds.map(async (userId) => {
       try {
@@ -269,13 +335,22 @@ export class RequestsComponent implements OnInit {
     // Cargar información completa de participantes para cada viaje
     const participantsPromises = this.myTrips.map(async (trip) => {
       if (!trip.id_trip) return;
-      
+
       try {
-        const participants = await this.participationService.getTripParticipantInformation(trip.id_trip);
+        const participants =
+          await this.participationService.getTripParticipantInformation(
+            trip.id_trip
+          );
         this.tripParticipants[trip.id_trip] = participants;
-        console.log(`✅ Participantes cargados para viaje ${trip.id_trip}:`, participants);
+        console.log(
+          `✅ Participantes cargados para viaje ${trip.id_trip}:`,
+          participants
+        );
       } catch (error) {
-        console.error(`❌ Error loading participants for trip ${trip.id_trip}:`, error);
+        console.error(
+          `❌ Error loading participants for trip ${trip.id_trip}:`,
+          error
+        );
       }
     });
 
@@ -289,10 +364,11 @@ export class RequestsComponent implements OnInit {
 
   getParticipationIdForUser(tripId: number, userId: number): number {
     // Buscar el id_participation para un usuario específico en un viaje
-    const request = this.allRequests.find(req => 
-      req.id_trip === tripId && 
-      req.id_user === userId && 
-      req.status === participationStatus.accepted
+    const request = this.allRequests.find(
+      (req) =>
+        req.id_trip === tripId &&
+        req.id_user === userId &&
+        req.status === participationStatus.accepted
     );
     return request?.id_participation || 0;
   }
@@ -302,8 +378,12 @@ export class RequestsComponent implements OnInit {
   }
 
   getUserAvatar(userId: number): string {
-    return this.userProfiles[userId]?.photo_url || 
-           `https://ui-avatars.com/api/?name=${this.getUserName(userId)}&background=random`;
+    return (
+      this.userProfiles[userId]?.photo_url ||
+      `https://ui-avatars.com/api/?name=${this.getUserName(
+        userId
+      )}&background=random`
+    );
   }
 
   getUserBio(userId: number): string {
@@ -348,5 +428,30 @@ export class RequestsComponent implements OnInit {
   isCurrentUser(userId: number): boolean {
     const currentUserId = this.authService.getUserId();
     return currentUserId === userId;
+  }
+
+  getTripCapacity(trip: ITrip): number {
+    const max = Number(trip.max_participants || 0);
+    const min = Number(trip.min_participants || 0);
+    return max > 0 ? max : min > 0 ? min : 1;
+  }
+
+  getProgressPercent(trip: ITrip): number {
+    const accepted = Number(trip.accepted_participants || 0);
+    const capacity = this.getTripCapacity(trip);
+    const percent = (accepted / capacity) * 100;
+    return Math.max(0, Math.min(100, percent));
+  }
+
+  getProgressBarClass(trip: ITrip): string {
+    const accepted = Number(trip.accepted_participants || 0);
+    const min = Number(trip.min_participants || 0);
+    const max = Number(trip.max_participants || 0);
+
+    if (max > 0 && accepted >= max) return 'bg-success';
+
+    if (accepted >= min) return 'bg-primary';
+
+    return 'bg-danger';
   }
 }

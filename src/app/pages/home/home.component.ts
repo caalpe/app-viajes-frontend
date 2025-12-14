@@ -22,7 +22,7 @@ import { TripCardComponent, cardType } from '../../shared/components/trip-card/t
 })
 export class HomeComponent implements OnInit {
   cardType = cardType;
-  
+
   features = [
     { title: 'Explora destinos', desc: 'Encuentra viajes hechos a tu medida.' },
     { title: 'Reservas seguras', desc: 'Transacciones protegidas y confirmaciones instantáneas.' },
@@ -36,6 +36,7 @@ export class HomeComponent implements OnInit {
   pageSize = 9;
   currentPage$ = new BehaviorSubject<number>(1);
   destinations: string[] = [];
+  hasSearched = false;
   minDate: string = '';
   minEndDate: string = '';
   private query$ = new BehaviorSubject<{ page: number; filters: any }>({ page: 1, filters: {} });
@@ -142,6 +143,7 @@ export class HomeComponent implements OnInit {
 
   onSearch(): void {
     if (this.searchForm.valid) {
+      this.hasSearched = true;
       this.currentPage$.next(1);
       this.query$.next({ page: 1, filters: this.searchForm.value });
     }
@@ -166,6 +168,7 @@ export class HomeComponent implements OnInit {
 
   // Limpiar filtros y volver a primera página
   clearFilters(): void {
+    this.hasSearched = false;
     this.searchForm.reset({ destination: '', from: '', to: '', budget: '' });
     this.currentPage$.next(1);
     this.query$.next({ page: 1, filters: this.searchForm.value });

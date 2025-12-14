@@ -6,18 +6,31 @@
 	min-width: 120px;
 }
 
+.pagination .btn-outline-primary {
+	color: #17a2b8;
+	border-color: #17a2b8;
+}
+
+.pagination .btn-outline-primary:hover:not(:disabled) {
+	background-color: #17a2b8;
+	border-color: #17a2b8;
+	color: #fff;
+	box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+
 .search-form .action-bottom {
 	margin-top: 1rem;
 }
 
 .search-form .btn.primary {
-	background-color: #0d6efd;
+	background-color: #17a2b8;
 	color: #fff;
-	border: 1px solid #0d6efd;
+	border: 1px solid #17a2b8;
 }
 
 .search-form .btn.primary:hover {
-	filter: brightness(0.95);
+	background-color: #138496;
+	box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
 }
 
 .search-form .btn.btn-secondary {
@@ -115,9 +128,13 @@
 }
 .btn:hover{ transform: translateY(-2px); box-shadow: 0 6px 18px rgba(2,6,23,0.06); }
 .btn.primary{
-	background: linear-gradient(90deg,#2563eb,#7c3aed);
+	background: #17a2b8;
 	color: white;
 	border: none;
+}
+.btn.primary:hover{
+	background: #138496;
+	box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
 }
 .btn.large{ padding:12px 20px; font-size:1.05rem; }
 
@@ -126,7 +143,7 @@
 .feature { background:#fff; padding:18px; border-radius:8px; box-shadow:0 4px 14px rgba(2,6,23,0.08); }
 .feature h3 { margin:0 0 8px 0; }
 
-.trips { padding: 0 0 40px 0; }
+.trips { padding: 40px 0 40px 0; }
 .trips h2 { margin: 8px 0 18px 0; }
 
 /* Trip cards - using Gaizka's Bootstrap card style */
