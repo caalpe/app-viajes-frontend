@@ -238,14 +238,16 @@ La aplicación sigue un patrón de arquitectura **por capas** con separación de
 ### 7. Utilidades y Constantes
 
 **Archivos principales:**
-- `shared/utils/crypto.utils.ts`
 - `shared/utils/http-error.utils.ts`
+- `shared/utils/data.utils.ts`
+- `shared/utils/route.utils.ts`
 - `shared/constants/field-lengths.constants.ts`
 - `shared/constants/validation-messages.constants.ts`
 
 **Características:**
-- ✅ Utilidades de cifrado para contraseñas
 - ✅ Manejo centralizado de errores HTTP
+- ✅ Utilidades de manipulación de datos
+- ✅ Helpers de navegación y rutas
 - ✅ Constantes de longitud de campos para validaciones
 - ✅ Mensajes de validación estandarizados
 
