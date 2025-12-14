@@ -53,46 +53,53 @@ export class RequestsComponent implements OnInit {
   participationStatus = participationStatus;
 
   // Rating states for past trips (participationId -> rating data)
+  expandedRatings: Record<string, boolean> = {};
+
   userRatings: Record<
-    number,
+    string,
     { score: number; comment: string; tripId: number; userId: number }
   > = {};
-  expandedRatings: Record<number, boolean> = {};
+
+  participationByTripUser: Record<number, Record<number, number>> = {};
 
   async ngOnInit() {
     await this.loadMyTripsAndRequests();
-    await this.loadUserProfiles();
     await this.loadTripParticipants();
+    await this.loadUserProfiles();
   }
 
   async loadMyTripsAndRequests() {
     try {
       this.loading = true;
 
-      // Cargar todos los viajes que he creado
+      // Viajes creados por mí
       this.myTrips = await this.tripService.getCreatedTrip();
 
-      // Para cada viaje, cargar sus solicitudes
-      const requestsPromises = this.myTrips.map(async (trip) => {
-        try {
+      // Viajes donde participo
+      this.participantTrips = await this.tripService.getParticipationsTrip();
+
+      const tripMap = new Map<number, ITrip>();
+      [...this.myTrips, ...this.participantTrips].forEach((t) => {
+        if (t.id_trip) tripMap.set(t.id_trip, t);
+      });
+
+      this.myTrips = Array.from(tripMap.values());
+
+      // Para los viajes que he creado cargamos solicitudes
+      const requestsPromises = this.myTrips
+        .filter((t) => t.id_creator === this.authService.getUserId())
+        .map(async (trip) => {
           const requests =
             await this.participationService.getTripParticipations(
               trip.id_trip!
             );
           return requests.map((req) => ({ ...req, trip }));
-        } catch (error) {
-          console.error(
-            `Error loading requests for trip ${trip.id_trip}:`,
-            error
-          );
-          return [];
-        }
-      });
+        });
 
       const allRequestsArrays = await Promise.all(requestsPromises);
       this.allRequests = allRequestsArrays.flat();
     } catch (error) {
-      console.error('Error loading trips and requests:', error);
+      console.error(error);
     } finally {
       this.loading = false;
     }
@@ -109,21 +116,23 @@ export class RequestsComponent implements OnInit {
     return [];
   }
 
-  private isPastTrip(trip: ITrip): boolean {
-    if (!trip.end_date) return false;
+  acceptedParticipationIds: Record<number, Record<number, number>> = {};
 
-    const end = new Date(trip.end_date);
-    end.setHours(0, 0, 0, 0);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    // cuando llega o supera la fecha end_date
-    return end <= today;
+  private ratingKey(tripId: number, reviewedUserId: number) {
+    const reviewerId = this.authService.getUserId();
+    return `rated:${reviewerId}:${tripId}:${reviewedUserId}`;
   }
 
-  private acceptedCount(trip: ITrip): number {
-    return Number(trip.accepted_participants ?? 0);
+  hasRated(tripId: number, reviewedUserId: number): boolean {
+    return localStorage.getItem(this.ratingKey(tripId, reviewedUserId)) === '1';
+  }
+
+  markRated(tripId: number, reviewedUserId: number): void {
+    localStorage.setItem(this.ratingKey(tripId, reviewedUserId), '1');
+  }
+
+  private formKey(tripId: number, userId: number): string {
+    return `${tripId}:${userId}`;
   }
 
   private isFull(trip: ITrip): boolean {
@@ -137,6 +146,8 @@ export class RequestsComponent implements OnInit {
     const accepted = Number(trip.accepted_participants ?? 0);
     return min > 0 && accepted >= min;
   }
+
+  participantTrips: ITrip[] = [];
 
   get pastTrips(): ITrip[] {
     return this.myTrips.filter((t) => t.status === 'completed');
@@ -157,7 +168,7 @@ export class RequestsComponent implements OnInit {
   }
 
   get incompleteTrips(): ITrip[] {
-    // NO ha alcanzado el mínimo y no pasado
+    // No ha alcanzado el mínimo y no pasado
     return this.myTrips.filter(
       (t) => t.status !== 'completed' && !this.reachedMin(t)
     );
@@ -246,119 +257,123 @@ export class RequestsComponent implements OnInit {
   }
 
   // Rating functionality for past trips
-  toggleRatingForm(participationId: number, tripId?: number, userId?: number) {
-    this.expandedRatings[participationId] =
-      !this.expandedRatings[participationId];
-    console.log('🔄 Toggle rating form:', { participationId, tripId, userId, expanded: this.expandedRatings[participationId] });
-    if (!this.userRatings[participationId] && tripId && userId) {
-      this.userRatings[participationId] = {
-        score: 0,
-        comment: '',
-        tripId,
-        userId,
-      };
-      console.log('✨ Inicializado userRatings para', participationId, this.userRatings[participationId]);
+  toggleRatingForm(tripId: number, userId: number) {
+    const key = this.formKey(tripId, userId);
+
+    this.expandedRatings[key] = !this.expandedRatings[key];
+
+    if (!this.userRatings[key]) {
+      this.userRatings[key] = { score: 0, comment: '', tripId, userId };
     }
   }
 
-  setRating(
-    participationId: number,
-    score: number,
-    tripId?: number,
-    userId?: number
-  ) {
-    if (!this.userRatings[participationId] && tripId && userId) {
-      this.userRatings[participationId] = {
-        score: 0,
-        comment: '',
-        tripId,
-        userId,
-      };
-      console.log('✨ Inicializado userRatings en setRating para', participationId);
-    }
-    this.userRatings[participationId].score = score;
-    console.log('⭐ Rating establecido:', { participationId, score, data: this.userRatings[participationId] });
+  setRating(tripId: number, userId: number, score: number) {
+    const key = this.formKey(tripId, userId);
+    if (!this.userRatings[key])
+      this.userRatings[key] = { score: 0, comment: '', tripId, userId };
+    this.userRatings[key].score = score;
   }
 
-  setComment(
-    participationId: number,
-    comment: string,
-    tripId?: number,
-    userId?: number
-  ) {
-    if (!this.userRatings[participationId] && tripId && userId) {
-      this.userRatings[participationId] = {
-        score: 0,
-        comment: '',
-        tripId,
-        userId,
-      };
-      console.log('✨ Inicializado userRatings en setComment para', participationId);
-    }
-    this.userRatings[participationId].comment = comment;
-    console.log('💬 Comentario establecido:', { participationId, comment, data: this.userRatings[participationId] });
+  setComment(tripId: number, userId: number, comment: string) {
+    const key = this.formKey(tripId, userId);
+    if (!this.userRatings[key])
+      this.userRatings[key] = { score: 0, comment: '', tripId, userId };
+    this.userRatings[key].comment = comment;
   }
 
-  async submitRating(participationId: number) {
-    const ratingData = this.userRatings[participationId];
-    console.log('📊 Intentando enviar valoración:', { participationId, ratingData, allRatings: this.userRatings });
+  async submitRating(tripId: number, userId: number) {
+    if (this.hasRated(tripId, userId)) return;
 
-    if (!ratingData || !ratingData.score) {
-      console.warn('⚠️ No hay datos de valoración o puntuación', { ratingData });
+    const key = this.formKey(tripId, userId);
+    const ratingData = this.userRatings[key];
+    if (!ratingData || !ratingData.score) return;
+
+    if (!tripId || !userId) {
+      alert('Datos inválidos');
       return;
     }
 
     try {
       const payload = {
-        id_trip: ratingData.tripId,
-        id_reviewed: ratingData.userId,
+        id_trip: tripId,
+        id_reviewed: userId,
         score: ratingData.score,
-        comment: ratingData.comment,
+        comment: ratingData.comment || null,
       };
 
-      console.log('📤 Enviando payload:', payload);
+      await this.ratingService.submitRating(payload as any);
 
-      const result = await this.ratingService.submitRating(payload);
-
-      console.log('✅ Valoración enviada correctamente:', result);
+      this.markRated(tripId, userId);
+      this.expandedRatings[key] = false;
+      delete this.userRatings[key];
 
       alert('Valoración enviada correctamente');
-      this.expandedRatings[participationId] = false;
-      delete this.userRatings[participationId];
-    } catch (error) {
-      console.error('❌ Error submitting rating:', error);
-      alert('Error al enviar la valoración');
+    } catch (error: any) {
+      console.error('Error submitting rating FULL:', error);
+      alert(
+        error?.error?.error?.message ||
+          error?.error?.message ||
+          'Error al enviar la valoración'
+      );
     }
   }
 
   async loadUserProfiles() {
-    // Obtener IDs únicos de usuarios de todas las solicitudes
-    const userIds = [...new Set(this.allRequests.map((req) => req.id_user))];
+    // IDs desde solicitudes
+    const idsFromRequests = this.allRequests.map((req) => req.id_user);
 
-    // Cargar perfiles en paralelo
-    const profilePromises = userIds.map(async (userId) => {
-      try {
-        const profile = await this.userService.getUser(userId);
-        this.userProfiles[userId] = profile;
-      } catch (error) {
-        console.error(`Error loading profile for user ${userId}:`, error);
-      }
-    });
+    // IDs desde participantes
+    const idsFromParticipants = Object.values(this.tripParticipants)
+      .flat()
+      .map((p) => p.id_user);
+
+    // Unir, únicos y limpiar nulos
+    const userIds = [
+      ...new Set([...idsFromRequests, ...idsFromParticipants]),
+    ].filter((id) => typeof id === 'number' && id > 0);
+
+    // Cargar solo los que falten
+    const profilePromises = userIds
+      .filter((id) => !this.userProfiles[id])
+      .map(async (userId) => {
+        try {
+          const profile = await this.userService.getUser(userId);
+          this.userProfiles[userId] = profile;
+        } catch (error) {
+          console.error(`Error loading profile for user ${userId}:`, error);
+        }
+      });
 
     await Promise.all(profilePromises);
   }
 
   async loadTripParticipants() {
-    // Cargar información completa de participantes para cada viaje
     const participantsPromises = this.myTrips.map(async (trip) => {
       if (!trip.id_trip) return;
 
       try {
-        const participants =
+        const participantsInfo =
           await this.participationService.getTripParticipantInformation(
             trip.id_trip
           );
-        this.tripParticipants[trip.id_trip] = participants;
+
+        this.tripParticipants[trip.id_trip] = participantsInfo;
+
+        const participations =
+          await this.participationService.getTripParticipations(trip.id_trip);
+
+        const accepted = participations.filter(
+          (p: any) => p.status === participationStatus.accepted
+        );
+
+        if (!this.participationByTripUser[trip.id_trip]) {
+          this.participationByTripUser[trip.id_trip] = {};
+        }
+
+        for (const p of accepted) {
+          this.participationByTripUser[trip.id_trip][p.id_user] =
+            p.id_participation;
+        }
       } catch (error) {
         console.error(
           `Error loading participants for trip ${trip.id_trip}:`,
@@ -375,14 +390,7 @@ export class RequestsComponent implements OnInit {
   }
 
   getParticipationIdForUser(tripId: number, userId: number): number {
-    // Buscar el id_participation para un usuario específico en un viaje
-    const request = this.allRequests.find(
-      (req) =>
-        req.id_trip === tripId &&
-        req.id_user === userId &&
-        req.status === participationStatus.accepted
-    );
-    return request?.id_participation || 0;
+    return this.participationByTripUser[tripId]?.[userId] || 0;
   }
 
   getUserName(userId: number): string {
@@ -426,12 +434,14 @@ export class RequestsComponent implements OnInit {
     this.selectedApplicantId = null;
   }
 
-  getRatingValue(participationId: number): number {
-    return this.userRatings[participationId]?.score || 0;
+  getRatingValue(tripId: number, userId: number): number {
+    const key = this.formKey(tripId, userId);
+    return this.userRatings[key]?.score || 0;
   }
 
-  getCommentValue(participationId: number): string {
-    return this.userRatings[participationId]?.comment || '';
+  getCommentValue(tripId: number, userId: number): string {
+    const key = this.formKey(tripId, userId);
+    return this.userRatings[key]?.comment || '';
   }
 
   isCurrentUser(userId: number): boolean {
