@@ -1,6 +1,6 @@
 # Meet&Go - Plataforma de Viajes Colaborativos
 
-Meet&Go es una aplicación web desarrollada con Angular 19 que permite a los usuarios crear, descubrir y participar en viajes colaborativos. La plataforma facilita la organización de viajes compartidos, la gestión de participantes y la comunicación en tiempo real entre los miembros de cada viaje.
+Meet&Go es una aplicación web desarrollada con Angular 19 que permite a los usuarios crear, descubrir y participar en viajes colaborativos. La plataforma facilita la organización de viajes compartidos, la gestión de participantes y la comunicación entre los miembros de cada viaje.
 
 ## 🏗️ Arquitectura
 
@@ -238,14 +238,16 @@ La aplicación sigue un patrón de arquitectura **por capas** con separación de
 ### 7. Utilidades y Constantes
 
 **Archivos principales:**
-- `shared/utils/crypto.utils.ts`
 - `shared/utils/http-error.utils.ts`
+- `shared/utils/data.utils.ts`
+- `shared/utils/route.utils.ts`
 - `shared/constants/field-lengths.constants.ts`
 - `shared/constants/validation-messages.constants.ts`
 
 **Características:**
-- ✅ Utilidades de cifrado para contraseñas
 - ✅ Manejo centralizado de errores HTTP
+- ✅ Utilidades de manipulación de datos
+- ✅ Helpers de navegación y rutas
 - ✅ Constantes de longitud de campos para validaciones
 - ✅ Mensajes de validación estandarizados
 
