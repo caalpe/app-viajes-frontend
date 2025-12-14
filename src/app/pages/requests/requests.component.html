@@ -493,90 +493,60 @@
                     </div>
                   </div>
 
-                  @if (!isCurrentUser(participant.id_user)) {
+                  @if (!isCurrentUser(participant.id_user)) { @if
+                  (hasRated(trip.id_trip!, participant.id_user)) {
+                  <button class="btn btn-sm btn-outline-secondary" disabled>
+                    <i class="bi bi-check2-circle me-1"></i> Ya valorado
+                  </button>
+                  } @else {
                   <button
                     (click)="
-                      toggleRatingForm(
-                        getParticipationIdForUser(
-                          trip.id_trip!,
-                          participant.id_user
-                        ),
-                        trip.id_trip,
-                        participant.id_user
-                      )
+                      toggleRatingForm(trip.id_trip!, participant.id_user)
                     "
                     class="btn btn-sm btn-outline-primary"
                   >
                     <i class="bi bi-star me-1"></i>
                     {{
-                      expandedRatings[
-                        getParticipationIdForUser(
-                          trip.id_trip!,
-                          participant.id_user
-                        )
-                      ]
+                      expandedRatings[trip.id_trip! + ":" + participant.id_user]
                         ? "Cancelar"
                         : "Valorar"
                     }}
                   </button>
-                  }
+                  } }
                 </div>
 
-                @if (expandedRatings[getParticipationIdForUser(trip.id_trip!,
-                participant.id_user)]) {
+                @if (expandedRatings[trip.id_trip! + ':' + participant.id_user])
+                {
                 <div class="bg-light rounded p-3">
                   <label class="form-label small fw-semibold"
                     >Tu Valoración (1-10)</label
                   >
+
                   <div class="d-flex gap-2 mb-3 flex-wrap">
                     @for (score of [1,2,3,4,5,6,7,8,9,10]; track score) {
                     <button
                       (click)="
-                        setRating(
-                          getParticipationIdForUser(
-                            trip.id_trip!,
-                            participant.id_user
-                          ),
-                          score,
-                          trip.id_trip,
-                          participant.id_user
-                        )
+                        setRating(trip.id_trip!, participant.id_user, score)
                       "
                       class="btn btn-link p-0"
                     >
                       <i
                         class="bi fs-4"
                         [class.bi-star-fill]="
-                          getRatingValue(
-                            getParticipationIdForUser(
-                              trip.id_trip!,
-                              participant.id_user
-                            )
-                          ) >= score
+                          getRatingValue(trip.id_trip!, participant.id_user) >=
+                          score
                         "
                         [class.bi-star]="
-                          getRatingValue(
-                            getParticipationIdForUser(
-                              trip.id_trip!,
-                              participant.id_user
-                            )
-                          ) < score
+                          getRatingValue(trip.id_trip!, participant.id_user) <
+                          score
                         "
                         [class.text-warning]="
-                          getRatingValue(
-                            getParticipationIdForUser(
-                              trip.id_trip!,
-                              participant.id_user
-                            )
-                          ) >= score
+                          getRatingValue(trip.id_trip!, participant.id_user) >=
+                          score
                         "
                         [class.text-muted]="
-                          getRatingValue(
-                            getParticipationIdForUser(
-                              trip.id_trip!,
-                              participant.id_user
-                            )
-                          ) < score
+                          getRatingValue(trip.id_trip!, participant.id_user) <
+                          score
                         "
                       ></i>
                     </button>
@@ -588,22 +558,13 @@
                   >
                   <textarea
                     [value]="
-                      getCommentValue(
-                        getParticipationIdForUser(
-                          trip.id_trip!,
-                          participant.id_user
-                        )
-                      )
+                      getCommentValue(trip.id_trip!, participant.id_user)
                     "
                     (input)="
                       setComment(
-                        getParticipationIdForUser(
-                          trip.id_trip!,
-                          participant.id_user
-                        ),
-                        $any($event.target).value,
-                        trip.id_trip,
-                        participant.id_user
+                        trip.id_trip!,
+                        participant.id_user,
+                        $any($event.target).value
                       )
                     "
                     class="form-control mb-3"
@@ -612,21 +573,9 @@
                   ></textarea>
 
                   <button
-                    (click)="
-                      submitRating(
-                        getParticipationIdForUser(
-                          trip.id_trip!,
-                          participant.id_user
-                        )
-                      )
-                    "
+                    (click)="submitRating(trip.id_trip!, participant.id_user)"
                     [disabled]="
-                      getRatingValue(
-                        getParticipationIdForUser(
-                          trip.id_trip!,
-                          participant.id_user
-                        )
-                      ) === 0
+                      getRatingValue(trip.id_trip!, participant.id_user) === 0
                     "
                     class="btn btn-primary w-100"
                   >
