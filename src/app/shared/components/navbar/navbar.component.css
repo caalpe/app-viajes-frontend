@@ -25,21 +25,28 @@
   color: #a5d6a7 !important;
 }
 
-.nav-link {
+/* Enlaces de navegación */
+.navbar-dark .navbar-nav .nav-link {
   margin-left: 0.5rem;
-  transition: color 0.3s ease;
+  margin-right: 0.5rem;
+  transition: all 0.3s ease;
   white-space: nowrap;
-  color: white !important;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: normal;
+  padding: 0.5rem 1rem;
 }
 
-.nav-link:hover {
-  color: #a5d6a7 !important;
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: #ffffff;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
 }
 
-.nav-link.active {
-  color: #a5d6a7 !important;
-  font-weight: 500;
-  border-bottom: 2px solid #a5d6a7;
+.navbar-dark .navbar-nav .nav-link.active {
+  color: #ffffff;
+  font-weight: bold;
+  border-bottom: 3px solid #ffffff;
 }
 
 /* Botones de autenticación */
@@ -69,15 +76,18 @@
   color: #1b5e20;
 }
 
-.btn-outline-warning {
+.navbar .btn-outline-warning {
   color: white;
   border-color: rgba(255, 255, 255, 0.5);
+  margin-left: 0.5rem;
+  transition: all 0.3s ease;
 }
 
-.btn-outline-warning:hover {
+.navbar .btn-outline-warning:hover {
   background-color: white;
   border-color: white;
   color: #17a2b8;
+  font-weight: bold;
 }
 
 /* Iconos */
@@ -87,15 +97,80 @@
 
 /* Responsive */
 @media (max-width: 991.98px) {
+  .container-fluid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .navbar-left {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .navbar-brand {
+    margin-right: auto;
+  }
+
+  .navbar-toggler {
+    margin-left: auto;
+  }
+
+  .navbar-collapse {
+    margin-top: 1rem;
+  }
+
+  .navbar-nav {
+    align-items: flex-start !important;
+    width: 100%;
+  }
+
+  .navbar-nav.ms-auto {
+    margin-left: 0 !important;
+  }
+
+  .nav-item {
+    width: 100%;
+  }
+
+  .navbar-dark .navbar-nav .nav-link {
+    padding: 0.75rem 1rem;
+    display: block;
+    text-align: left;
+    margin: 0.25rem 0;
+  }
+
+  .navbar-dark .navbar-nav .nav-link:hover {
+    color: #ffffff;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+  }
+
   .btn-group {
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
   }
 
-  .nav-link {
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
+  .navbar .btn-outline-warning {
+    width: 100%;
+    text-align: left;
+    margin-top: 0.5rem;
+    margin-left: 0;
+    padding-left: 1rem;
+  }
+
+  .navbar .btn-outline-warning:hover {
+    background-color: white;
+    color: #17a2b8;
+    font-weight: bold;
+  }
+
+  .btn-light {
+    width: 100%;
+    text-align: left;
+    margin-top: 0.5rem;
   }
 }

@@ -34,7 +34,7 @@ export class TripChatComponent implements OnInit {
   isOrganizer = false;
   showSurveyModal = false;
   replyingTo: IMessage | null = null; // Mensaje al que se está respondiendo
-  
+
   // Modal de alertas
   showModal = false;
   modalTitle = '';
@@ -172,19 +172,19 @@ export class TripChatComponent implements OnInit {
   deleteMessage(messageId: number): void {
     // Buscar el mensaje en el árbol
     const message = this.findMessageById(this.messages, messageId);
-    
+
     if (!message) {
       console.error('Mensaje no encontrado');
       this.showErrorModal('No se pudo encontrar el mensaje.');
       return;
     }
-    
+
     // Verificar si el mensaje tiene respuestas
     if (message.replies && message.replies.length > 0) {
       this.showErrorModal('No puedes eliminar un mensaje que tiene respuestas. Elimina primero las respuestas.');
       return;
     }
-    
+
     this.showConfirmationModal(
       'Eliminar mensaje',
       '¿Estás seguro de que quieres eliminar este mensaje?',

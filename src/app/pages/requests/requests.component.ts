@@ -302,7 +302,7 @@ export class RequestsComponent implements OnInit {
   async submitRating(participationId: number) {
     const ratingData = this.userRatings[participationId];
     console.log('📊 Intentando enviar valoración:', { participationId, ratingData, allRatings: this.userRatings });
-    
+
     if (!ratingData || !ratingData.score) {
       console.warn('⚠️ No hay datos de valoración o puntuación', { ratingData });
       return;
@@ -315,13 +315,13 @@ export class RequestsComponent implements OnInit {
         score: ratingData.score,
         comment: ratingData.comment,
       };
-      
+
       console.log('📤 Enviando payload:', payload);
-      
+
       const result = await this.ratingService.submitRating(payload);
-      
+
       console.log('✅ Valoración enviada correctamente:', result);
-      
+
       alert('Valoración enviada correctamente');
       this.expandedRatings[participationId] = false;
       delete this.userRatings[participationId];
