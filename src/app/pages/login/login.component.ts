@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit {
 
     try {
       const response = await this.authRest.login(credentials);
-      console.log('Login exitoso:', response);
+
 
       // Guardar el token en el AuthService (decodifica JWT automáticamente)
       this.authService.setToken(response.token);

@@ -39,9 +39,6 @@ export class TripListComponent
         try
         {
             this.allTrips = await this.tripService.getAllTripsWithAuth();
-            console.log('📋 Todos los viajes (con autenticación):');
-            console.log(JSON.stringify(this.allTrips, null, 2));
-            console.table(this.allTrips);
         }
         catch (error)
         {
@@ -60,7 +57,7 @@ export class TripListComponent
         }
         catch (error)
         {
-            console.log("Error loading user created trips: " + error);
+            console.error("Error loading user created trips:", error);
         }
 
         //Load user participation
@@ -70,7 +67,7 @@ export class TripListComponent
         }
         catch (error)
         {
-            console.log("Error loading trips where user send participation: " + error);
+            console.error("Error loading trips where user send participation:", error);
         }
 
         //Get user petitions to know the status of them
@@ -80,7 +77,7 @@ export class TripListComponent
         }
         catch (error)
         {
-            console.log("Error loading trips where user send participation: " + error);
+            console.error("Error loading user petitions:", error);
         }
     }
 

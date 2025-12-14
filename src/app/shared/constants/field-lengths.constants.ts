@@ -51,3 +51,20 @@ export const TRIP_MIN_PARTICIPANTS_MAX = 1000;
 
 // Campo: cost_per_person (DECIMAL(10,2)) - máximo 9,999,999.99
 export const TRIP_COST_PER_PERSON_MAX = 9999999.99;
+
+/**
+ * Constantes con los límites de caracteres para los campos de mensajes y encuestas
+ */
+
+// Campo: message (TEXT) - limitado a 1000 para UX
+export const MESSAGE_MAX_LENGTH = 1000;
+
+// Campo: question (VARCHAR(200))
+export const SURVEY_QUESTION_MAX_LENGTH = 200;
+
+// Campo: option_text (VARCHAR(100))
+export const SURVEY_OPTION_MAX_LENGTH = 100;
+
+// Límites de opciones en encuestas
+export const SURVEY_MIN_OPTIONS = 2;
+export const SURVEY_MAX_OPTIONS = 10;

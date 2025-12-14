@@ -110,9 +110,6 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   async onSubmit(): Promise<void> {
-    console.log('onSubmit llamado');
-    console.log('Form valid:', this.changePasswordForm.valid);
-    console.log('Form value:', this.changePasswordForm.value);
 
     // Validar datos del formulario
     const customValidationsPassed = this.validateFormData(this.changePasswordForm.value);
@@ -122,13 +119,13 @@ export class ChangePasswordComponent implements OnInit {
 
     // Si no pasa las validaciones de Angular, marcar como touched para mostrar errores
     if (!angularValidationsPassed) {
-      console.log('Formulario inválido según Angular, marcando como touched');
+      // Formulario inválido, marcar como touched
       this.changePasswordForm.markAllAsTouched();
     }
 
     // Retornar si falla cualquiera de las validaciones
     if (!customValidationsPassed || !angularValidationsPassed) {
-      console.log('Validaciones fallidas - Custom:', customValidationsPassed, 'Angular:', angularValidationsPassed);
+      // Validaciones fallidas
       return;
     }
 
@@ -146,7 +143,7 @@ export class ChangePasswordComponent implements OnInit {
 
       // Realizar PATCH solo del campo password
       const response = await this.userApi.updateUserPatch(userId, payload);
-      console.log('Contraseña actualizada', response);
+
 
       const successMessage = extractSuccessMessage(response, 'Contraseña actualizada correctamente');
       this.showModal('¡Éxito!', successMessage, 'success', '/user/profile/edit');
@@ -162,7 +159,7 @@ export class ChangePasswordComponent implements OnInit {
   private validateFormData(payload: any): boolean {
     // Limpiar errores previos
     this.validationErrors = {};
-    console.log('Validando payload:', payload);
+
 
     // La validación de coincidencia de contraseñas ya se hace de forma reactiva
     // Solo verificar que ambas contraseñas tengan contenido

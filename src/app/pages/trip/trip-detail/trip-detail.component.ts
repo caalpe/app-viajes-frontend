@@ -65,11 +65,10 @@ export class TripDetailComponent
     try
     {
       this.tripInfo = await this.tripService.getTrip(this.tripId);
-      console.log(this.tripInfo);
     }
     catch (error)
     {
-      console.log('Couldn`t get the trip info:' + error);
+      console.error('Couldn`t get the trip info:', error);
     }
     //Load participation information
     try
@@ -78,7 +77,7 @@ export class TripDetailComponent
     }
     catch (error)
     {
-      console.log('Couldn`t get the trip participants:' + error);
+      console.error('Couldn`t get the trip participants:', error);
     }
 
     //Get user petitions to check if he already sended one
@@ -88,7 +87,7 @@ export class TripDetailComponent
     }
     catch (error)
     {
-      console.log('Couldn`t get the trip participants:' + error);
+      console.error('Couldn`t get user participation requests:', error);
     }
 
     //Check if the user seeing this trip is the owner
@@ -207,13 +206,13 @@ export class TripDetailComponent
         let participationId = this.userTripParticipation?.id_participation ?? -1;
         if(participationId == -1)
         {
-          console.log("No se pudo cancelar la peticion del viaje por que no se obtubo la informacion de la solicitud");
+          console.error("No se pudo cancelar la peticion del viaje por que no se obtubo la informacion de la solicitud");
         }
         result = await this.participationService.deleteParticipation(participationId);
       }
       catch (error) 
       {
-        console.log("No se pudo cancelar la peticion del viaje por un error inesperado :", error);
+        console.error("No se pudo cancelar la peticion del viaje por un error inesperado:", error);
       }
       this.userHasSendRequest = false;
       this.cancelPetitionButtonPressed();
@@ -226,13 +225,13 @@ export class TripDetailComponent
         let participationId = this.userTripParticipation?.id_participation ?? -1;
         if(participationId == -1)
         {
-          console.log("No se pudo abandonar el viaje por que no se obtubo la informacion de la solicitud");
+          console.error("No se pudo abandonar el viaje por que no se obtubo la informacion de la solicitud");
         }
         result = await this.participationService.updateParticipationStatus(participationId, participationStatus.left);
       }
       catch (error) 
       {
-        console.log("No se pudo abandonar el viaje por un error inesperado :", error);
+        console.error("No se pudo abandonar el viaje por un error inesperado:", error);
       }
     }
     //despues de abandonar el viaje recargamos la informacion de la pagina
@@ -247,7 +246,7 @@ export class TripDetailComponent
 		} 
 		catch (error) 
 		{
-			console.log("Couldn't send the participation petition:", error);
+			console.error("Couldn't send the participation petition:", error);
 			//TODO:modal to warm the user that something whent wrong he will need to retry
 		}
 
