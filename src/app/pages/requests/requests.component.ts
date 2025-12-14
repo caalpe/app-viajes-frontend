@@ -71,8 +71,6 @@ export class RequestsComponent implements OnInit {
 
       // Cargar todos los viajes que he creado
       this.myTrips = await this.tripService.getCreatedTrip();
-      console.log('🚗 Mis viajes creados:', this.myTrips);
-      console.log('📊 Total de viajes:', this.myTrips.length);
 
       // Para cada viaje, cargar sus solicitudes
       const requestsPromises = this.myTrips.map(async (trip) => {
@@ -81,7 +79,6 @@ export class RequestsComponent implements OnInit {
             await this.participationService.getTripParticipations(
               trip.id_trip!
             );
-          console.log(`📝 Solicitudes del viaje ${trip.title}:`, requests);
           return requests.map((req) => ({ ...req, trip }));
         } catch (error) {
           console.error(
@@ -94,7 +91,6 @@ export class RequestsComponent implements OnInit {
 
       const allRequestsArrays = await Promise.all(requestsPromises);
       this.allRequests = allRequestsArrays.flat();
-      console.log('📋 Total de solicitudes:', this.allRequests.length);
     } catch (error) {
       console.error('Error loading trips and requests:', error);
     } finally {
@@ -314,21 +310,18 @@ export class RequestsComponent implements OnInit {
   async loadUserProfiles() {
     // Obtener IDs únicos de usuarios de todas las solicitudes
     const userIds = [...new Set(this.allRequests.map((req) => req.id_user))];
-    console.log('👥 IDs de usuarios a cargar:', userIds);
 
     // Cargar perfiles en paralelo
     const profilePromises = userIds.map(async (userId) => {
       try {
         const profile = await this.userService.getUser(userId);
         this.userProfiles[userId] = profile;
-        console.log(`✅ Perfil cargado para usuario ${userId}:`, profile);
       } catch (error) {
-        console.error(`❌ Error loading profile for user ${userId}:`, error);
+        console.error(`Error loading profile for user ${userId}:`, error);
       }
     });
 
     await Promise.all(profilePromises);
-    console.log('✅ Todos los perfiles cargados:', this.userProfiles);
   }
 
   async loadTripParticipants() {
@@ -342,20 +335,15 @@ export class RequestsComponent implements OnInit {
             trip.id_trip
           );
         this.tripParticipants[trip.id_trip] = participants;
-        console.log(
-          `✅ Participantes cargados para viaje ${trip.id_trip}:`,
-          participants
-        );
       } catch (error) {
         console.error(
-          `❌ Error loading participants for trip ${trip.id_trip}:`,
+          `Error loading participants for trip ${trip.id_trip}:`,
           error
         );
       }
     });
 
     await Promise.all(participantsPromises);
-    console.log('✅ Todos los participantes cargados:', this.tripParticipants);
   }
 
   getTripParticipantsInfo(tripId: number): IParticipantInfo[] {
@@ -399,9 +387,6 @@ export class RequestsComponent implements OnInit {
   }
 
   showUserProfile(userId: number) {
-    console.log('🔍 Abriendo perfil de usuario:', userId);
-    console.log('📋 Perfil disponible:', this.userProfiles[userId]);
-    console.log('💾 Todos los perfiles:', this.userProfiles);
     this.selectedUserId = userId;
   }
 

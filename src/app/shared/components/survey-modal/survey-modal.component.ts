@@ -73,7 +73,6 @@ export class SurveyModalComponent {
 
     this.isSubmitting = true;
     try {
-      console.log('Creando encuesta con datos:', { tripId: this.tripId, userId: this.userId, userName: this.userName, question, options });
       const newSurvey = await this.surveyApi.createSurvey(
         this.tripId,
         this.userId,
@@ -81,8 +80,6 @@ export class SurveyModalComponent {
         question,
         options
       );
-      console.log('Encuesta creada en modal:', newSurvey);
-      console.log('Emitiendo surveyCreated...');
       this.surveyCreated.emit(newSurvey);
       this.surveyService.resetForm();
       this.onClose();

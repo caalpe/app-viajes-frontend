@@ -170,12 +170,8 @@ export class TripChatComponent implements OnInit {
   }
 
   deleteMessage(messageId: number): void {
-    console.log('deleteMessage llamado con ID:', messageId);
-    console.log('Mensajes actuales:', JSON.stringify(this.messages, null, 2));
-    
     // Buscar el mensaje en el árbol
     const message = this.findMessageById(this.messages, messageId);
-    console.log('Mensaje encontrado:', message);
     
     if (!message) {
       console.error('Mensaje no encontrado');
@@ -184,28 +180,19 @@ export class TripChatComponent implements OnInit {
     }
     
     // Verificar si el mensaje tiene respuestas
-    console.log('Verificando replies. message.replies:', message.replies);
-    console.log('Tiene replies:', message.replies && message.replies.length > 0);
-    
     if (message.replies && message.replies.length > 0) {
-      console.log('Mensaje tiene respuestas, mostrando modal de error');
       this.showErrorModal('No puedes eliminar un mensaje que tiene respuestas. Elimina primero las respuestas.');
       return;
     }
     
-    console.log('Mensaje válido para eliminar, mostrando confirmación');
     this.showConfirmationModal(
       'Eliminar mensaje',
       '¿Estás seguro de que quieres eliminar este mensaje?',
       async () => {
         try {
-          console.log('Confirmación aceptada, eliminando mensaje:', messageId);
           await this.chatApi.deleteMessage(messageId);
-          console.log('Mensaje eliminado del servicio');
-          
           // Recargar todos los mensajes desde el servicio
           await this.loadMessages();
-          console.log('Mensajes recargados');
         } catch (error) {
           console.error('Error al eliminar mensaje:', error);
           this.showErrorModal('Error al eliminar el mensaje. Por favor, intenta de nuevo.');
@@ -302,7 +289,6 @@ export class TripChatComponent implements OnInit {
       this.showErrorModal('No se pudo identificar al usuario');
       return;
     }
-    console.log('Abriendo modal de encuesta. Usuario:', this.currentUserId, this.currentUserName);
     this.showSurveyModal = true;
   }
 
@@ -311,12 +297,8 @@ export class TripChatComponent implements OnInit {
   }
 
   onSurveyCreated(newSurvey: ISurvey): void {
-    console.log('Nueva encuesta creada:', newSurvey);
-    console.log('Encuestas antes:', this.surveys.length);
     // Crear una nueva referencia del array para forzar detección de cambios
     this.surveys = [...this.surveys, newSurvey];
-    console.log('Encuestas después:', this.surveys.length);
-    console.log('Todas las encuestas:', this.surveys);
   }
 
   onSurveyUpdated(updatedSurvey: ISurvey): void {
