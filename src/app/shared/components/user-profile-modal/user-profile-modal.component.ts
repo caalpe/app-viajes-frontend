@@ -12,4 +12,12 @@ import { IUser } from '../../../interfaces/IUser';
 export class UserProfileModalComponent {
   @Input() user: IUser | null = null;
   @Output() close = new EventEmitter<void>();
+
+  closeModal(): void {
+    this.close.emit();
+  }
+
+  getDefaultAvatar(): string {
+    return 'https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff';
+  }
 }

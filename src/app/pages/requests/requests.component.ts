@@ -101,16 +101,17 @@ export class RequestsComponent implements OnInit {
     return [];
   }
 
-  get uncompletedTrips(): ITrip[] {
+  get incompleteTrips(): ITrip[] {
     const today = new Date();
     const filtered = this.myTrips.filter(trip => {
       const startDate = new Date(trip.start_date!);
-      const isFull = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
+      const hasReachedMinimum = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
       const isUpcoming = startDate > today;
-      console.log(`🔍 Viaje ${trip.title}: startDate=${startDate.toISOString()}, today=${today.toISOString()}, isUpcoming=${isUpcoming}, isFull=${isFull}, accepted=${trip.accepted_participants}, min=${trip.min_participants}`);
-      return isUpcoming && !isFull;
+      console.log(`🔍 Viaje ${trip.title}: accepted=${trip.accepted_participants}, min=${trip.min_participants}, hasReachedMinimum=${hasReachedMinimum}, isUpcoming=${isUpcoming}`);
+      // Incompleto = No ha alcanzado el mínimo de participantes
+      return isUpcoming && !hasReachedMinimum;
     });
-    console.log('🟡 Viajes Incompletos:', filtered.length);
+    console.log('🟡 Viajes Incompletos (no alcanzan mínimo):', filtered.length);
     return filtered;
   }
 
@@ -118,10 +119,27 @@ export class RequestsComponent implements OnInit {
     const today = new Date();
     const filtered = this.myTrips.filter(trip => {
       const startDate = new Date(trip.start_date!);
-      const isFull = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
-      return startDate > today && isFull;
+      const hasReachedMinimum = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
+      const hasReachedMaximum = trip.max_participants ? (trip.accepted_participants || 0) >= trip.max_participants : false;
+      const isUpcoming = startDate > today;
+      console.log(`🔍 Viaje ${trip.title}: accepted=${trip.accepted_participants}, min=${trip.min_participants}, max=${trip.max_participants}, hasMin=${hasReachedMinimum}, hasMax=${hasReachedMaximum}`);
+      // Completado (listo para comenzar) = Ha alcanzado el mínimo pero NO el máximo
+      return isUpcoming && hasReachedMinimum && !hasReachedMaximum;
     });
-    console.log('🟢 Viajes Completados:', filtered.length);
+    console.log('🟢 Viajes Completados (listos para comenzar):', filtered.length);
+    return filtered;
+  }
+
+  get fullTrips(): ITrip[] {
+    const today = new Date();
+    const filtered = this.myTrips.filter(trip => {
+      const startDate = new Date(trip.start_date!);
+      const hasReachedMaximum = trip.max_participants ? (trip.accepted_participants || 0) >= trip.max_participants : false;
+      const isUpcoming = startDate > today;
+      // Viaje completo (lleno) = Ha alcanzado el máximo de participantes
+      return isUpcoming && hasReachedMaximum;
+    });
+    console.log('🔴 Viajes Completos (llenos):', filtered.length);
     return filtered;
   }
 
@@ -134,6 +152,19 @@ export class RequestsComponent implements OnInit {
       return isPast;
     });
     console.log('⏰ Viajes Pasados:', filtered.length);
+    return filtered;
+  }
+
+  get uncompletedTrips(): ITrip[] {
+    const today = new Date();
+    const filtered = this.myTrips.filter(trip => {
+      const startDate = new Date(trip.start_date!);
+      const hasReachedMinimum = (trip.accepted_participants || 0) >= (trip.min_participants || 0);
+      const isUpcoming = startDate > today;
+      // Incompleto = NO ha alcanzado el mínimo de participantes
+      return isUpcoming && !hasReachedMinimum;
+    });
+    console.log('🟡 Viajes Incompletos (sin mínimo):', filtered.length);
     return filtered;
   }
 
