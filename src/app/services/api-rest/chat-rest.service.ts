@@ -40,7 +40,7 @@ export class ChatApiService {
     const mainMessages: IMessage[] = [];
 
     // Ordenar por fecha (UTC)
-    const sortedMessages = allMessages.sort((a, b) => 
+    const sortedMessages = allMessages.sort((a, b) =>
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     );
 
@@ -89,7 +89,7 @@ export class ChatApiService {
   ): Promise<IMessage> {
     const headers = this.getAuthHeaders();
     const body: any = { message };
-    
+
     if (parentMessageId) {
       body.id_parent_message = parentMessageId;
     }
