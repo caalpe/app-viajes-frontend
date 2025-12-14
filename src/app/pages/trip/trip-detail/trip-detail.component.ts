@@ -33,13 +33,13 @@ export class TripDetailComponent
   image : string = "https://www.mercurynews.com/wp-content/uploads/2021/04/SJM-L-ROADTRIP-0502-01.jpg?w=1024";
 
   userIsOwner         	: boolean = false; //To display if its the owner
-  userHasSendRequest  	: boolean = false; //To know when the user has "Send" a new request to the trip he is seeing 
+  userHasSendRequest  	: boolean = false; //To know when the user has "Send" a new request to the trip he is seeing
 	userRequestIsAccepted	: boolean = false; //To dispplay the button for more information in participants
   requestingPetition  	: boolean = false; //To start the animation when the user sends the request
   showForm      				: boolean = false; //To show de form when the user hits the "send request" button
   showMessageBox        : boolean = false;
 
-  pageLoaded          	: boolean = false; //To load the page when all the promises comes 
+  pageLoaded          	: boolean = false; //To load the page when all the promises comes
 
   animationTimeOut : number = 500;//ms
 
@@ -116,7 +116,7 @@ export class TripDetailComponent
         }
       }
     }
-    
+
     //Get the owner information
     this.ownerTripInfo = this.tripParticipantsInfo.find((value) =>
         {
@@ -160,7 +160,7 @@ export class TripDetailComponent
     }
     return "";
   }
-  
+
   get participationClass(): string
   {
     const status = this.userTripParticipation?.status ?? participationStatus.pending;
@@ -190,7 +190,7 @@ export class TripDetailComponent
 
     setTimeout(() =>
     {
-      this.showForm = true;  
+      this.showForm = true;
       this.showMessageBox = true;
     }, this.animationTimeOut);
   }
@@ -201,7 +201,7 @@ export class TripDetailComponent
     if(this.userTripParticipation?.status == participationStatus.pending)
     {
       let result;
-      try 
+      try
       {
         let participationId = this.userTripParticipation?.id_participation ?? -1;
         if(participationId == -1)
@@ -210,7 +210,7 @@ export class TripDetailComponent
         }
         result = await this.participationService.deleteParticipation(participationId);
       }
-      catch (error) 
+      catch (error)
       {
         console.error("No se pudo cancelar la peticion del viaje por un error inesperado:", error);
       }
@@ -220,7 +220,7 @@ export class TripDetailComponent
     else//The button is acepted and the user wants to leave the trip
     {
       let result;
-      try 
+      try
       {
         let participationId = this.userTripParticipation?.id_participation ?? -1;
         if(participationId == -1)
@@ -229,7 +229,7 @@ export class TripDetailComponent
         }
         result = await this.participationService.updateParticipationStatus(participationId, participationStatus.left);
       }
-      catch (error) 
+      catch (error)
       {
         console.error("No se pudo abandonar el viaje por un error inesperado:", error);
       }
@@ -240,11 +240,11 @@ export class TripDetailComponent
 
   async sendPetitionButtonPressed()
   {
-		try 
+		try
 		{
-			this.userTripParticipation = await this.participationService.createParticipationRequest(this.tripId, this.petitionForm.get("text")?.value ?? "");	
-		} 
-		catch (error) 
+			this.userTripParticipation = await this.participationService.createParticipationRequest(this.tripId, this.petitionForm.get("text")?.value ?? "");
+		}
+		catch (error)
 		{
 			console.error("Couldn't send the participation petition:", error);
 			//TODO:modal to warm the user that something whent wrong he will need to retry
@@ -253,7 +253,7 @@ export class TripDetailComponent
 		if(this.userTripParticipation)
 		{
 			//TODO MODAL PARA AVISAR DE QUE LA PETICION HA SIDO ENVIADA
-			
+
 			//refres the card info
 			this.userHasSendRequest = true;
 		}
