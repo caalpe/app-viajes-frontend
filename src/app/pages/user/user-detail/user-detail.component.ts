@@ -48,22 +48,27 @@ export class UserDetailComponent implements OnInit {
     try {
       // Obtener el ID del usuario de la ruta (si existe)
       const idFromRoute = await getIdFromRoute(this.activatedRoute, 'idUser');
+      const loggedUserId = this.authService.getUserId();
+
+      console.log('🔍 Debug user-detail:', { idFromRoute, loggedUserId });
 
       // Si hay ID en la ruta, mostrar ese usuario; si no, mostrar perfil propio
-      const userId = idFromRoute || this.authService.getUserId();
+      const userId = idFromRoute || loggedUserId;
 
       if (!userId) {
         throw new Error('No se pudo obtener el ID del usuario');
       }
 
       this.targetUserId = userId;
-      this.isOwnProfile = userId === this.authService.getUserId();
+      this.isOwnProfile = userId === loggedUserId;
+      
+      console.log('📋 Cargando usuario con ID:', userId);
       this.user = await this.userApi.getUser(userId);
-      console.log('Datos del usuario cargados:', this.user);
+      console.log('✅ Datos del usuario cargados:', this.user);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
+      console.error('❌ Error cargando usuario:', error);
       this.showModal('Error', errorMessage, 'error');
-      console.error('Error cargando usuario', error);
     } finally {
       this.isLoading = false;
     }

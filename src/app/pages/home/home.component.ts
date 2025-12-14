@@ -115,7 +115,25 @@ export class HomeComponent implements OnInit {
           this.totalItems = pagination.total;
           this.pageSize = pagination.pageSize;
         }
-        return trips;
+        
+        // Filtrar viajes con fechas pasadas
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalizar a inicio del día
+        
+        const futureTrips = trips.filter((trip: any) => {
+          // Usar start_date como fecha de referencia del viaje
+          if (trip.start_date) {
+            const tripDate = new Date(trip.start_date);
+            tripDate.setHours(0, 0, 0, 0);
+            return tripDate >= today;
+          }
+          // Si no tiene fecha, mostrar el viaje (por si acaso)
+          return true;
+        });
+        
+        console.log(`📅 Viajes filtrados por fecha: ${trips.length} → ${futureTrips.length} (eliminados ${trips.length - futureTrips.length} viajes pasados)`);
+        
+        return futureTrips;
       })
     );
 

@@ -49,7 +49,12 @@
           <!-- Mi Perfil -->
           <li class="nav-item">
             <a class="nav-link" [routerLink]="['/user/profile']" routerLinkActive="active">
-              <i class="bi bi-person-circle"></i> Mi perfil
+              <i class="bi bi-person-circle"></i> 
+              @if (userName) {
+                {{ userName }}
+              } @else {
+                Mi perfil
+              }
             </a>
           </li>
 

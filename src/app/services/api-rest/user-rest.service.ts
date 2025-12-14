@@ -39,8 +39,10 @@ export class UserApiService {
    * GET /api/usuarios/:idUser
    */
   getUser(idUser: number): Promise<IUser> {
+    const headers = this.getAuthHeaders();
+    console.log('🔐 Petición getUser - ID:', idUser, 'Token:', this.authService.getToken()?.substring(0, 20) + '...');
     return firstValueFrom(
-      this.http.get<IUser>(`${this.baseUrl}/${idUser}`, { headers: this.getAuthHeaders() })
+      this.http.get<IUser>(`${this.baseUrl}/${idUser}`, { headers })
     );
   }
 
