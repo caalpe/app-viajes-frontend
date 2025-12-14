@@ -1,0 +1,139 @@
+:host {
+  display: block;
+}
+
+.message-item {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-left: 3px solid #17a2b8;
+  transition: all 0.3s ease;
+}
+
+.message-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.message-item.own-message {
+  background: #e7f5f7;
+  border-left-color: #138496;
+}
+
+.message-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  gap: 8px;
+}
+
+.btn-reply {
+  background: transparent;
+  border: 1px solid #17a2b8;
+  color: #17a2b8;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.btn-reply:hover {
+  background: #17a2b8;
+  color: white;
+}
+
+.reply-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.reply-indicator {
+  color: #6c757d;
+  font-size: 16px;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.reply-content {
+  flex: 1;
+  background: #e9ecef;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border-left: 2px solid #17a2b8;
+  font-size: 14px;
+}
+
+.reply-item.own-reply .reply-content {
+  background: #d4edda;
+  border-left-color: #28a745;
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.message-body {
+  position: relative;
+}
+
+.message-body .message-text {
+  margin: 0;
+  color: #495057;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.message-body .message-text ::ng-deep .message-link {
+  color: #17a2b8;
+  text-decoration: underline;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.message-body .message-text ::ng-deep .message-link:hover {
+  color: #138496;
+  text-decoration: none;
+}
+
+.btn-delete-msg {
+  position: absolute;
+  top: -8px;
+  right: 0;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 12px;
+}
+
+.message-item:hover .btn-delete-msg,
+.reply-content:hover .btn-delete-msg {
+  opacity: 1;
+}
+
+.btn-delete-msg:hover {
+  background: #c82333;
+}

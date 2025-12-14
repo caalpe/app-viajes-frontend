@@ -192,3 +192,24 @@ export function formatDateDDMMYYYY(date: string | Date | undefined | null): stri
 
   return `${day}-${month}-${year}`;
 }
+
+/**
+ * Formatear fecha en formato relativo (hace X minutos, horas, días)
+ * @param dateString - Fecha en formato ISO o Date
+ * @returns Fecha formateada de manera relativa (ej: "Hace 5 min", "Hace 2h", "Hace 3d")
+ */
+export function formatRelativeDate(dateString: string | Date): string {
+  const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Ahora';
+  if (diffMins < 60) return `Hace ${diffMins} min`;
+  if (diffHours < 24) return `Hace ${diffHours}h`;
+  if (diffDays < 7) return `Hace ${diffDays}d`;
+
+  return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}

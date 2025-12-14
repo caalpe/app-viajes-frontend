@@ -59,7 +59,6 @@ export class UserDetailComponent implements OnInit {
       this.targetUserId = userId;
       this.isOwnProfile = userId === this.authService.getUserId();
       this.user = await this.userApi.getUser(userId);
-      console.log('Datos del usuario cargados:', this.user);
     } catch (error: any) {
       const errorMessage = extractErrorMessage(error);
       this.showModal('Error', errorMessage, 'error');

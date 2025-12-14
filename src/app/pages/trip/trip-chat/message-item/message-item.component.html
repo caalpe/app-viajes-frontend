@@ -1,0 +1,46 @@
+@if (isReply) {
+  <div class="reply-item" [class.own-reply]="isOwnMessage()">
+    <div class="reply-indicator">
+      <i class="bi bi-corner-down-right"></i>
+    </div>
+    <div class="reply-content">
+      <div class="message-header">
+        <span class="user-name">{{ message.user_name }}</span>
+        <span class="message-time">{{ formatDate(message.created_at) }}</span>
+      </div>
+      <div class="message-body">
+        <div class="message-text" [innerHTML]="linkifyText(message.message)"></div>
+        @if (canDelete()) {
+          <button class="btn-delete-msg" (click)="onDelete()" title="Eliminar mensaje">
+            <i class="bi bi-trash"></i>
+          </button>
+        }
+      </div>
+      <div class="message-actions">
+        <button class="btn-reply" (click)="onReply()">
+          <i class="bi bi-reply-fill me-1"></i>Responder
+        </button>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="message-item" [class.own-message]="isOwnMessage()">
+    <div class="message-header">
+      <span class="user-name">{{ message.user_name }}</span>
+      <span class="message-time">{{ formatDate(message.created_at) }}</span>
+    </div>
+    <div class="message-body">
+      <div class="message-text" [innerHTML]="linkifyText(message.message)"></div>
+      @if (canDelete()) {
+        <button class="btn-delete-msg" (click)="onDelete()" title="Eliminar mensaje">
+          <i class="bi bi-trash"></i>
+        </button>
+      }
+    </div>
+    <div class="message-actions">
+      <button class="btn-reply" (click)="onReply()">
+        <i class="bi bi-reply-fill me-1"></i>Responder
+      </button>
+    </div>
+  </div>
+}

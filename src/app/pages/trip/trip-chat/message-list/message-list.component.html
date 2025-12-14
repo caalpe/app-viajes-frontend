@@ -1,0 +1,78 @@
+<div class="messages-section">
+  <div class="messages-header">
+    <h3>Mensajes</h3>
+    <span class="message-count">{{ messages.length }} mensajes</span>
+  </div>
+
+  @if (loading || loadingSurveys) {
+    <div class="loading-state">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p>Cargando...</p>
+    </div>
+  } @else if (combinedItems.length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-chat-text"></i>
+      <p>No hay mensajes todavía</p>
+      <small>Sé el primero en escribir</small>
+    </div>
+  } @else {
+    <div class="messages-list">
+      @for (item of combinedItems; track item.type === 'message' ? asMessage(item.data).id_message : asSurvey(item.data).id_survey) {
+        @if (item.type === 'message') {
+          @let message = asMessage(item.data);
+          <div class="message-wrapper">
+            <!-- Mensaje principal -->
+            <app-message-item
+              [message]="message"
+              [currentUserId]="currentUserId"
+              [isReply]="false"
+              (reply)="onReply($event)"
+              (delete)="onDelete($event)"
+            ></app-message-item>
+
+            <!-- Respuestas al mensaje (ordenadas cronológicamente) -->
+            @if (message.replies && message.replies.length > 0) {
+              <div class="replies-container">
+                @for (reply of getSortedReplies(message.replies); track reply.id_message) {
+                  <app-message-item
+                    [message]="reply"
+                    [currentUserId]="currentUserId"
+                    [isReply]="true"
+                    (reply)="onReply($event)"
+                    (delete)="onDelete($event)"
+                  ></app-message-item>
+
+                  <!-- Respuestas anidadas (recursivas) -->
+                  @if (reply.replies && reply.replies.length > 0) {
+                    <div class="nested-replies-container">
+                      @for (nestedReply of getSortedReplies(reply.replies); track nestedReply.id_message) {
+                        <app-message-item
+                          [message]="nestedReply"
+                          [currentUserId]="currentUserId"
+                          [isReply]="true"
+                          (reply)="onReply($event)"
+                          (delete)="onDelete($event)"
+                        ></app-message-item>
+                      }
+                    </div>
+                  }
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          @let survey = asSurvey(item.data);
+          <app-survey
+            [survey]="survey"
+            [canClose]="isOrganizer && survey.id_creator === currentUserId"
+            [currentUserId]="currentUserId"
+            (surveyUpdated)="onSurveyUpdated($event)"
+            (error)="onSurveyError($event)"
+          ></app-survey>
+        }
+      }
+    </div>
+  }
+</div>
