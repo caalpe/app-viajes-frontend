@@ -32,7 +32,7 @@
             }
           </div>
 
-          @if (hasUserVoted() || survey.is_closed) {
+          @if (getTotalVotes() > 0) {
             <div class="option-stats">
               <span class="vote-count">{{ option.vote_count }} {{ option.vote_count === 1 ? 'voto' : 'votos' }}</span>
               <span class="vote-percentage">{{ getPercentage(option.vote_count) }}%</span>
@@ -40,7 +40,7 @@
           }
         </div>
 
-        @if (hasUserVoted() || survey.is_closed) {
+        @if (getTotalVotes() > 0) {
           <div class="option-bar">
             <div class="option-bar-fill" [style.width.%]="getPercentage(option.vote_count)"></div>
           </div>
@@ -50,12 +50,13 @@
   </div>
 
   <div class="survey-footer">
-    @if (hasUserVoted() || survey.is_closed) {
+    @if (getTotalVotes() > 0) {
       <span class="total-votes">
         <i class="bi bi-people-fill me-1"></i>
         {{ getTotalVotes() }} {{ getTotalVotes() === 1 ? 'persona ha votado' : 'personas han votado' }}
       </span>
-    } @else {
+    }
+    @if (!hasUserVoted() && !survey.is_closed) {
       <span class="vote-prompt">
         <i class="bi bi-hand-index me-1"></i>
         Haz clic en una opción para votar
