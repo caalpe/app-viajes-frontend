@@ -5,10 +5,11 @@ import { ITrip } from '../../../interfaces/ITrip';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ParticipationApiService } from '../../../services/api-rest/participation-rest.service';
 import { IParticipant, IParticipantInfo, participationStatus } from '../../../interfaces/IParticipant';
-import { convertIsoToDateInputFormat } from '../../../shared/utils/data.utils';
+import { convertIsoToDateInputFormat, formatDateDDMMYYYY } from '../../../shared/utils/data.utils';
 import { AuthService } from '../../../services/auth.service';
 import { SpinnerComponent } from "../../../shared/components/spinner/spinner.component";
 import { FormControl, FormGroup, ɵInternalFormsSharedModule, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-trip-detail',
@@ -28,6 +29,7 @@ export class TripDetailComponent
   tripParticipantsInfo : IParticipantInfo[] = [];
   userParticipationRequests : IParticipant[] = [];
   userTripParticipation? : IParticipant;
+  ownerTripInfo? : IParticipantInfo;
   image : string = "https://www.mercurynews.com/wp-content/uploads/2021/04/SJM-L-ROADTRIP-0502-01.jpg?w=1024";
 
   userIsOwner         	: boolean = false; //To display if its the owner
@@ -43,7 +45,7 @@ export class TripDetailComponent
 
   petitionForm = new FormGroup
 	({
-  	text: new FormControl<string>('')   // este será el textarea
+  	text: new FormControl<string>('Me gustaría unirme a este viaje 🙂')
   });
 
   ngOnInit()
@@ -63,7 +65,6 @@ export class TripDetailComponent
     try
     {
       this.tripInfo = await this.tripService.getTrip(this.tripId);
-
       console.log(this.tripInfo);
     }
     catch (error)
@@ -104,18 +105,25 @@ export class TripDetailComponent
         this.userTripParticipation = this.userParticipationRequests.find((value) =>
         {
           return value.id_trip == this.tripId;
-        })
+        });
         if(this.userTripParticipation)
         {
           this.userHasSendRequest = true;
-					//Check if the request is accepted
-					if(this.userTripParticipation.status == participationStatus.accepted)
-					{
-						this.userRequestIsAccepted = true;
-					}
+		      //Check if the request is accepted
+		      if(this.userTripParticipation.status == participationStatus.accepted)
+		      {
+		      	this.userRequestIsAccepted = true;
+		      }
         }
       }
     }
+    
+    //Get the owner information
+    this.ownerTripInfo = this.tripParticipantsInfo.find((value) =>
+        {
+          return value.id_user == this.tripInfo.id_creator;
+        });
+
     //Page loaded, we can show it
     this.pageLoaded = true;
   }
@@ -126,7 +134,16 @@ export class TripDetailComponent
     {
       return "";
     }
-    return convertIsoToDateInputFormat(dateString);
+    return formatDateDDMMYYYY(dateString);
+  }
+
+  checkIfUserCanCancel() : boolean
+  {
+    if(this.userTripParticipation?.status == participationStatus.pending || this.userTripParticipation?.status == participationStatus.accepted)
+    {
+      return true;
+    }
+    return false;
   }
 
   changePetitionText() : string
@@ -144,7 +161,30 @@ export class TripDetailComponent
     }
     return "";
   }
+  
+  get participationClass(): string
+  {
+    const status = this.userTripParticipation?.status ?? participationStatus.pending;
+    return this.participationStatusMap[status];
+  }
 
+  participationStatusMap: Record<participationStatus, string> =
+  {
+      [participationStatus.pending]: "text-bg-info",
+      [participationStatus.accepted]: "text-bg-success",
+      [participationStatus.rejected]: "text-bg-danger",
+      [participationStatus.left]: "text-bg-secondary",
+  };
+
+  //Here we will only have two status: pending or acepted
+  changeCancelPetitionText() : string
+  {
+    if(this.userTripParticipation?.status == participationStatus.pending)
+    {
+      return "Cancelar solicitud";
+    }
+    return "Abandonar viaje"
+  }
   petitionButtonPressed()
   {
     this.requestingPetition = true;
@@ -156,12 +196,53 @@ export class TripDetailComponent
     }, this.animationTimeOut);
   }
 
+  async cancelPetitionButtonClicked()
+  {
+    //The user wants to delete de petition for entering the trip
+    if(this.userTripParticipation?.status == participationStatus.pending)
+    {
+      let result;
+      try 
+      {
+        let participationId = this.userTripParticipation?.id_participation ?? -1;
+        if(participationId == -1)
+        {
+          console.log("No se pudo cancelar la peticion del viaje por que no se obtubo la informacion de la solicitud");
+        }
+        result = await this.participationService.deleteParticipation(participationId);
+      }
+      catch (error) 
+      {
+        console.log("No se pudo cancelar la peticion del viaje por un error inesperado :", error);
+      }
+      this.userHasSendRequest = false;
+      this.cancelPetitionButtonPressed();
+    }
+    else//The button is acepted and the user wants to leave the trip
+    {
+      let result;
+      try 
+      {
+        let participationId = this.userTripParticipation?.id_participation ?? -1;
+        if(participationId == -1)
+        {
+          console.log("No se pudo abandonar el viaje por que no se obtubo la informacion de la solicitud");
+        }
+        result = await this.participationService.updateParticipationStatus(participationId, participationStatus.left);
+      }
+      catch (error) 
+      {
+        console.log("No se pudo abandonar el viaje por un error inesperado :", error);
+      }
+    }
+    //despues de abandonar el viaje recargamos la informacion de la pagina
+    this.loadTrip();
+  }
+
   async sendPetitionButtonPressed()
   {
-		console.log(this.petitionForm.value);
 		try 
 		{
-			console.log(this.tripId);
 			this.userTripParticipation = await this.participationService.createParticipationRequest(this.tripId, this.petitionForm.get("text")?.value ?? "");	
 		} 
 		catch (error) 
@@ -186,18 +267,4 @@ export class TripDetailComponent
     this.requestingPetition = false;
 		this.petitionForm.reset();
   }
-
-  get participationClass(): string
-  {
-    const status = this.userTripParticipation?.status ?? participationStatus.pending;
-    return this.participationStatusMap[status];
-  }
-
-  participationStatusMap: Record<participationStatus, string> =
-  {
-      [participationStatus.pending]: "text-bg-info",
-      [participationStatus.accepted]: "text-bg-success",
-      [participationStatus.rejected]: "text-bg-danger",
-      [participationStatus.left]: "text-bg-secondary",
-  };
 }

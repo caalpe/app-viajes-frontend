@@ -138,6 +138,19 @@ export function validateNumberRange(value: number, min: number, max: number): bo
 }
 
 /**
+ * Validar que el máximo de participantes sea estrictamente mayor que el mínimo
+ * @param min - Mínimo de participantes
+ * @param max - Máximo de participantes
+ * @returns true si max > min, false en caso contrario
+ */
+export function validateMaxGreaterThanMin(min: number | undefined | null, max: number | undefined | null): boolean {
+  const minVal = typeof min === 'number' ? min : Number(min);
+  const maxVal = typeof max === 'number' ? max : Number(max);
+  if (isNaN(minVal) || isNaN(maxVal)) return false;
+  return maxVal > minVal;
+}
+
+/**
  * Convertir una fecha a formato en español legible
  * @param date - Fecha a convertir (string ISO o Date)
  * @returns Fecha formateada en español (ej: "26 de noviembre de 2025")
@@ -160,4 +173,22 @@ export function formatDateToSpanish(date: string | Date | undefined | null): str
   };
 
   return dateObj.toLocaleDateString('es-ES', options);
+}
+
+/**
+ * Convertir fecha de formato americano (YYYY-MM-DD) a formato español (DD-MM-YYYY)
+ * @param date - Fecha en formato YYYY-MM-DD o ISO
+ * @returns Fecha en formato DD-MM-YYYY (ej: "28-11-2025")
+ */
+export function formatDateDDMMYYYY(date: string | Date | undefined | null): string {
+  if (!date) {
+    return '';
+  }
+
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const day = dateObj.getUTCDate().toString().padStart(2, '0');
+  const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, '0');
+  const year = dateObj.getUTCFullYear();
+
+  return `${day}-${month}-${year}`;
 }

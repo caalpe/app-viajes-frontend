@@ -25,33 +25,7 @@
     padding: 0;
 }
 
-/*
-.enter-form 
+.preserve-lines
 {
-    @starting-style 
-    {
-        height: 0px !important;
-        min-height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        overflow: hidden;
-    }
-    
-    height: 110px;
-    min-height: unset;
-    overflow: hidden;
-    opacity: 1;
-    transition: height 5000ms ease-in-out, opacity 5000ms ease-in-out;
+    white-space: pre-line;
 }
-
-.enter-buttons
-{
-    @starting-style 
-    {
-        height: 0px !important;
-        padding: 0px !important;
-    }
-    transition: height 10000ms ease-in-out, opacity 10000ms ease-in-out;
-} */
-
-/*151 de altura final*/

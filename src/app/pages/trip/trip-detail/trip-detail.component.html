@@ -1,18 +1,18 @@
-@if (pageLoaded) 
+@if (pageLoaded)
 {
 <div class="container">
     <article class="row justify-content-around m-0 py-4 gap-4">
         <!-- Left Section -->
-        <div class="col-12 col-md-7 d-flex flex-column gap-4">
+        <div class="col-12 col-lg-7 d-flex flex-column gap-4">
             <section class="card rounded-4 shadow-sm">
                 <img [src]="tripInfo.image_url ?? image" alt="" class="img-fluid card-image mt-4 mb-4">
                 <span class="fs-5 badge text-bg-success rounded-pill position-absolute cost-display">{{tripInfo.cost_per_person}}€</span>
             </section>
-            
+
             <!-- Parte de iconos {Ruta-Fecha-Participantes} -->
             <section class="card p-3 rounded-4 shadow-sm">
                 <h1>{{tripInfo.title}}</h1>
-                
+
                 <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between justify-content-start">
                     <div class="d-flex align-items-center">
                         <i class="bi bi-geo-alt pe-2"></i>
@@ -28,9 +28,18 @@
                     <div class="d-flex align-items-center">
                         <i class="bi bi-calendar pe-2"></i>
                         <div class="d-flex flex-column">
-                            <p class="m-0 fw-medium">Fecha</p>
+                            <p class="m-0 fw-medium">Fecha inicio</p>
                             <div>
                                 <span class="card-text">{{changeDate(tripInfo.start_date)}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-calendar pe-2"></i>
+                        <div class="d-flex flex-column">
+                            <p class="m-0 fw-medium">Fecha fin</p>
+                            <div>
+                                <span class="card-text">{{changeDate(tripInfo.end_date)}}</span>
                             </div>
                         </div>
                     </div>
@@ -39,66 +48,88 @@
                         <div class="d-flex flex-column">
                             <p class="m-0 fw-medium">Participantes</p>
                             <div>
-                                <span class="card-text">{{tripInfo.accepted_participants}} / {{tripInfo.min_participants}}</span>
+                                <span class="card-text">{{tripInfo.accepted_participants}} / {{tripInfo.max_participants}}</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <hr>
-                
-                <h2>Sobre este viaje</h2>
-                <p>{{tripInfo.description}}</p>
-                
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Sobre este viaje</h2>
+                    <div>
+                        <i class="bi bi-people pe-2"></i>
+                        <span class="card-text fw-medium">Participantes minimos: </span>
+                        <span class="card-text">{{tripInfo.min_participants}}</span>
+                    </div>
+                </div>
+                    <p class="preserve-lines">{{tripInfo.description}}</p>
+
                 <hr>
-                
+
                 <h2>Itinerario</h2>
-                <p>{{tripInfo.itinerary}}</p>
+                <p class="preserve-lines">{{tripInfo.itinerary}}</p>
             </section>
         </div>
-        
+
         <!-- Right Section  -->
-        <div class="col-12 col-md-4 d-flex flex-column gap-4">
+        <div class="col-12 col-lg-4 d-flex flex-column gap-4">
             @if (userIsOwner) 
             {
                 <button class="btn btn-primary" [routerLink]="['/trips', tripInfo.id_trip, 'edit']">Editar Viaje</button>
             }
-            
+
             <section class="card p-3 rounded-4 shadow-sm">
                 <div class="d-flex flex-column gap-3">
                     <h4>Organizador</h4>
                     <div class="d-flex align-items-center">
-                        <img src="{{image}}" alt="" class="img-fluid rounded-circle creator-img">
-                        <p class="m-0 ps-2 fw-medium">{{tripInfo.creator_name}}</p>
+                        <img src="{{ownerTripInfo?.photo_url}}" alt="" class="img-fluid rounded-circle creator-img">
+                        <p class="m-0 ps-2 fw-medium">{{ownerTripInfo?.name}}</p>
                     </div>
                     @if(userHasSendRequest)
                     {
-                        <span class="btn btn-primary {{participationClass}}">{{changePetitionText()}}</span>
+                        <div class="d-flex align-items-center justify-content-around gap-2">
+                            <span class="btn btn-primary w-100 {{participationClass}}">{{changePetitionText()}}</span>
+                            @if(checkIfUserCanCancel())
+                            {
+                                <button class="btn btn-danger w-100" (click)="cancelPetitionButtonClicked()">{{changeCancelPetitionText()}}</button>
+                            }
+                        </div>
                     }
-                    @else 
+                    @else
                     {
-                        @if (showForm) 
+                        @if (showForm)
                         {
                             <form [formGroup]="petitionForm">
-                                <textarea class="form-control enter-form" formControlName="text"></textarea>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <button class="btn btn-danger enter-buttons" type="button" 
-                                    (click)="cancelPetitionButtonPressed()">Cancelar</button>
-                                    
-                                    <button class="btn btn-success enter-buttons" type="button" 
-                                    (click)="sendPetitionButtonPressed()">Enviar</button>
+                                <div class="d-flex align-items-center flex-column gap-2">
+                                    <textarea class="form-control enter-form" formControlName="text"></textarea>
+                                    <div class="d-flex align-items-center justify-content-between gap-2 w-100">
+                                        <button class="btn btn-danger enter-buttons w-100" type="button"
+                                        (click)="cancelPetitionButtonPressed()">Cancelar</button>
+
+                                        <button class="btn btn-success enter-buttons w-100" type="button"
+                                        (click)="sendPetitionButtonPressed()">Enviar</button>
+                                    </div>
                                 </div>
                             </form>
                         }
                         @else 
                         {
-                            <button class="btn btn-primary simple-animation" [class.button-hide]="requestingPetition" [disabled]="userIsOwner" 
-                            [attr.aria-disabled]="userIsOwner" (click)="petitionButtonPressed()">Mandar peticion</button>
+                            @if (tripInfo.status == "open") 
+                            {
+                                <button class="btn btn-primary simple-animation" [class.button-hide]="requestingPetition" [disabled]="userIsOwner" 
+                                [attr.aria-disabled]="userIsOwner" (click)="petitionButtonPressed()">Mandar peticion</button>
+                            }
+                            <!-- Status of the trip is either close or complete -->
+                            @else
+                            {
+                                <button class="btn btn-danger simple-animation disabled aria-disabled">Peticiones cerradas</button>
+                            }
                         }
                     }
                 </div>
             </section>
-            
+
             <section class="card p-3 rounded-4 shadow-sm gap-3">
                 <h4>Participantes</h4>
                 @for (participants of tripParticipantsInfo; track participants.id_user)
@@ -108,35 +139,18 @@
                             <img [src]=participants.photo_url alt="" class="img-fluid rounded-circle creator-img">
                             <p class="m-0 ps-2 fw-medium">{{participants.name}}</p>
                         </div>
-                        @if(userRequestIsAccepted) 
+                        @if(userRequestIsAccepted)
                         {
                             <button class="btn btn-warning" [routerLink]="['/user/profile', participants.id_user]">Ver Perfil</button>
                         }
                     </div>
                 }
             </section>
-
-             <!-- <section class="card p-3 rounded-4 shadow-sm gap-3">
-                <h4>Valora a tus compañeros</h4>
-                @for (participants of tripParticipantsInfo; track participants.id_user)
-                {
-                    <div class="d-flex align-items-center  justify-content-between">
-                        <div class="d-flex align-items-center  justify-content-start">
-                            <img [src]=participants.photo_url alt="" class="img-fluid rounded-circle creator-img">
-                            <p class="m-0 ps-2 fw-medium">{{participants.name}}</p>
-                        </div>
-                        @if(userRequestIsAccepted) 
-                        {
-                            <button class="btn btn-warning" [routerLink]="['/user/profile', participants.id_user]">Ver Perfil</button>
-                        }
-                    </div>
-                }
-            </section> -->
         </div>
     </article>
 </div>
 }
-@else 
+@else
 {
       <app-spinner message="Cargando datos del viaje..." size="md"></app-spinner>
 }
