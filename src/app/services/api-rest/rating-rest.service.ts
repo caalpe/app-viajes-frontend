@@ -5,12 +5,13 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RatingApiService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private readonly baseUrl = 'https://app-viajes-backend-amla.onrender.com/api/ratings';
+  private readonly baseUrl =
+    'https://app-viajes-backend-amla.onrender.com/api/ratings';
 
   /**
    * Obtiene los headers con la autorización del token
@@ -18,8 +19,8 @@ export class RatingApiService {
   private getAuthHeaders(): HttpHeaders {
     const token = this.authService.getToken();
     return new HttpHeaders({
-      'Authorization': `${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `${token}`,
+      'Content-Type': 'application/json',
     });
   }
 
@@ -29,7 +30,20 @@ export class RatingApiService {
    */
   submitRating(ratingData: IRatingSubmit): Promise<IRating> {
     return firstValueFrom(
-      this.http.post<IRating>(this.baseUrl, ratingData, { headers: this.getAuthHeaders() })
+      this.http.post<IRating>(this.baseUrl, ratingData, {
+        headers: this.getAuthHeaders(),
+      })
+    );
+  }
+  getMyRatingsForTrip(
+    tripId: number
+  ): Promise<
+    Array<{ id_reviewed: number; score: number; comment: string | null }>
+  > {
+    return firstValueFrom(
+      this.http.get<
+        Array<{ id_reviewed: number; score: number; comment: string | null }>
+      >(`${this.baseUrl}/trip/${tripId}/me`, { headers: this.getAuthHeaders() })
     );
   }
 }
