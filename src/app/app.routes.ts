@@ -11,6 +11,7 @@ import { TripListComponent } from './pages/trip/trip-list/trip-list.component';
 import { TripChatComponent } from './pages/trip/trip-chat/trip-chat.component';
 import { RequestsComponent } from './pages/requests/requests.component';
 import { authGuard } from './guards/auth.guard';
+import { profileGuard } from './guards/profile.guard';
 
  export const routes: Routes = [
   {
@@ -46,7 +47,8 @@ import { authGuard } from './guards/auth.guard';
       },
       {
         path: 'profile/:idUser',
-        component: UserDetailComponent
+        component: UserDetailComponent,
+        canActivate: [profileGuard]
       },
       {
         path: 'change-password',
