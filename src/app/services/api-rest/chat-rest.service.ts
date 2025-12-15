@@ -110,7 +110,7 @@ export class ChatApiService {
   async deleteMessage(messageId: number): Promise<void> {
     const headers = this.getAuthHeaders();
     await firstValueFrom(
-      this.http.delete<void>(`${this.baseUrl}/messages/${messageId}`, { headers })
+      this.http.delete<void>(`https://app-viajes-backend-amla.onrender.com/api/messages/${messageId}`, { headers })
     );
   }
 }

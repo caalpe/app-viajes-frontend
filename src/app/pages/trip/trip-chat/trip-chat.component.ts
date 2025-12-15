@@ -170,18 +170,8 @@ export class TripChatComponent implements OnInit {
   }
 
   deleteMessage(messageId: number): void {
-    // Buscar el mensaje en el árbol
-    const message = this.findMessageById(this.messages, messageId);
-
-    if (!message) {
-      console.error('Mensaje no encontrado');
-      this.showErrorModal('No se pudo encontrar el mensaje.');
-      return;
-    }
-
-    // Verificar si el mensaje tiene respuestas
-    if (message.replies && message.replies.length > 0) {
-      this.showErrorModal('No puedes eliminar un mensaje que tiene respuestas. Elimina primero las respuestas.');
+    if (!messageId) {
+      this.showErrorModal('ID de mensaje inválido');
       return;
     }
 
@@ -191,11 +181,11 @@ export class TripChatComponent implements OnInit {
       async () => {
         try {
           await this.chatApi.deleteMessage(messageId);
-          // Recargar todos los mensajes desde el servicio
           await this.loadMessages();
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error al eliminar mensaje:', error);
-          this.showErrorModal('Error al eliminar el mensaje. Por favor, intenta de nuevo.');
+          const errorMsg = error?.error?.message || error?.message || 'Error al eliminar el mensaje. Por favor, intenta de nuevo.';
+          this.showErrorModal(errorMsg);
         }
       }
     );
