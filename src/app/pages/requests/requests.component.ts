@@ -62,10 +62,13 @@ export class RequestsComponent implements OnInit {
 
   participationByTripUser: Record<number, Record<number, number>> = {};
 
+  ratedUsersByTrip: Record<number, Set<number>> = {};
+
   async ngOnInit() {
     await this.loadMyTripsAndRequests();
     await this.loadTripParticipants();
     await this.loadUserProfiles();
+    await this.loadMyRatingsForPastTrips();
   }
 
   async loadMyTripsAndRequests() {
@@ -105,6 +108,29 @@ export class RequestsComponent implements OnInit {
     }
   }
 
+  async loadMyRatingsForPastTrips() {
+    this.ratedUsersByTrip = {};
+    for (const trip of this.pastTrips) {
+      if (!trip.id_trip) continue;
+
+      try {
+        const ratings = await this.ratingService.getMyRatingsForTrip(
+          trip.id_trip
+        );
+
+        this.ratedUsersByTrip[trip.id_trip] = new Set(
+          ratings.map((r) => r.id_reviewed)
+        );
+      } catch (error) {
+        console.error('Error loading ratings for trip', trip.id_trip, error);
+      }
+    }
+  }
+
+  hasRated(tripId: number, reviewedUserId: number): boolean {
+    return this.ratedUsersByTrip[tripId]?.has(reviewedUserId) ?? false;
+  }
+
   setActiveTab(tab: TabType) {
     this.activeTab = tab;
   }
@@ -117,19 +143,6 @@ export class RequestsComponent implements OnInit {
   }
 
   acceptedParticipationIds: Record<number, Record<number, number>> = {};
-
-  private ratingKey(tripId: number, reviewedUserId: number) {
-    const reviewerId = this.authService.getUserId();
-    return `rated:${reviewerId}:${tripId}:${reviewedUserId}`;
-  }
-
-  hasRated(tripId: number, reviewedUserId: number): boolean {
-    return localStorage.getItem(this.ratingKey(tripId, reviewedUserId)) === '1';
-  }
-
-  markRated(tripId: number, reviewedUserId: number): void {
-    localStorage.setItem(this.ratingKey(tripId, reviewedUserId), '1');
-  }
 
   private formKey(tripId: number, userId: number): string {
     return `${tripId}:${userId}`;
@@ -202,7 +215,10 @@ export class RequestsComponent implements OnInit {
         requestId,
         participationStatus.accepted
       );
-      await this.loadMyTripsAndRequests(); // Recargar datos
+      await this.loadMyTripsAndRequests();
+      await this.loadTripParticipants();
+      await this.loadUserProfiles();
+      await this.loadMyRatingsForPastTrips();
     } catch (error) {
       console.error('Error accepting request:', error);
     }
@@ -214,7 +230,10 @@ export class RequestsComponent implements OnInit {
         requestId,
         participationStatus.rejected
       );
-      await this.loadMyTripsAndRequests(); // Recargar datos
+      await this.loadMyTripsAndRequests();
+      await this.loadTripParticipants();
+      await this.loadUserProfiles();
+      await this.loadMyRatingsForPastTrips();
     } catch (error) {
       console.error('Error rejecting request:', error);
     }
@@ -302,8 +321,10 @@ export class RequestsComponent implements OnInit {
       };
 
       await this.ratingService.submitRating(payload as any);
-
-      this.markRated(tripId, userId);
+      if (!this.ratedUsersByTrip[tripId]) {
+        this.ratedUsersByTrip[tripId] = new Set<number>();
+      }
+      this.ratedUsersByTrip[tripId].add(userId);
       this.expandedRatings[key] = false;
       delete this.userRatings[key];
 
