@@ -148,7 +148,7 @@
                             <img [src]=participants.photo_url alt="" class="img-fluid rounded-circle creator-img">
                             <p class="m-0 ps-2 fw-medium">{{participants.name}}</p>
                         </div>
-                        @if(userRequestIsAccepted)
+                        @if(userRequestIsAccepted || userIsOwner)
                         {
                             <button class="btn btn-warning" [routerLink]="['/user/profile', participants.id_user]">Ver Perfil</button>
                         }
