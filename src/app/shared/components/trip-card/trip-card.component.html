@@ -1,39 +1,56 @@
-<article class="card rounded-4 pt-4" (mouseenter)="hover = true" (mouseleave)="hover = false"
-         [class.shadow]="hover" [class.shadow-sm]="!hover">
-    <div class="image-wrapper">
-        <img [src]="tripInfo.image_url ?? image" alt="" class="img-fluid card-image">
-        @if (tripInfo.status == "open") 
-        {
-            <span class="badge rounded-pill position-absolute owner-display {{badgeClassMap[type]}}">{{selectCardType()}}</span>
-        }
-        @else 
-        {
-            <span class="badge rounded-pill position-absolute owner-display text-bg-danger">{{informTripStatus()}}</span>
-        }
+<article
+  class="card rounded-4 pt-4"
+  (mouseenter)="hover = true"
+  (mouseleave)="hover = false"
+  [class.shadow]="hover"
+  [class.shadow-sm]="!hover"
+>
+  <div class="image-wrapper">
+    <img
+      [src]="tripInfo.image_url ?? image"
+      alt=""
+      class="img-fluid card-image"
+    />
+    @if (tripInfo.status == "open") {
+    <span
+      class="badge rounded-pill position-absolute owner-display {{
+        badgeClassMap[type]
+      }}"
+      >{{ selectCardType() }}</span
+    >
+    } @else {
+    <span
+      class="badge rounded-pill position-absolute owner-display text-bg-danger"
+      >{{ informTripStatus() }}</span
+    >
+    }
+  </div>
+  <div class="card-body">
+    <h3 class="card-title">{{ tripInfo.title }}</h3>
+    <div>
+      <i class="bi bi-geo-alt pe-2"></i>
+      <span class="card-text">{{ tripInfo.departure }}</span>
+      <i class="bi bi-arrow-right pe-2"></i>
+      <span class="card-text">{{ tripInfo.destination }}</span>
     </div>
-    <div class="card-body">
-        <h3 class="card-title">{{tripInfo.title}}</h3>
-        <div>
-            <i class="bi bi-geo-alt pe-2"></i>
-            <span class="card-text">{{tripInfo.departure}}</span>
-            <i class="bi bi-arrow-right pe-2"></i>
-            <span class="card-text">{{tripInfo.destination}}</span>
-        </div>
-        <div>
-            <i class="bi bi-calendar pe-2"></i>
-            <span class="card-text">{{changeDate(tripInfo.start_date)}}</span>
-            <i class="bi bi-arrow-right pe-2"></i>
-            <span class="card-text">{{changeDate(tripInfo.end_date)}}</span>
-        </div>
-        <div>
-            <i class="bi bi-people pe-2"></i>
-            <span class="card-text">{{tripInfo.accepted_participants}} / {{tripInfo.min_participants}}</span>
-        </div>
-        <div>
-            <i class="bi bi-cash pe-2"></i>
-            <span class="card-text">{{tripInfo.cost_per_person}} €</span>
-        </div>
+    <div>
+      <i class="bi bi-calendar pe-2"></i>
+      <span class="card-text">{{ changeDate(tripInfo.start_date) }}</span>
+      <i class="bi bi-arrow-right pe-2"></i>
+      <span class="card-text">{{ changeDate(tripInfo.end_date) }}</span>
     </div>
+    <div>
+      <i class="bi bi-people pe-2"></i>
+      <span class="card-text">
+        {{ tripInfo.accepted_participants }} / {{ tripInfo.max_participants }}
+        <small class="text-muted">(mín. {{ tripInfo.min_participants }})</small>
+      </span>
+    </div>
+    <div>
+      <i class="bi bi-cash pe-2"></i>
+      <span class="card-text">{{ tripInfo.cost_per_person }} €</span>
+    </div>
+  </div>
 
-    <a [routerLink]="['/trips', tripInfo.id_trip]" class="stretched-link"></a>
+  <a [routerLink]="['/trips', tripInfo.id_trip]" class="stretched-link"></a>
 </article>
