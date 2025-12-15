@@ -171,7 +171,6 @@ export class TripChatComponent implements OnInit {
 
   deleteMessage(messageId: number): void {
     if (!messageId) {
-      console.error('ID de mensaje inválido:', messageId);
       this.showErrorModal('ID de mensaje inválido');
       return;
     }
@@ -181,19 +180,10 @@ export class TripChatComponent implements OnInit {
       '¿Estás seguro de que quieres eliminar este mensaje?',
       async () => {
         try {
-          console.log('Eliminando mensaje con ID:', messageId);
           await this.chatApi.deleteMessage(messageId);
-          console.log('Mensaje eliminado exitosamente, recargando lista...');
-          // Recargar todos los mensajes desde el servicio
           await this.loadMessages();
         } catch (error: any) {
           console.error('Error al eliminar mensaje:', error);
-          console.error('Detalles del error:', {
-            status: error?.status,
-            statusText: error?.statusText,
-            errorMessage: error?.error?.message,
-            errorDetails: error?.error
-          });
           const errorMsg = error?.error?.message || error?.message || 'Error al eliminar el mensaje. Por favor, intenta de nuevo.';
           this.showErrorModal(errorMsg);
         }
