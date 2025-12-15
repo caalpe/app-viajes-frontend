@@ -175,6 +175,26 @@ export class TripChatComponent implements OnInit {
       return;
     }
 
+    // Buscar el mensaje en el árbol
+    const message = this.findMessageById(this.messages, messageId);
+
+    if (!message) {
+      this.showErrorModal('No se pudo encontrar el mensaje.');
+      return;
+    }
+
+    // Verificar si es el autor del mensaje
+    if (message.id_user !== this.currentUserId) {
+      this.showErrorModal('Solo puedes eliminar tus propios mensajes.');
+      return;
+    }
+
+    // Verificar si el mensaje tiene respuestas
+    if (message.replies && message.replies.length > 0) {
+      this.showErrorModal('No puedes eliminar un mensaje que tiene respuestas. Elimina primero las respuestas.');
+      return;
+    }
+
     this.showConfirmationModal(
       'Eliminar mensaje',
       '¿Estás seguro de que quieres eliminar este mensaje?',
