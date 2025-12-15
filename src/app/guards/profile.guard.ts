@@ -42,7 +42,7 @@ export const profileGuard = async (route: ActivatedRouteSnapshot) => {
 
     // Obtener viajes en los que el usuario actual participa
     const myParticipations = await participationApi.getUserParticipationRequests();
-    
+
     // Para cada viaje donde participo, verificar si el target user también participa
     for (const participation of myParticipations) {
       if (participation.id_trip) {
